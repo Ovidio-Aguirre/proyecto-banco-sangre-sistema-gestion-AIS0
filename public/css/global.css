@@ -1,0 +1,80 @@
+:root {
+    /* Colores */
+    --color-primary: #e02b20;
+    --color-messages: #b3140c;
+    --color-messages-bg: #fde3e1;
+    --color-background: #ffffff;
+    --color-bg-secondary: #f4f4f4;
+    --color-text: #6f726f;
+    --color-text-title: #333333;
+    
+    /* Tipografía */
+    --font-family: Arial, sans-serif;
+
+    /* Tamaños de texto */
+    --font-size-title: 24px;
+    --font-size-subtitle: 18px;
+    --font-size-nav: 17px;
+    --font-size-button: 15px;
+    --font-size-body: 14px;
+    --font-size-note: 12px;
+
+    /* Estilos tipográficos */
+    --font-weight-semibold: 600;
+    --font-weight-bold: 800;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family);
+    color: var(--color-text);
+    background-color: var(--color-background);
+}
+
+h1, h2, h3 {
+    margin: 0;
+    line-height: 1.1; 
+}
+
+p {
+    margin: 0;
+}
+
+.main-content {
+    padding: 24px;
+}
+
+.text {
+    font-size: var(--font-size-body);
+    color: var(--color-text);
+}
+
+.subtext {
+    font-size: var(--font-size-note);
+    color: var(--color-text);
+}
+
+.text-title {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-title);
+}
+
+.title {
+    font-size: var(--font-size-subtitle);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-title);
+}
+
+.container {
+    border: 2px solid var(--color-bg-secondary);
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+    padding: 10px 0;
+    width: 100%;
+    border-spacing: 4px 6px;
+}

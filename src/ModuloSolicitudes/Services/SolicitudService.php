@@ -1,0 +1,1 @@
+// Maneja la logica de asignacion para evitar solapamiento.

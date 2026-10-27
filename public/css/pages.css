@@ -1,0 +1,180 @@
+.page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.page-title {
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+}
+
+.page-subtitle {
+    font-size: var(--font-size-body);
+    color: var(--color-text);
+}
+
+.page-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px 0;
+}
+
+.section-nav{
+    display: flex;
+    gap: 10px;
+}
+
+.page-button {
+    font-size: var(--font-size-button);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    background-color: var(--color-background);
+    border: 2px solid var(--color-primary);
+    border-radius: 18px;
+    padding: 9px 18px;
+}
+
+.page-button:hover {
+    color: var(--color-background);
+    background-color: var(--color-primary);
+}
+
+.section-nav .page-button.active {
+    color: var(--color-background);
+    background-color: var(--color-primary);
+}
+
+.page-panel {
+    display: none;
+}
+
+.page-panel.active {
+    display: block;
+}
+
+/* --- FORMS --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    padding: 20px 0;        
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.form-group select,.form-group input {
+    padding: 12px;
+    font-size: var(--font-size-body);
+    border: 2px solid var(--color-bg-secondary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+
+.form-buttons{
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 10px;
+    padding-top: 10px;
+}
+
+.main-button {
+    font-size: var(--font-size-note);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-background);
+    background-color: var(--color-primary);
+    border: 2px solid var(--color-background);
+    border-radius: 18px;
+    padding: 9px 18px;
+}
+
+.sec-button {
+    font-size: var(--font-size-note);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    background-color: var(--color-background);
+    border: 2px solid var(--color-primary);
+    border-radius: 18px;
+    padding: 9px 18px;
+}
+
+.main-button:hover, .sec-button:hover {
+    transform: scale(1.05);
+}
+
+/* --- TABLES --- */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.filter-group select,.filter-group input{
+    padding: 8px;
+    font-size: var(--font-size-body);
+    border: 2px solid var(--color-bg-secondary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+
+.table-button {
+    font-size: var(--font-size-note);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    background-color: var(--color-background);
+    border: 2px solid var(--color-primary);
+    border-radius: 18px;
+    padding: 9px 18px;
+}
+
+.table-button:hover {
+    color: var(--color-background);
+    background-color: var(--color-primary);
+}
+
+.data-table {
+    border-spacing: 2px 6px;
+}
+
+.data-table th{
+    text-align: left;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    padding: 5px 10px;
+}
+
+.data-table thead th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.data-table thead th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.data-table td {
+    padding: 2px 10px;
+    min-width: 70px;
+}
+
+/* Tabla donantes */
+.pill {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    padding: 5px 10px;
+    border-radius: 15px;
+}
+
+#donor-header{
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    align-items: end;
+    gap: 10px;
+}

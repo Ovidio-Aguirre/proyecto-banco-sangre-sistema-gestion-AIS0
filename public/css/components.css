@@ -1,0 +1,76 @@
+.user-options {
+    display: flex;
+    justify-content: right;
+    gap: 15px;
+    padding: 10px 30px;
+    background-color: var(--color-primary);
+    font-size: var(--font-size-button);
+}
+
+.user-options a {
+    color: var(--color-background);
+    text-decoration: none;
+}
+
+.user-options a:hover {
+    color: var(--color-messages);
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+}
+
+.topbar-title {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-title);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+    gap: 10px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.icon-gota {
+  font-size: 40px; /* Ajustar segun conveniencia*/
+}
+
+.topbar-user {
+    display: flex;
+    text-align: right;
+    font-size: var(--font-size-body);
+    color: var(--color-text);
+    gap: 10px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: left;
+    gap: 20px;
+    padding: 15px 30px;
+    background-color: var(--color-bg-secondary);
+    font-size: var(--font-size-nav);
+}
+
+.navbar a {
+    color: var(--color-text);
+    text-decoration: underline transparent;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 15px; /* Coincidir con el padding vertical de la navbar*/
+    transition: text-decoration-color 0.2s ease;
+}
+
+.navbar a:hover {
+    color: var(--color-primary);
+    text-decoration-color: var(--color-primary);
+}
+
+/* Pagina activa*/
+.navbar a.active {
+    color: var(--color-primary);
+    text-decoration-color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}

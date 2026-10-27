@@ -1,0 +1,130 @@
+<section class="donantes">
+    <h1 class="page-title">Donantes</h1>
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="consultar">Consultar donantes</button>
+            <button class="page-button" data-target="registrar">Registrar donante</button> 
+        </div>
+
+        <div class="section-content">
+            <section id="consultar" class="page-panel active">
+                <div class="container">
+                    <div id="donor-header">
+                        <article class="filter-group">
+                            <label for="buscar">Buscar por nombre o DUI</label>
+                            <input type="text" name="buscar" id="buscar">
+                        </article>
+                        <article class="filter-group">
+                            <label for="buscar-tipo">Tipo sanguineo</label>
+                            <select id="buscar-tipo" required>
+                                <option value="" disabled selected hidden>Todos</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="AB">AB</option>
+                                <option value="O">O</option>
+                            </select>
+                        </article>
+                        <div class="filter-buttons">
+                                <button class="main-button text">BUSCAR</button>
+                                <button class="sec-button" data-target="registrar">+ NUEVO DONANTE</button>
+                            </div>
+                    </div>
+                    <table class="table data-table" id="donor-table">
+                        <thead>
+                            <tr>
+                                <th>DUI</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Telefono</th>
+                                <th>Ultima donacion</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text">
+                                <td>06147890-1</td>
+                                <td>Luis Torres</td>
+                                <td><span class="pill">AB+</span></td>
+                                <td>7890-5602</td>
+                                <td>20/10/2026</td>
+                                <td>
+                                    <article>
+                                        <button class="table-button">Ver Historial</button>
+                                        <button class="table-button">Editar</button>
+                                        <button class="table-button">Eliminar</button>
+                                    </article>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="registrar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Datos del donante</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" name="nombre" id="nombre" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="apellido">Apellido</label>
+                            <input type="text" name="apellido" id="apellido" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="dui">Documento de identidad (DUI)</label>
+                            <input type="text" name="dui" id="dui" placeholder="00000000-0" maxlength="10" inputmode="numeric" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="telefono">Contacto</label>
+                            <input type="tel" name="telefono" id="telefono" placeholder="0000-0000" maxlength="9" inputmode="numeric" required>
+                        </article>
+                        
+                        <article class="form-group">
+                            <label for="nacimiento">Fecha de Nacimiento</label>
+                            <input type="date" name="nacimiento" id="nacimiento" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="sexo">Sexo</label>
+                            <select id="sexo" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="peso">Peso (kg)</label>
+                            <input type="number" name="peso" id="peso"  min="0" step="0.1" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="tsangre">Tipo de Sangre</label>
+                            <select id="tsangre" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="AB">AB</option>
+                                <option value="O">O</option>
+                            </select>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button" >GUARDAR DONANTE</button>
+                            <button type="button" class="sec-button" data-target="consultar">CANCELAR</button>
+                        </div>
+                        
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+    
+</section>

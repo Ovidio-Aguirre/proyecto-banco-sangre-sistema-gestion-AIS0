@@ -1,0 +1,21 @@
+# Credenciales y configuracion privada
+.env
+.env.*
+!.env.example
+config.local.php
+
+# Dependencias
+/vendor/
+/node_modules/
+
+# Archivos temporales
+/tmp/
+/cache/
+
+# Configuracion del editor
+.vscode/
+.idea/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db

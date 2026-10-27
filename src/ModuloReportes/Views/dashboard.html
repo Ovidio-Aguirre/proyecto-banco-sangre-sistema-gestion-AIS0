@@ -1,0 +1,105 @@
+<section class="dashboard">
+    <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Resumen general del banco de sangre</p>
+    </div>
+    <div class="page-body">
+        <div class="global-filter">
+            <label class="subtext" for="period-filter">Periodo</label>
+            <select id="period-filter">
+                <option value="hoy">Hoy</option>
+                <option value="semanal">Esta semana</option>
+                <option value="mensual" selected>Este mes</option>
+                <option value="3-meses">Ultimos 3 meses</option>
+                <option value="6-meses">Ultimos 6 meses</option>
+                <option value="anual">Este año</option>
+            </select>
+        </div>
+
+        <div class="stats-panel">
+            <article class="card">
+                <h3 class="card-value">86</h3>
+                <p class="subtext">Donantes registrados</p>
+            </article>
+            <article class="card">
+                <h3 class="card-value">250</h3>
+                <p class="subtext">Donaciones realizadas</p>
+            </article>
+            <article class="card">
+                <h3 class="card-value">35</h3>
+                <p class="subtext">Solicitudes recibidas</p>
+            </article> 
+            <article class="card">
+                <h3 class="card-value">19</h3>
+                <p class="subtext">Solicitudes atendidas</p>
+            </article>    
+        </div>
+
+        <section class="charts-panel">
+            <div class="container">
+                <p class="text-title">Unidades disponibles por tipo</p>
+                <canvas id="blood-chart"></canvas>
+            </div>
+            <div class="container">
+                <div class="panel-header">
+                    <p class="text-title">Tendencia de donaciones</p>
+                    <span id="period-value"></span>
+                </div>
+                <canvas class="chart" id="donations-chart"></canvas>
+            </div>
+        </section>
+
+        <section class="info-panel">
+            <div class="container" id="actions-log">
+                <div class="panel-header">
+                    <p class="text-title">Acciones recientes</p>
+                    <a href="#" class="subtext" id="actions-detail">Mostrar mas</a>
+                </div>
+                <table class="table" id="actions-table">
+                    <tbody>
+                        <tr class="subtext">
+                            <td>26/10/2026</td>
+                            <td>06:30 PM</td>
+                            <td>Descargar reporte</td>
+                            <td>rglinares</td>
+                        </tr>
+                        <tr class="subtext">
+                            <td>26/10/2026</td>
+                            <td>01:45 PM</td>
+                            <td>Aceptar solicitud</td>
+                            <td>jadiaz</td>
+                        </tr>
+                        <tr class="subtext">
+                            <td>26/10/2026</td>
+                            <td>10:00 AM</td>
+                            <td>Registrar donante</td>
+                            <td>lpguevara</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="container" id="alerts">
+                <div class="panel-header">
+                    <p class="text-title">Alertas</p>
+                    <a href="#" class="subtext" id="alerts-detail">Mostrar mas</a>
+                </div>
+                <table class="table" id="alerts-table">
+                    <tbody>
+                        <tr class="subtext">
+                            <td>Inventario</td>
+                            <td>B- por debajo del minimo (10/15)</td>
+                        </tr>
+                        <tr class="subtext">
+                            <td>Vencimiento</td>
+                            <td>Unidad #101 vence en 3 dias</td>
+                        </tr>
+                        <tr class="subtext">
+                            <td>Inventario</td>
+                            <td>AB- por debajo del minimo (4/15)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>
