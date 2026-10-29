@@ -1,11 +1,11 @@
 <nav class="user-options">
     <a href="#">Ayuda</a>
-    <a href="index.php?page=perfil" class="<?= ($currentPage ?? '') === 'perfil' ? 'active' : '' ?>">Mi perfil</a>
+    <a href="<?= $baseUrl ?>/index.php?page=perfil" class="<?= ($currentPage ?? '') === 'perfil' ? 'active' : '' ?>">Mi perfil</a>
     <a href="#">Cerrar sesion</a>
 </nav>
 
 <header class="topbar">
-    <a href="/bancoSangre/index.php?page=dashboard" class="topbar-title">
+    <a href="<?= $baseUrl ?>/index.php?page=dashboard" class="topbar-title">
         <span class="icon-gota">&#127778;</span>
         <p>BANCO DE<br>SANGRE</p>
     </a>
@@ -17,7 +17,7 @@
         </div>
 
         <div class="user-avatar">
-            <img src="/banco_sangre/public/img/user.png"
+            <img src="<?= $baseUrl ?>/public/img/user.png"
                  alt="Foto">
         </div>
     </div>

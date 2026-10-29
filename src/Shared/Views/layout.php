@@ -1,3 +1,7 @@
+<?php
+$baseUrl = '/' . basename(realpath(__DIR__ . '/../../..'));
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,15 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'Banco de Sangre') ?></title>
 
-    <link rel="stylesheet" href="/bancoSangre/public/css/global.css">
-    <link rel="stylesheet" href="/bancoSangre/public/css/components.css">
-    <link rel="stylesheet" href="/bancoSangre/public/css/dashboard.css">
-    <link rel="stylesheet" href="/bancoSangre/public/css/pages.css">
+    <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/global.css">
+    <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/components.css">
+    <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/dashboard.css">
+    <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/pages.css">
 
      <?php if ($currentPage === 'dashboard'): ?>
         <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2" defer></script>
-        <script src="public/js/dashboard.js" defer></script>
+        <script src="<?= $baseUrl ?>/public/js/dashboard.js" defer></script>
     <?php endif; ?>
 </head>
 <body>
@@ -27,6 +31,6 @@
         <?php require $contentView; ?>
     </main>
 
-    <script src="/bancoSangre/public/js/pages.js"></script>
+    <script src="<?= $baseUrl ?>/public/js/pages.js"></script>
 </body>
 </html>
