@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-10-2026 a las 00:20:01
+-- Tiempo de generación: 30-10-2026 a las 23:01:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -73,8 +73,9 @@ CREATE TABLE `donantes` (
   `apellido` varchar(50) NOT NULL,
   `contacto` char(9) DEFAULT NULL,
   `fecha_nacimiento` date NOT NULL,
-  `sexo` enum('masculino','femenino') NOT NULL,
-  `peso` decimal(5,2) NOT NULL
+  `sexo` enum('M','F') NOT NULL,
+  `peso` decimal(5,2) NOT NULL,
+  `activo` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -89,7 +90,8 @@ CREATE TABLE `hospitales` (
   `id_distrito` int(11) NOT NULL,
   `id_municipio` int(11) NOT NULL,
   `nombre_hospital` varchar(100) NOT NULL,
-  `direccion` varchar(255) NOT NULL
+  `direccion` varchar(255) NOT NULL,
+  `activo` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -115,7 +117,7 @@ CREATE TABLE `pacientes` (
   `nombre_paciente` varchar(50) NOT NULL,
   `apellido_paciente` varchar(50) NOT NULL,
   `fecha_nacimiento` date NOT NULL,
-  `sexo` enum('masculino','femenino') NOT NULL
+  `sexo` enum('M','F') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -182,7 +184,7 @@ CREATE TABLE `usuarios` (
   `nombre_usuario` varchar(50) NOT NULL,
   `contrasena` varchar(255) NOT NULL,
   `correo` varchar(100) NOT NULL,
-  `estado` enum('activo','inactivo') NOT NULL
+  `activo` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -216,6 +218,7 @@ ALTER TABLE `donaciones`
 --
 ALTER TABLE `donantes`
   ADD PRIMARY KEY (`id_donante`),
+  ADD UNIQUE KEY `dui` (`dui`),
   ADD KEY `id_tipo_sangre` (`id_tipo_sangre`);
 
 --
