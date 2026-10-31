@@ -3,7 +3,6 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-10-2026 a las 23:01:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -40,6 +39,7 @@ CREATE TABLE `departamentos` (
 
 CREATE TABLE `distritos` (
   `id_distrito` int(11) NOT NULL,
+  `id_municipio` int(11) NOT NULL,
   `nombre_distrito` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -51,12 +51,28 @@ CREATE TABLE `distritos` (
 
 CREATE TABLE `donaciones` (
   `id_donacion` int(11) NOT NULL,
-  `id_donante` int(11) NOT NULL,
+  `id_evaluacion` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
-  `id_solicitudes` int(11) NOT NULL,
+  `id_solicitud` int(11) NULL,
   `fecha_recoleccion` date NOT NULL,
   `fecha_caducidad` date NOT NULL,
   `estado` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `evaluaciones_donante`
+--
+
+CREATE TABLE `evaluaciones_donante` (
+  `id_evaluacion` int(11) NOT NULL,
+  `id_donante` int(11) NOT NULL,
+  `fecha_evaluacion` date NOT NULL,
+  `peso` decimal(5,2) NOT NULL,
+  `altura` decimal(3,2) NOT NULL,
+  `resultado` enum('APTO','NO_APTO','PENDIENTE') NOT NULL,
+  `motivo` varchar(255) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -74,7 +90,6 @@ CREATE TABLE `donantes` (
   `contacto` char(9) DEFAULT NULL,
   `fecha_nacimiento` date NOT NULL,
   `sexo` enum('M','F') NOT NULL,
-  `peso` decimal(5,2) NOT NULL,
   `activo` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -86,9 +101,7 @@ CREATE TABLE `donantes` (
 
 CREATE TABLE `hospitales` (
   `id_hospital` int(11) NOT NULL,
-  `id_departamento` int(11) NOT NULL,
   `id_distrito` int(11) NOT NULL,
-  `id_municipio` int(11) NOT NULL,
   `nombre_hospital` varchar(100) NOT NULL,
   `direccion` varchar(255) NOT NULL,
   `activo` tinyint(4) NOT NULL DEFAULT 1
@@ -102,6 +115,7 @@ CREATE TABLE `hospitales` (
 
 CREATE TABLE `municipios` (
   `id_municipio` int(11) NOT NULL,
+  `id_departamento` int(11) NOT NULL,
   `nombre_municipio` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -202,16 +216,24 @@ ALTER TABLE `departamentos`
 -- Indices de la tabla `distritos`
 --
 ALTER TABLE `distritos`
-  ADD PRIMARY KEY (`id_distrito`);
+  ADD PRIMARY KEY (`id_distrito`),
+  ADD KEY `id_municipio` (`id_municipio`);
 
 --
 -- Indices de la tabla `donaciones`
 --
 ALTER TABLE `donaciones`
   ADD PRIMARY KEY (`id_donacion`),
-  ADD KEY `id_donante` (`id_donante`),
-  ADD KEY `id_solicitudes` (`id_solicitudes`),
+  ADD UNIQUE KEY `id_evaluacion` (`id_evaluacion`),
+  ADD KEY `id_solicitud` (`id_solicitud`),
   ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Indices de la tabla `evaluaciones_donante`
+--
+ALTER TABLE `evaluaciones_donante`
+  ADD PRIMARY KEY (`id_evaluacion`),
+  ADD KEY `idx_donante_fecha` (`id_donante`,`fecha_evaluacion`);
 
 --
 -- Indices de la tabla `donantes`
@@ -226,15 +248,14 @@ ALTER TABLE `donantes`
 --
 ALTER TABLE `hospitales`
   ADD PRIMARY KEY (`id_hospital`),
-  ADD KEY `id_departamento` (`id_departamento`),
-  ADD KEY `id_distrito` (`id_distrito`),
-  ADD KEY `id_municipio` (`id_municipio`);
+  ADD KEY `id_distrito` (`id_distrito`);
 
 --
 -- Indices de la tabla `municipios`
 --
 ALTER TABLE `municipios`
-  ADD PRIMARY KEY (`id_municipio`);
+  ADD PRIMARY KEY (`id_municipio`),
+  ADD KEY `id_departamento` (`id_departamento`);
 
 --
 -- Indices de la tabla `pacientes`
@@ -302,6 +323,12 @@ ALTER TABLE `donaciones`
   MODIFY `id_donacion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `evaluaciones_donante`
+--
+ALTER TABLE `evaluaciones_donante`
+  MODIFY `id_evaluacion` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `donantes`
 --
 ALTER TABLE `donantes`
@@ -363,9 +390,15 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `donaciones`
 --
 ALTER TABLE `donaciones`
-  ADD CONSTRAINT `donaciones_ibfk_1` FOREIGN KEY (`id_donante`) REFERENCES `donantes` (`id_donante`),
-  ADD CONSTRAINT `donaciones_ibfk_2` FOREIGN KEY (`id_solicitudes`) REFERENCES `solicitudes` (`id_solicitud`),
+  ADD CONSTRAINT `donaciones_ibfk_1` FOREIGN KEY (`id_evaluacion`) REFERENCES `evaluaciones_donante` (`id_evaluacion`),
+  ADD CONSTRAINT `donaciones_ibfk_2` FOREIGN KEY (`id_solicitud`) REFERENCES `solicitudes` (`id_solicitud`),
   ADD CONSTRAINT `donaciones_ibfk_3` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
+
+--
+-- Filtros para la tabla `evaluaciones_donante`
+--
+ALTER TABLE `evaluaciones_donante`
+  ADD CONSTRAINT `evaluaciones_ibfk_1` FOREIGN KEY (`id_donante`) REFERENCES `donantes` (`id_donante`);
 
 --
 -- Filtros para la tabla `donantes`
@@ -374,12 +407,22 @@ ALTER TABLE `donantes`
   ADD CONSTRAINT `donantes_ibfk_1` FOREIGN KEY (`id_tipo_sangre`) REFERENCES `tipo_sangre` (`id_tipo_sangre`);
 
 --
+-- Filtros para la tabla `municipios`
+--
+ALTER TABLE `municipios`
+  ADD CONSTRAINT `municipios_ibfk_1` FOREIGN KEY (`id_departamento`) REFERENCES `departamentos` (`id_departamento`);
+
+--
+-- Filtros para la tabla `distritos`
+--
+ALTER TABLE `distritos`
+  ADD CONSTRAINT `distritos_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipios` (`id_municipio`);
+
+--
 -- Filtros para la tabla `hospitales`
 --
 ALTER TABLE `hospitales`
-  ADD CONSTRAINT `hospitales_ibfk_1` FOREIGN KEY (`id_departamento`) REFERENCES `departamentos` (`id_departamento`),
-  ADD CONSTRAINT `hospitales_ibfk_2` FOREIGN KEY (`id_distrito`) REFERENCES `distritos` (`id_distrito`),
-  ADD CONSTRAINT `hospitales_ibfk_3` FOREIGN KEY (`id_municipio`) REFERENCES `municipios` (`id_municipio`);
+  ADD CONSTRAINT `hospitales_ibfk_1` FOREIGN KEY (`id_distrito`) REFERENCES `distritos` (`id_distrito`);
 
 --
 -- Filtros para la tabla `pacientes`
