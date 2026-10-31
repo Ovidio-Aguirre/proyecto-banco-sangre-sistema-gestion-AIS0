@@ -3,13 +3,21 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "bancoSangre";
+$db = "banco_sangre";
 /*$port = 3306;*/
 
-$conn = new mysqli($host, $user, $pass, $db /*, $port*/);
+try {
+    $pdo = new PDO(
+        "mysql:host=$host;dbname=$db;charset=utf8mb4",
+        $user,
+        $pass
+    );
 
-if ($conn->connect_error) {
-    die(json_encode(['success' => false, 'mensaje' => 'Error de conexión']));
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+} catch (PDOException $e) {
+    die("Error de conexión: " . $e->getMessage());
 }
 
+return $pdo;
 ?>
