@@ -20,6 +20,9 @@
             case 'PUT':
                 modificarHospital($modelo);
                 break;
+            case 'DELETE':
+                eliminarHospital($modelo);
+                break;
             default:
                 respuesta(405, ['success' => false, 'mensaje' => 'Método no permitido']);
         }
@@ -78,7 +81,7 @@
             respuesta(200, ['success' => true, 'Hospitales' => $resultado]);
         }
         else{
-            respuesta(200, ['success' => true, 'error' => 'No se encontro ningun hopital']);
+            respuesta(400, ['success' => false, 'error' => 'No se encontro ningun hopital']);
         }
         
     }
@@ -107,7 +110,13 @@
             $distrito
         );
 
-        respuesta(200, ['success' => true, 'Mensaje:' => $resultado]);
+        if($resultado){
+            respuesta(201, ['success' => true, 'Mensaje:' => 'Nuevo Hospital ingresado Exitosamente']);
+        }
+        else{
+            respuesta(409, ['success' => false, 'Mensaje:' => 'Este Hospital ya se encuentra registrado']);
+        }
+        
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -141,6 +150,12 @@
             exit;
         }
 
+        //la direccion no puede estar vacia
+        if($direccion === ''){
+            respuesta(400, ['success' => false, 'Mensaje:' => 'La direccion no puede estar vacia']);
+            exit;
+        }
+
         $resultado = $modelo->actualizarHospital(
             $id,
             $nombre,
@@ -150,7 +165,43 @@
             $distrito
         );
 
-        respuesta(200, ['success' => true, 'Mensaje:' => $resultado]);
+        //Segun la respuesta mostramos un mensaje u otro
+        switch($resultado){
+            case 1:
+                respuesta(404, ['success' => false, 'Mensaje:' => 'El departamento ingresado no existe']);
+                break;
+            case 2:
+                respuesta(404, ['success' => false, 'Mensaje:' => 'El municipio ingresado no existe']);
+                break;
+            case 3:
+                respuesta(404, ['success' => false, 'Mensaje:' => 'El distrito ingresado no existe']);
+                break;
+            case 4:
+                respuesta(404, ['success' => false, 'Mensaje:' => 'ID ingresado es invalido']);
+                break;
+            default:
+                respuesta(200, ['success' => true, 'Mensaje:' => 'Hospital Actualizado correctamente']);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //========== DELETE ==========
+    function eliminarHospital(Hospital $modelo): void {
+        $id = $_GET["idHospital"] ?? null;
+
+        if ($id === null || !ctype_digit($id)) {
+            respuesta(400, ['success' => false, 'mensaje' => 'ID de hospital inválido']);
+            exit;
+        }
+
+        $resultado = $modelo->eliminar($id);
+
+        if($resultado){
+            respuesta(200, ['success' => true, 'Mensaje:' => $resultado]);
+        }
+        else{
+            respuesta(404, ['success' => false, 'Mensaje:' => 'Hospital no encontrado o eliminado']);
+        }
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

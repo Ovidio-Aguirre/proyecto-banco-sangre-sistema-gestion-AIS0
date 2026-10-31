@@ -10,24 +10,25 @@
         //========== GET ==========
         //---Lista de todos los hospitales---
         public function listarHospitales(){
-            $sql = "SELECT * FROM hospitales";
+            $sql = "SELECT id_hospital, id_departamento, id_municipio, id_distrito, nombre_hospital, direccion FROM hospitales WHERE activo = 1";
             $hospitales = $this->conn->query($sql);
             return $hospitales->fetch_all(MYSQLI_ASSOC);
         }
 
         //---Busqueda por ID---
         public function buscarPorID($id){
-            $sql = ("SELECT * FROM  hospitales WHERE id_hospital = ?");
+            $sql = ("SELECT id_hospital, id_departamento, id_municipio, id_distrito, nombre_hospital, direccion FROM  hospitales WHERE id_hospital = ? AND activo=1");
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id); 
-            $stmt->execute();
-
-            return $stmt->get_result()->fetch_assoc(); 
+            
+            if($stmt->execute()){
+                return $stmt->get_result()->fetch_assoc(); 
+            }
         }
 
         //---Busqueda mediante filtros---
         public function buscarPorFiltros($nombre, $departamento, $municipio, $distrito){
-            $sql = ("SELECT * FROM  hospitales WHERE 1=1");
+            $sql = ("SELECT id_hospital, id_departamento, id_municipio, id_distrito, nombre_hospital, direccion  FROM  hospitales WHERE activo=1 ");
             $parametros = [];
             $tipoParametro = "";
 
@@ -63,7 +64,7 @@
             }
             $stmt->execute();
 
-            return $stmt->get_result()->fetch_assoc();
+            return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -80,10 +81,10 @@
                 $stmt->bind_param("ssiii", $nombre, $direccion, $departamento, $municipio, $distrito); 
                 $stmt->execute();
 
-                return 'Nuevo Hospital ingresado correctamente';
+                return true;
             }
             else{
-                return 'Nombre de Hospital ya ingresado en el mismo distrito';
+                return false;
             }
         }
 
@@ -113,12 +114,12 @@
                 $stmt->bind_param("ssiiii", $nombre, $direccion, $departamento, $municipio, $distrito, $id); 
                 $stmt->execute();
 
-                return 'Hospital actualizado correctamente';
+                return 0;
             }
-            else if($validacion === 1) {return 'Departamento invalido';}
-            else if($validacion === 2) {return 'Municipio invalido';}
-            else if($validacion === 3) {return 'Distrito invalido';}
-            else{return 'ID no valida';}
+            else if($validacion === 1) {return 1;}
+            else if($validacion === 2) {return 2;}
+            else if($validacion === 3) {return 3;}
+            else{return 4;}
         }
 
         //validaciones
@@ -162,6 +163,35 @@
                 }
             }
             return 0;
+        }
+
+        //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //========== DELETE ==========
+
+        public function eliminar($id){
+            //Si la id no existe o fue ilimnada de la DB
+            if($this->validacionEliminar($id) === false){
+                return ;
+            }
+
+            $sql = "UPDATE hospitales SET activo = 0  WHERE id_hospital = ? AND activo = 1";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id); 
+            $stmt->execute();
+
+            return 'Hospital eliminado exitosamente';
+        }
+
+        public function validacionEliminar($id){
+            //Solo busca los activos
+            $sql = "SELECT * FROM hospitales WHERE id_hospital = ? AND activo = 1";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows <= 0) {
+                return false;
+            }
+            else{return true;}
         }
     }
 ?>
