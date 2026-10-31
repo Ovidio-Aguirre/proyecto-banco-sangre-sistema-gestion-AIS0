@@ -11,8 +11,8 @@
 
         public function listarPacientes(){
             $sql = "SELECT * FROM pacientes";
-            $hospitales = $this->conn->query($sql);
-            return $hospitales->fetch_all(MYSQLI_ASSOC);
+            $pacientes = $this->conn->query($sql);
+            return $pacientes->fetch_all(MYSQLI_ASSOC);
         }
 
         //---Busqueda por ID---
