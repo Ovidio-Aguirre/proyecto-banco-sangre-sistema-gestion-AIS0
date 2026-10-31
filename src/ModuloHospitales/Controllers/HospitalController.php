@@ -41,7 +41,7 @@
             $id = trim($_GET["idHospital"]) ?? NULL;
             //Si la busqueda esta vacia
             if($id === ''){
-                respuesta(200, ['success' => false, 'Mensaje:' => 'Campo de ID vacio']);
+                respuesta(400, ['success' => false, 'Mensaje:' => 'Campo de ID vacio']);
             }
             //Si es correcto
             $resultado = $modelo->buscarPorID(
