@@ -37,6 +37,7 @@
 
             //por distrito
             if ($distrito !== ''){
+                if(!$this->distritoExiste($distrito)){return 3;}
                 $select .= " ,d.id_distrito";
                 $inner[] = " INNER JOIN distritos d ON d.id_distrito = h.id_distrito";
                 $where .= " AND (h.id_distrito = ?)";
@@ -46,6 +47,7 @@
             
             //por municipio
             if ($municipio !== ''){
+                if(!$this->municipioExiste($municipio)){return 2;}
                 //si distrito no se ha seleccionado
                 if($distrito === ''){
                     $inner[] = " INNER JOIN distritos d ON d.id_distrito = h.id_distrito";
@@ -60,6 +62,7 @@
 
             //por departamento
             if ($departamento !== ''){
+                if(!$this->departamentoExiste($departamento)){return 1;}
                 //si municipio no se ha seleccionado
                 if($municipio === ''){
                     //si distrito no se ha seleccionado
@@ -111,6 +114,40 @@
             $stmt->execute();
 
             return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        }
+
+        //validaciones
+        function departamentoExiste($id){
+            $sql = "SELECT * FROM departamentos WHERE id_departamento = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                return false;
+            }
+            return true;
+        }
+
+        function municipioExiste($id){
+            $sql = "SELECT * FROM municipios WHERE id_municipio = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                return false;
+            }
+            return true;
+        }
+
+        function distritoExiste($id){
+            $sql = "SELECT * FROM distritos WHERE id_distrito = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                return false;
+            }
+            return true;
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

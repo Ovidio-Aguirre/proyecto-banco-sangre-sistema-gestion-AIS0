@@ -52,7 +52,7 @@ function validarCampoEntero($campo): int
 
     return $valor;
 }
-function validacionCamposVacios($campos = []){
+function validarCamposVacios($campos = []){
         $vacio = true;
         foreach($campos as $campo){
             if($campo !== '' && $campo !== NULL){

@@ -68,7 +68,7 @@
                 $orden = trim($_GET["ordenHospital"] ?? '');
                 $orden = strtoupper($orden);
 
-                validacionCamposVacios([$nombre, $departamento, $municipio, $distrito, $orden]);
+                validarCamposVacios([$nombre, $departamento, $municipio, $distrito, $orden]);
 
                 //Si existe orden
                 if($orden){
@@ -98,6 +98,15 @@
             }
             
             if($resultado){
+                if($resultado === 1){
+                    respuesta(400, ['success' => false, 'error' => 'Departamento fuera de rango']);
+                }
+                else if($resultado === 2){
+                    respuesta(400, ['success' => false, 'error' => 'Municipio fuera de rango']);
+                }
+                else if($resultado === 3){
+                    respuesta(400, ['success' => false, 'error' => 'Distrito fuera de rango']);
+                }
                 respuesta(200, ['success' => true, 'Hospitales' => $resultado]);
             }
             else{
@@ -155,8 +164,8 @@
             $distrito = $datosHospital['distritoHospital'] ?? null;
 
             validarCampoEntero($distrito);
-            validacionCamposVacios([$nombre]);
-            validacionCamposVacios([$direccion]);
+            validarCamposVacios([$nombre]);
+            validarCamposVacios([$direccion]);
 
             $resultado = $this->modelo->actualizarHospital(
                 $id,
