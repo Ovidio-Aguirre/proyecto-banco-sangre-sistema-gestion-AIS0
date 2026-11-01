@@ -31,6 +31,7 @@ try {
             new EvaluacionController(new EvaluacionDonante($conn))
         ),
         'pacientes'  => fn() => new PacienteController(new Paciente($conn)),
+        'hospitales'  => fn() => new HospitalController(new Hospital($conn)),
         // 'solicitudes' => fn() => new SolicitudController(new Solicitud($conn)),
     ];
 
