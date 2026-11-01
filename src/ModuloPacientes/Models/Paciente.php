@@ -27,7 +27,7 @@
         }
 
         //---Busqueda mediante filtros---
-        public function buscarPorFiltros($busqueda, $tipo, $sexo){
+        public function buscarPorFiltros($busqueda, $tipo, $sexo, $orden){
             $sql = ("SELECT *  FROM  pacientes WHERE 1=1 ");
             $parametros = [];
             $tipoParametro = "";
@@ -40,17 +40,29 @@
                 $tipoParametro .= "s";
                 $tipoParametro .= "s";
             }
-            //por departamento
+
+            //por tipo de sangre
             if ($tipo !== ''){
+                if(!$this->validarTipoExiste($tipo)){
+                    return 1;
+                }
                 $sql .= " AND id_tipo_sangre = ?";
                 $parametros[] = $tipo;
                 $tipoParametro .= "i";
             }
-            //por municipio
+            //por sexo
             if ($sexo !== ''){
                 $sql .= " AND sexo = ?";
                 $parametros[] = $sexo;
                 $tipoParametro .= "s";
+            }
+
+            //ordenar de forma
+            if ($orden === 'ASC'){
+                $sql .= " ORDER BY apellido_paciente ASC";
+            }
+            if($orden === 'DESC'){
+                $sql .= " ORDER BY apellido_paciente DESC";
             }
 
             //ejecutamos
@@ -61,6 +73,18 @@
             $stmt->execute();
 
             return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        }
+
+        //validaciones
+        public function validarTipoExiste($tipo){
+            $sql = "SELECT * FROM tipo_sangre WHERE id_tipo_sangre = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $tipo); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                return false;
+            }
+            return true;
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -130,17 +154,15 @@
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id); 
             $stmt->execute();
-            if ($stmt->get_result()->num_rows <= 0) {
+            if ($stmt->get_result()->num_rows == 0) {
                 return 1;
             }
-            else{
-                $sql = "SELECT * FROM tipo_sangre WHERE id_tipo_sangre = ?";
-                $stmt = $this->conn->prepare($sql);
-                $stmt->bind_param("i", $tipo); 
-                $stmt->execute();
-                if ($stmt->get_result()->num_rows === 0) {
-                    return 2;
-                }
+            $sql = "SELECT * FROM tipo_sangre WHERE id_tipo_sangre = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $tipo); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                return 2;
             }
             return 0;
         }
