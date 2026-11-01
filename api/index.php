@@ -30,7 +30,7 @@ try {
             new Donante($conn),
             new EvaluacionController(new EvaluacionDonante($conn))
         ),
-        // 'hospitales'  => fn() => new HospitalController(new Hospital($conn)),
+        'hospitales'  => fn() => new HospitalController(new Hospital($conn)),
         // 'solicitudes' => fn() => new SolicitudController(new Solicitud($conn)),
     ];
 
