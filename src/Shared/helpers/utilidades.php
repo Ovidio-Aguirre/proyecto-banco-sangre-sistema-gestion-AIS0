@@ -36,3 +36,30 @@ function noEncontrado(): void
 {
     respuesta(404, ['success' => false, 'mensaje' => 'Ruta no encontrada']);
 }
+
+//=====================================================================
+
+function validarCampoEntero($campo): int
+{
+    $valor = filter_var($campo, FILTER_VALIDATE_INT);
+
+    if ($valor === false || $valor <= 0) {
+        respuesta(400, [
+            'success' => false,
+            'mensaje' => 'Campo inválido'
+        ]);
+    }
+
+    return $valor;
+}
+function validacionCamposVacios($campos = []){
+        $vacio = true;
+        foreach($campos as $campo){
+            if($campo !== '' && $campo !== NULL){
+                $vacio = false; break;
+            }
+        }
+        if($vacio){
+            respuesta(400, ['success' => false, 'Mensaje:' => 'Campo vacio']);
+        }
+    }
