@@ -22,7 +22,8 @@ class Donante{
         ): array {
             //Verificar duplicidad de DUI
             $stmt = $this->conn->prepare(
-                "SELECT id_donante, activo, id_tipo_sangre, fecha_nacimiento, sexo FROM donantes WHERE dui = ?");
+                "SELECT id_donante, activo, id_tipo_sangre, fecha_nacimiento, sexo 
+                FROM donantes WHERE dui = ?");
             $stmt->bind_param("s",$dui);
             $stmt->execute();
             $existe = $stmt->get_result()->fetch_assoc();
@@ -72,7 +73,9 @@ class Donante{
      */
     public function obtenerDonantePorId(int $idDonante): ?array{
         $stmt = $this->conn->prepare(
-                "SELECT * FROM donantes WHERE activo = 1 AND id_donante = ?");
+                "SELECT id_donante, id_tipo_sangre, dui, nombre, apellido, contacto, fecha_nacimiento, sexo 
+                FROM donantes 
+                WHERE activo = 1 AND id_donante = ?");
         $stmt->bind_param("i",$idDonante);
         $stmt->execute();
 
@@ -88,7 +91,9 @@ class Donante{
      *               sin filtro devuelve todos los donantes
      */
     public function buscarDonantes(?string $busqueda=null, ?int $idTipoSangre = null, bool $ordenDesc = false): array{
-        $sql = "SELECT * FROM donantes WHERE activo = 1"; 
+        $sql = "SELECT id_donante, id_tipo_sangre, dui, nombre, apellido, contacto, fecha_nacimiento, sexo 
+        FROM donantes 
+        WHERE activo = 1"; 
         $tipos = "";
         $params = [];
 
@@ -143,7 +148,10 @@ class Donante{
 
             //Comprobar que el DUI no pertenezca a otro donante
             $stmt = $this->conn->prepare(
-                "SELECT id_donante FROM donantes WHERE dui = ? AND id_donante <> ?");
+                "SELECT id_donante 
+                FROM donantes 
+                WHERE dui = ? 
+                AND id_donante <> ?");
             $stmt->bind_param("si", $dui, $idDonante);
             $stmt->execute();
             if ($stmt->get_result()->num_rows > 0) {
