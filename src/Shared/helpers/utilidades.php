@@ -53,13 +53,20 @@ function validarCampoEntero($campo): int
     return $valor;
 }
 function validarCamposVacios($campos = []){
-        $vacio = true;
-        foreach($campos as $campo){
-            if($campo !== '' && $campo !== NULL){
-                $vacio = false; break;
-            }
-        }
-        if($vacio){
-            respuesta(400, ['success' => false, 'Mensaje:' => 'Campo vacio']);
+    $vacio = true;
+    foreach($campos as $campo){
+        if($campo !== '' && $campo !== NULL){
+            $vacio = false; break;
         }
     }
+    if($vacio){
+        respuesta(400, ['success' => false, 'Mensaje:' => 'Campo vacio']);
+    }
+}
+
+function validarFecha($fecha){
+    $fechaValidada = DateTime::createFromFormat('!Y-m-d', $fecha);
+    if (!$fechaValidada || $fechaValidada->format('Y-m-d') !== $fecha || $fechaValidada > new DateTime('today')){
+        respuesta(400, ['success' => false, 'Mensaje:' => 'Tipo de fecha ingresada no es valida']);
+    }
+}
