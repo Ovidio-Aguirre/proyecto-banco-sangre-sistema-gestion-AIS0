@@ -167,16 +167,16 @@
         //========== PUT ==========
 
         //--- Modificar una solicitud ---
-        public function actualizarSolicitud($id,$idPaciente, $idHospital, $unidades, $justificacion, $estado){
+        public function actualizarSolicitud($id,$idPaciente, $idHospital, $unidades, $justificacion, $estado, $motivo){
             $validacion = $this->validacionesPUT($id, $idPaciente, $idHospital);
             
             if($validacion !== 0){
                 return $validacion;
             }
 
-            $sql = "UPDATE solicitudes SET id_paciente = ?, id_hospital = ?, unidades_solicitadas = ?, justificacion = ?, estado = ? WHERE id_solicitud = ?";
+            $sql = "UPDATE solicitudes SET id_paciente = ?, id_hospital = ?, unidades_solicitadas = ?, justificacion = ?, estado = ?, motivo_rechazo = ? WHERE id_solicitud = ?";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("iiissi", $idPaciente, $idHospital, $unidades, $justificacion, $estado, $id); 
+            $stmt->bind_param("iiisssi", $idPaciente, $idHospital, $unidades, $justificacion, $estado, $motivo, $id); 
             $stmt->execute();
 
             return 0;
@@ -218,63 +218,6 @@
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        //========== DELETE ==========
-        public function eliminarSolicitud($id){
-            $validacion = $this->validacionEliminar($id);
-
-            if($validacion !== 0){
-                return $validacion;
-            }
-
-            $estado = 'INHABILITADA';
-
-            $sql = "UPDATE solicitudes
-                    SET estado = ?
-                    WHERE id_solicitud = ?
-                    AND estado = 'RECHAZADA'";
-
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("si", $estado, $id);
-
-            if(!$stmt->execute()){
-                return false;
-            }
-
-            if($stmt->affected_rows === 0){
-                return false;
-            }
-
-            return true;
-            
-        }
-
-        public function validacionEliminar($id){
-            $sql = "SELECT estado FROM solicitudes WHERE id_solicitud = ?";
-
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
-
-            $resultado = $stmt->get_result();
-
-            if($resultado->num_rows === 0){
-                return 1;
-            }
-
-            $solicitud = $resultado->fetch_assoc();
-
-            if($solicitud['estado'] === 'INHABILITADA'){
-                return 1;
-            }
-
-            if($solicitud['estado'] !== 'RECHAZADA'){
-                return 2;
-            }
-
-            return 0;
-        }
-
-        //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         //========== PATCH ==========
         function entregarSolicitud($estado, $id){
 
@@ -305,7 +248,7 @@
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id);
             $stmt->execute();
-            if($stmt->get_result()->num_rows > 0){
+            if($stmt->get_result()->num_rows === 0){
                 return 1;
             }
 

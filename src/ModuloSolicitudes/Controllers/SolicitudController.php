@@ -40,7 +40,6 @@ class SolicitudController implements Controlador
                     'GET'    => $this->obtenerSolicitud($idSolicitud),
                     'PUT'    => $this->modificarSolicitud($idSolicitud),
                     'PATCH' => $this->entregarUnaSolicitud($idSolicitud),
-                    'DELETE' => $this->eliminarUnaSolicitud($idSolicitud),
                     default  => noPermitido(),
                 };
             }
@@ -185,6 +184,7 @@ class SolicitudController implements Controlador
                 $unidades = $datosSolicitud['unidadesSolicitadas'] ?? null;
                 $estado = $datosSolicitud['estado'] ?? null;
                 $estado = strtoupper($estado);
+                $motivo = $datosSolicitud['motivoRechazo'] ?? null;
 
                 validarCamposVacios([$paciente, $hospital, $justificacion, $unidades, $estado]);
 
@@ -203,6 +203,12 @@ class SolicitudController implements Controlador
                         respuesta(400, ['success' => false, 'Mensaje:' => 'Estado invalido']);
                     }
                 }
+
+                if($estado === 'RECHAZADA'){
+                    if($motivo === ''){
+                        respuesta(400, ['success' => false, 'Mensaje:' => 'Si va a rechazar un solicitud se debe colocar el motivo de la misma']);
+                    }
+                }
                 
                 $resultado = $this->modelo->actualizarSolicitud(
                     $id,
@@ -210,7 +216,8 @@ class SolicitudController implements Controlador
                     $hospital,
                     $unidades,
                     $justificacion,
-                    $estado
+                    $estado,
+                    $motivo
                 );
 
                 //Segun la respuesta mostramos un mensaje u otro
@@ -257,37 +264,6 @@ class SolicitudController implements Controlador
                     'success' => true,
                     'mensaje' => 'Solicitud entregada al paciente'
                 ]);
-            }
-
-            //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            //========== DELETE   ==========
-            function eliminarUnaSolicitud(int $id): void {
-                $resultado = $this->modelo->eliminarSolicitud($id);
-
-                if($resultado === 1){
-                    respuesta(404, [
-                        'success' => false,
-                        'mensaje' => 'Solicitud no encontrada o ya eliminada'
-                    ]);
-                }
-                else if($resultado === 2){
-                    respuesta(409, [
-                        'success' => false,
-                        'mensaje' => 'La solicitud no se encuentra rechazada'
-                    ]);
-                }
-                else if($resultado === false){
-                    respuesta(500, [
-                        'success' => false,
-                        'mensaje' => 'No se pudo eliminar la solicitud'
-                    ]);
-                }
-                else if($resultado){
-                    respuesta(200, [
-                        'success' => true,
-                        'mensaje' => 'Solicitud eliminada correctamente'
-                    ]);
-                }
             }
         }
 ?>
