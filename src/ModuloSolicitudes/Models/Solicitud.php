@@ -10,14 +10,14 @@
         //========== GET ==========
 
         public function listarSolicitudes(){
-            $sql = "SELECT * FROM solicitudes WHERE estado != 0";
+            $sql = "SELECT * FROM solicitudes WHERE estado != 'INHABILITADA'";
             $solicitudes = $this->conn->query($sql);
             return $solicitudes->fetch_all(MYSQLI_ASSOC);
         }
 
         //---Busqueda por ID---
         public function buscarPorID($id){
-            $sql = ("SELECT * FROM solicitudes WHERE stado != 0 AND id_solictud = ?");
+            $sql = ("SELECT * FROM solicitudes WHERE estado != 'INHABILITADA' AND id_solicitud = ?");
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id); 
             
@@ -27,23 +27,28 @@
         }
 
         //---Busqueda mediante filtros---
-        public function buscarPorFiltros($paciente, $hospital, $estado){
+        public function buscarPorFiltros($paciente, $hospital, $estado, $orden){
             $parametros = [];
             $tipoParametro = "";
             $select = "";
             $inner = [];
             $where = "";
+            $ordenPor = "";
+
+            if ($paciente !== '' || $orden !== '') {
+                $select .= ", p.nombre_paciente, p.apellido_paciente";
+                $inner[] = "INNER JOIN pacientes p ON s.id_paciente = p.id_paciente";
+            }
 
             //buscamos por nombre o apellido
             if ($paciente !== ''){
-                $select .= " ,p.nombre_paciente, p.apellido_paciente";
-                $inner[] = " INNER JOIN pacientes p ON s.id_paciente = p.id_paciente";
                 $where .= " AND (p.nombre_paciente LIKE ? OR p.apellido_paciente LIKE ?)";
                 $parametros[] = "%".$paciente."%";
                 $parametros[] = "%".$paciente."%";
                 $tipoParametro .= "s";
                 $tipoParametro .= "s";
             }
+
             //por hospital
             if ($hospital !== ''){
                 $select .= " ,h.nombre_hospital";
@@ -52,17 +57,23 @@
                 $parametros[] = "%".$hospital."%";
                 $tipoParametro .= "s";
             }
+
+            if ($orden === 'ASC') {
+                $ordenPor = " ORDER BY p.apellido_paciente ASC";
+            } elseif ($orden === 'DESC') {
+                $ordenPor = " ORDER BY p.apellido_paciente DESC";
+            }
             
             $sql = "SELECT s.*";
             //Si se ingresaron alguno de los datos de paciente o hospital
             if($select !== ''){
                 $sql .= $select . " FROM solicitudes s ";
                 $sql .= implode(" ", $inner);
-                $sql .= " WHERE s.estado > 0 ";
+                $sql .= " WHERE s.estado != 'INHABILITADA' ";
                 $sql .= $where;
             }
             else{
-                $sql .= " FROM solicitudes s WHERE estado > 0";
+                $sql .= " FROM solicitudes s WHERE estado != 'INHABILITADA'";
             }
 
             //por estado
@@ -71,6 +82,7 @@
                 $parametros[] = $estado;
                 $tipoParametro .= "s";
             }
+            $sql .= $ordenPor;
 
             //ejecutamos
             $stmt = $this->conn->prepare($sql);
@@ -78,12 +90,11 @@
                 $stmt->bind_param($tipoParametro, ...$parametros);
             }
             $stmt->execute();
-
             return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         }
 
         public function buscarPorIDPacienteHospital($pacienteID, $hospitalID){
-            $sql = ("SELECT *  FROM solicitudes WHERE estado > 0");
+            $sql = ("SELECT *  FROM solicitudes WHERE estado != 'INHABILITADA'");
             $parametros = [];
             $tipoParametro = "";
 
@@ -114,7 +125,7 @@
         //========== POST ==========
         //--Agregar una nueva solicitud---
         public function agregarNuevaSolicitud($idPaciente, $idHospital, $fecha, $unidades, $justificacion){
-            $estado = 1;
+            $estado = 'PENDIENTE';
             $validacion = $this->validacionSolicitudes($idPaciente, $idHospital);
             //Si no existe podemos ingresar uno nuevo
             if($validacion !== 0){
@@ -124,7 +135,7 @@
             $sql = "INSERT INTO solicitudes 
             (id_paciente, id_hospital, fecha_solicitud, unidades_solicitadas, justificacion, estado) VALUES (?,?,?,?,?,?)";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("iisisi", $idPaciente, $idHospital, $fecha, $unidades, $justificacion, $estado); 
+            $stmt->bind_param("iisiss", $idPaciente, $idHospital, $fecha, $unidades, $justificacion, $estado); 
             $stmt->execute();
             return 0;
             
@@ -165,7 +176,7 @@
 
             $sql = "UPDATE solicitudes SET id_paciente = ?, id_hospital = ?, unidades_solicitadas = ?, justificacion = ?, estado = ? WHERE id_solicitud = ?";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("iiisii", $idPaciente, $idHospital, $unidades, $justificacion, $estado, $id); 
+            $stmt->bind_param("iiissi", $idPaciente, $idHospital, $unidades, $justificacion, $estado, $id); 
             $stmt->execute();
 
             return 0;
@@ -181,56 +192,137 @@
             if ($stmt->get_result()->num_rows === 0) {
                 return 1;
             }
-            else{
-                $sql = "SELECT * FROM pacientes WHERE id_paciente = ?";
-                $stmt = $this->conn->prepare($sql);
-                $stmt->bind_param("i", $paciente); 
-                $stmt->execute();
-                if ($stmt->get_result()->num_rows === 0) {
-                    return 2;
-                }
-                else{
-                    $sql = "SELECT * FROM solicitudes WHERE id_solicitud = ?";
-                    $stmt = $this->conn->prepare($sql);
-                    $stmt->bind_param("i", $id); 
-                    $stmt->execute();
-                    if ($stmt->get_result()->num_rows === 0) {
-                        return 3;
-                    }
-                }
+            $sql = "SELECT * FROM pacientes WHERE id_paciente = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $paciente); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                return 2;
             }
+            $sql = "SELECT * FROM solicitudes WHERE id_solicitud = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows === 0) {
+                return 3;
+            }
+            $sql = "SELECT * FROM solicitudes WHERE id_solicitud = ? AND (estado != 'PENDIENTE')";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id); 
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows > 0) {
+                return 4;
+            } 
+            
             return 0;
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         //========== DELETE ==========
         public function eliminarSolicitud($id){
-            //Si la id no existe o fue elimnada de la DB
-            if($this->validacionEliminar($id) === false){
-                return false;
-            }
-            $estado = 0;
+            $validacion = $this->validacionEliminar($id);
 
-            $sql = "UPDATE solicitudes SET estado = ? WHERE id_solicitud = ?";
+            if($validacion !== 0){
+                return $validacion;
+            }
+
+            $estado = 'INHABILITADA';
+
+            $sql = "UPDATE solicitudes
+                    SET estado = ?
+                    WHERE id_solicitud = ?
+                    AND estado = 'RECHAZADA'";
+
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("ii", $estado, $id); 
+            $stmt->bind_param("si", $estado, $id);
+
             if(!$stmt->execute()){
                 return false;
             }
-            return 'Solicitud eliminada correctamente';
+
+            if($stmt->affected_rows === 0){
+                return false;
+            }
+
+            return true;
             
         }
 
         public function validacionEliminar($id){
-            //Solo busca los activos
-            $sql = "SELECT * FROM solicitudes WHERE id_solicitud = ? AND estado != 0";
+            $sql = "SELECT estado FROM solicitudes WHERE id_solicitud = ?";
+
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id); 
+            $stmt->bind_param("i", $id);
             $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0) {
-                return false;
+
+            $resultado = $stmt->get_result();
+
+            if($resultado->num_rows === 0){
+                return 1;
             }
-            else{return true;}
+
+            $solicitud = $resultado->fetch_assoc();
+
+            if($solicitud['estado'] === 'INHABILITADA'){
+                return 1;
+            }
+
+            if($solicitud['estado'] !== 'RECHAZADA'){
+                return 2;
+            }
+
+            return 0;
+        }
+
+        //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //========== PATCH ==========
+        function entregarSolicitud($estado, $id){
+
+            if($this->validacionesPATCH($id) != 0){
+                return $this->validacionesPATCH($id);
+            }
+            $fecha = new DateTime();
+            $fecha = $fecha->format('Y-m-d');
+            $sql = "UPDATE solicitudes
+            SET estado = ?, fecha_entrega = ?
+            WHERE id_solicitud = ?
+            AND estado = 'APROBADA' AND estado != 'INHABILITADA'";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ssi", $estado, $fecha, $id);
+
+            return $stmt->execute();
+        }
+
+        //validaciones
+        function validacionesPATCH($id){
+            //solo las solicitudes aprobadas
+            $sql = "SELECT id_solicitud
+            FROM solicitudes
+            WHERE id_solicitud = ?
+            AND estado = 'APROBADA'";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            if($stmt->get_result()->num_rows > 0){
+                return 1;
+            }
+
+            //si ya esta entregada
+            $sql = "SELECT id_solicitud
+            FROM solicitudes
+            WHERE id_solicitud = ?
+            AND estado = 'ENTREGADA'";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            if($stmt->get_result()->num_rows > 0){
+                return 2;
+            }
+
+            return 0;
         }
     }
 ?>
