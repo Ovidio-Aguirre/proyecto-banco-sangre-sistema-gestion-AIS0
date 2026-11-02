@@ -32,6 +32,7 @@ try {
         ),
         'hospitales'  => fn() => new HospitalController(new Hospital($conn)),
         'solicitudes' => fn() => new SolicitudController(new Solicitud($conn)),
+        'pacientes'  => fn() => new PacienteController(new Paciente($conn)),
     ];
 
     $recurso = $partes[0] ?? '';

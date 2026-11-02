@@ -1,11 +1,12 @@
 <?php
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "bancoSangre";
+$db = "banco_sangre";
 /*$port = 3306;*/
 
 $conn = new mysqli($host, $user, $pass, $db /*, $port*/);
