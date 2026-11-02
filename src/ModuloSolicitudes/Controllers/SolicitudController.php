@@ -205,7 +205,7 @@ class SolicitudController implements Controlador
                 }
 
                 if($estado === 'RECHAZADA'){
-                    if($motivo === ''){
+                    if($motivo === '' || $motivo === NULL){
                         respuesta(400, ['success' => false, 'Mensaje:' => 'Si va a rechazar un solicitud se debe colocar el motivo de la misma']);
                     }
                 }
