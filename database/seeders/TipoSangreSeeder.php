@@ -1,6 +1,6 @@
 <?php
 
-function seedTiposSangre(PDO $pdo): void
+function seedTiposSangre(mysqli $conn): void
 {
     $tipos = [
         "A+",
@@ -14,15 +14,14 @@ function seedTiposSangre(PDO $pdo): void
     ];
 
     $sql = "INSERT INTO tipo_sangre (tipo)
-            VALUES (:tipo)
+            VALUES (?)
             ON DUPLICATE KEY UPDATE tipo = VALUES(tipo)";
 
-    $stmt = $pdo->prepare($sql);
+    $stmt = $conn->prepare($sql);
 
     foreach ($tipos as $tipo) {
-        $stmt->execute([
-            ":tipo" => $tipo
-        ]);
+        $stmt->bind_param("s", $tipo);
+        $stmt->execute();
     }
 
     echo "Tipos de sangre insertados correctamente.\n";

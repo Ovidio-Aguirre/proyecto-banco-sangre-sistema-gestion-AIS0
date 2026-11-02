@@ -1,6 +1,6 @@
 <?php
 
-function seedRoles(PDO $pdo): void
+function seedRoles(mysqli $conn): void
 {
     $roles = [
         "Administrador",
@@ -10,15 +10,14 @@ function seedRoles(PDO $pdo): void
     ];
 
     $sql = "INSERT INTO roles (rol)
-            VALUES (:rol)
+            VALUES (?)
             ON DUPLICATE KEY UPDATE rol = VALUES(rol)";
 
-    $stmt = $pdo->prepare($sql);
+    $stmt = $conn->prepare($sql);
 
     foreach ($roles as $rol) {
-        $stmt->execute([
-            ":rol" => $rol
-        ]);
+        $stmt->bind_param("s", $rol);
+        $stmt->execute();
     }
 
     echo "Roles insertados correctamente.\n";

@@ -1,6 +1,6 @@
 <?php
 
-function seedDonantes(PDO $pdo): void
+function seedDonantes(mysqli $conn): void
 {
     $donantes = [
         [
@@ -43,16 +43,15 @@ function seedDonantes(PDO $pdo): void
 
     $sqlTipo = "SELECT id_tipo_sangre
                 FROM tipo_sangre
-                WHERE tipo = :tipo";
+                WHERE tipo = ?";
 
-    $stmtTipo = $pdo->prepare($sqlTipo);
+    $stmtTipo = $conn->prepare($sqlTipo);
 
     $sql = "INSERT INTO donantes
             (id_tipo_sangre, dui, nombre, apellido,
              contacto, fecha_nacimiento, sexo, activo)
             VALUES
-            (:id_tipo, :dui, :nombre, :apellido,
-             :contacto, :fecha, :sexo, 1)
+            (?, ?, ?, ?, ?, ?, ?, 1)
             ON DUPLICATE KEY UPDATE
             id_tipo_sangre = VALUES(id_tipo_sangre),
             nombre = VALUES(nombre),
@@ -62,15 +61,18 @@ function seedDonantes(PDO $pdo): void
             sexo = VALUES(sexo),
             activo = 1";
 
-    $stmt = $pdo->prepare($sql);
+    $stmt = $conn->prepare($sql);
 
     foreach ($donantes as $donante) {
 
-        $stmtTipo->execute([
-            ":tipo" => $donante["tipo"]
-        ]);
+        $tipo = $donante["tipo"];
+        $stmtTipo->bind_param("s", $tipo);
+        $stmtTipo->execute();
 
-        $idTipo = $stmtTipo->fetchColumn();
+        $resultado = $stmtTipo->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idTipo = $fila["id_tipo_sangre"] ?? null;
 
         if (!$idTipo) {
             throw new Exception(
@@ -78,16 +80,17 @@ function seedDonantes(PDO $pdo): void
             );
         }
 
-        $stmt->execute([
-            ":id_tipo" => $idTipo,
-            ":dui" => $donante["dui"],
-            ":nombre" => $donante["nombre"],
-            ":apellido" => $donante["apellido"],
-            ":contacto" => $donante["contacto"],
-            ":fecha" => $donante["fecha_nacimiento"],
-            ":sexo" => $donante["sexo"]
-        ]);
+        $dui = $donante["dui"];
+        $nombre = $donante["nombre"];
+        $apellido = $donante["apellido"];
+        $contacto = $donante["contacto"];
+        $fecha = $donante["fecha_nacimiento"];
+        $sexo = $donante["sexo"];
+        $stmt->bind_param("issssss", $idTipo, $dui, $nombre, $apellido, $contacto, $fecha, $sexo);
+        $stmt->execute();
     }
+    $stmtTipo->close();
+    $stmt->close();
 
     echo "Donantes insertados correctamente.\n";
 }

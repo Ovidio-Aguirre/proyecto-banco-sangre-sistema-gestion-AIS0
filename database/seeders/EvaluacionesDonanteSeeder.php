@@ -1,6 +1,6 @@
 <?php
 
-function seedEvaluacionesDonante(PDO $pdo): void
+function seedEvaluacionesDonante(mysqli $conn): void
 {
     $evaluaciones = [
         [
@@ -39,17 +39,20 @@ function seedEvaluacionesDonante(PDO $pdo): void
 
     $sqlDonante = "SELECT id_donante
                    FROM donantes
-                   WHERE dui = :dui";
+                   WHERE dui = ?";
 
-    $stmtDonante = $pdo->prepare($sqlDonante);
+    $stmtDonante = $conn->prepare($sqlDonante);
 
     foreach ($evaluaciones as $evaluacion) {
 
-        $stmtDonante->execute([
-            ":dui" => $evaluacion["dui"]
-        ]);
+        $dui = $evaluacion["dui"];
+        $stmtDonante->bind_param("s", $dui);
+        $stmtDonante->execute();
 
-        $idDonante = $stmtDonante->fetchColumn();
+        $resultado = $stmtDonante->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idDonante = $fila["id_donante"] ?? null;
 
         if (!$idDonante) {
             throw new Exception(
@@ -59,55 +62,73 @@ function seedEvaluacionesDonante(PDO $pdo): void
 
         $sqlBuscar = "SELECT id_evaluacion
                       FROM evaluaciones_donante
-                      WHERE id_donante = :id_donante
-                      AND fecha_evaluacion = :fecha
+                      WHERE id_donante = ?
+                      AND fecha_evaluacion = ?
                       LIMIT 1";
 
-        $stmtBuscar = $pdo->prepare($sqlBuscar);
+        $stmtBuscar = $conn->prepare($sqlBuscar);
 
-        $stmtBuscar->execute([
-            ":id_donante" => $idDonante,
-            ":fecha" => $evaluacion["fecha"]
-        ]);
+        $fecha = $evaluacion["fecha"];
+        $stmtBuscar->bind_param("is", $idDonante, $fecha);
+        $stmtBuscar->execute();
 
-        $idEvaluacion = $stmtBuscar->fetchColumn();
+        $resultado = $stmtBuscar->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idEvaluacion = $fila["id_evaluacion"] ?? null;
 
         if ($idEvaluacion) {
 
             $sql = "UPDATE evaluaciones_donante
-                    SET peso = :peso,
-                        altura = :altura,
-                        resultado = :resultado,
-                        motivo = :motivo
-                    WHERE id_evaluacion = :id";
+                    SET peso = ?,
+                        altura = ?,
+                        resultado = ?,
+                        motivo = ?
+                    WHERE id_evaluacion = ?";
 
         } else {
 
             $sql = "INSERT INTO evaluaciones_donante
-                    (id_donante, fecha_evaluacion, peso,
-                     altura, resultado, motivo)
+                    (id_donante, fecha_evaluacion, peso, altura, resultado, motivo)
                     VALUES
-                    (:id_donante, :fecha, :peso,
-                     :altura, :resultado, :motivo)";
+                    (?, ?, ?, ?, ?, ?)";
         }
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $conn->prepare($sql);
 
-        $parametros = [
-            ":peso" => $evaluacion["peso"],
-            ":altura" => $evaluacion["altura"],
-            ":resultado" => $evaluacion["resultado"],
-            ":motivo" => $evaluacion["motivo"]
-        ];
+        $peso = $evaluacion["peso"];
+        $altura = $evaluacion["altura"];
+        $resultadoEvaluacion = $evaluacion["resultado"];
+        $motivo = $evaluacion["motivo"];
 
         if ($idEvaluacion) {
-            $parametros[":id"] = $idEvaluacion;
+
+            $stmt->bind_param(
+                "ddsii",
+                $peso,
+                $altura,
+                $resultadoEvaluacion,
+                $motivo,
+                $idEvaluacion
+            );
+
         } else {
-            $parametros[":id_donante"] = $idDonante;
-            $parametros[":fecha"] = $evaluacion["fecha"];
+
+            $idDonante = (int) $idDonante;
+            $fecha = $evaluacion["fecha"];
+
+            $stmt->bind_param(
+                "isddss",
+                $idDonante,
+                $fecha,
+                $peso,
+                $altura,
+                $resultadoEvaluacion,
+                $motivo
+            );
         }
 
-        $stmt->execute($parametros);
+        $stmt->execute();
     }
 
     echo "Evaluaciones insertadas correctamente.\n";

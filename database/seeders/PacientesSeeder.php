@@ -1,6 +1,6 @@
 <?php
 
-function seedPacientes(PDO $pdo): void
+function seedPacientes(mysqli $conn): void
 {
     $pacientes = [
         [
@@ -28,17 +28,20 @@ function seedPacientes(PDO $pdo): void
 
     $sqlTipo = "SELECT id_tipo_sangre
                 FROM tipo_sangre
-                WHERE tipo = :tipo";
+                WHERE tipo = ?";
 
-    $stmtTipo = $pdo->prepare($sqlTipo);
+    $stmtTipo = $conn->prepare($sqlTipo);
 
     foreach ($pacientes as $paciente) {
 
-        $stmtTipo->execute([
-            ":tipo" => $paciente["tipo"]
-        ]);
+        $tipo = $paciente["tipo"];
+        $stmtTipo->bind_param("s", $tipo);
+        $stmtTipo->execute();
 
-        $idTipo = $stmtTipo->fetchColumn();
+        $resultado = $stmtTipo->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idTipo = $fila["id_tipo_sangre"] ?? null;
 
         if (!$idTipo) {
             throw new Exception(
@@ -48,24 +51,25 @@ function seedPacientes(PDO $pdo): void
 
         $sqlBuscar = "SELECT id_paciente
                       FROM pacientes
-                      WHERE id_tipo_sangre = :id_tipo
-                      AND nombre_paciente = :nombre
-                      AND apellido_paciente = :apellido
-                      AND fecha_nacimiento = :fecha
-                      AND sexo = :sexo
+                      WHERE id_tipo_sangre = ?
+                      AND nombre_paciente = ?
+                      AND apellido_paciente = ?
+                      AND fecha_nacimiento = ?
+                      AND sexo = ?
                       LIMIT 1";
 
-        $stmtBuscar = $pdo->prepare($sqlBuscar);
+        $stmtBuscar = $conn->prepare($sqlBuscar);
 
-        $stmtBuscar->execute([
-            ":id_tipo" => $idTipo,
-            ":nombre" => $paciente["nombre"],
-            ":apellido" => $paciente["apellido"],
-            ":fecha" => $paciente["fecha_nacimiento"],
-            ":sexo" => $paciente["sexo"]
-        ]);
+        $nombre = $paciente["nombre"];
+        $apellido = $paciente["apellido"];
+        $fecha = $paciente["fecha_nacimiento"];
+        $sexo = $paciente["sexo"];
+        $stmtBuscar->bind_param("issss", $idTipo, $nombre, $apellido, $fecha, $sexo);
+        $stmtBuscar->execute();
 
-        $idPaciente = $stmtBuscar->fetchColumn();
+        $resultado = $stmtBuscar->get_result();
+        $fila = $resultado->fetch_assoc();
+        $idPaciente = $fila["id_paciente"] ?? null;
 
         if (!$idPaciente) {
 
@@ -73,17 +77,16 @@ function seedPacientes(PDO $pdo): void
                     (id_tipo_sangre, nombre_paciente,
                      apellido_paciente, fecha_nacimiento, sexo)
                     VALUES
-                    (:id_tipo, :nombre, :apellido, :fecha, :sexo)";
+                    (?, ?, ?, ?, ?)";
 
-            $stmt = $pdo->prepare($sql);
+            $stmt = $conn->prepare($sql);
 
-            $stmt->execute([
-                ":id_tipo" => $idTipo,
-                ":nombre" => $paciente["nombre"],
-                ":apellido" => $paciente["apellido"],
-                ":fecha" => $paciente["fecha_nacimiento"],
-                ":sexo" => $paciente["sexo"]
-            ]);
+            $nombre = $paciente["nombre"];
+            $apellido = $paciente["apellido"];
+            $fecha = $paciente["fecha_nacimiento"];
+            $sexo = $paciente["sexo"];
+            $stmt->bind_param("issss", $idTipo, $nombre, $apellido, $fecha, $sexo);
+            $stmt->execute();
         }
     }
 

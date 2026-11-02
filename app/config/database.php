@@ -6,18 +6,10 @@ $pass = "";
 $db = "banco_sangre";
 /*$port = 3306;*/
 
-try {
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$db;charset=utf8mb4",
-        $user,
-        $pass
-    );
+$conn = new mysqli($host, $user, $pass, $db /*, $port*/);
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-} catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
+if ($conn->connect_error) {
+    die(json_encode(['success' => false, 'mensaje' => 'Error de conexión']));
 }
 
-return $pdo;
 ?>

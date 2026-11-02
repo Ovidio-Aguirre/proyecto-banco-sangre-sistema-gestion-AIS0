@@ -1,6 +1,6 @@
 <?php
 
-function seedMunicipios(PDO $pdo): void
+function seedMunicipios(mysqli $conn): void
 {
     $municipios = [
         "Ahuachapán" => [
@@ -92,25 +92,26 @@ function seedMunicipios(PDO $pdo): void
 
     $sqlDepartamento = "SELECT id_departamento
                         FROM departamentos
-                        WHERE nombre_departamento = :nombre";
+                        WHERE nombre_departamento = ?";
 
-    $stmtDepartamento = $pdo->prepare($sqlDepartamento);
+    $stmtDepartamento = $conn->prepare($sqlDepartamento);
 
     $sqlMunicipio = "INSERT INTO municipios
                      (id_departamento, nombre_municipio)
-                     VALUES (:id_departamento, :nombre)
+                     VALUES (?, ?)
                      ON DUPLICATE KEY UPDATE
                      nombre_municipio = VALUES(nombre_municipio)";
 
-    $stmtMunicipio = $pdo->prepare($sqlMunicipio);
+    $stmtMunicipio = $conn->prepare($sqlMunicipio);
 
     foreach ($municipios as $departamento => $listaMunicipios) {
 
-        $stmtDepartamento->execute([
-            ":nombre" => $departamento
-        ]);
+        $stmtDepartamento->bind_param("s", $departamento);
+        $stmtDepartamento->execute();
 
-        $idDepartamento = $stmtDepartamento->fetchColumn();
+        $resultado = $stmtDepartamento->get_result();
+        $fila = $resultado->fetch_assoc();
+        $idDepartamento = $fila["id_departamento"] ?? null;
 
         if (!$idDepartamento) {
             throw new Exception(
@@ -120,10 +121,8 @@ function seedMunicipios(PDO $pdo): void
 
         foreach ($listaMunicipios as $municipio) {
 
-            $stmtMunicipio->execute([
-                ":id_departamento" => $idDepartamento,
-                ":nombre" => $municipio
-            ]);
+            $stmtMunicipio->bind_param("is", $idDepartamento, $municipio);
+            $stmtMunicipio->execute();
         }
     }
 

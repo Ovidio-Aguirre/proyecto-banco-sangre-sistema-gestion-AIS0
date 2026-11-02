@@ -1,6 +1,6 @@
 <?php
 
-function seedDepartamentos(PDO $pdo): void
+function seedDepartamentos(mysqli $conn): void
 {
     $departamentos = [
         "Ahuachapán",
@@ -20,15 +20,14 @@ function seedDepartamentos(PDO $pdo): void
     ];
 
     $sql = "INSERT INTO departamentos (nombre_departamento)
-            VALUES (:departamento)
+            VALUES (?)
             ON DUPLICATE KEY UPDATE nombre_departamento = VALUES(nombre_departamento)";
 
-    $stmt = $pdo->prepare($sql);
+    $stmt = $conn->prepare($sql);
 
     foreach ($departamentos as $departamento) {
-        $stmt->execute([
-            ":departamento" => $departamento
-        ]);
+        $stmt->bind_param("s", $departamento);
+        $stmt->execute();
     }
 
     echo "Departamentos insertados correctamente.\n";

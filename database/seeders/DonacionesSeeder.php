@@ -1,6 +1,6 @@
 <?php
 
-function seedDonaciones(PDO $pdo): void
+function seedDonaciones(mysqli $conn): void
 {
     $donaciones = [
         [
@@ -25,26 +25,29 @@ function seedDonaciones(PDO $pdo): void
                       FROM evaluaciones_donante e
                       INNER JOIN donantes d
                       ON e.id_donante = d.id_donante
-                      WHERE d.dui = :dui
-                      AND e.fecha_evaluacion = :fecha
+                      WHERE d.dui = ?
+                      AND e.fecha_evaluacion = ?
                       AND e.resultado = 'APTO'";
 
-    $stmtEvaluacion = $pdo->prepare($sqlEvaluacion);
+    $stmtEvaluacion = $conn->prepare($sqlEvaluacion);
 
     $sqlUsuario = "SELECT id_usuario
                    FROM usuarios
-                   WHERE correo = :correo";
+                   WHERE correo = ?";
 
-    $stmtUsuario = $pdo->prepare($sqlUsuario);
+    $stmtUsuario = $conn->prepare($sqlUsuario);
 
     foreach ($donaciones as $donacion) {
 
-        $stmtEvaluacion->execute([
-            ":dui" => $donacion["dui"],
-            ":fecha" => $donacion["fecha_evaluacion"]
-        ]);
+        $dui = $donacion["dui"];
+        $fecha = $donacion["fecha_evaluacion"];
+        $stmtEvaluacion->bind_param("ss", $dui, $fecha);
+        $stmtEvaluacion->execute();
 
-        $idEvaluacion = $stmtEvaluacion->fetchColumn();
+        $resultado = $stmtEvaluacion->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idEvaluacion = $fila["id_evaluacion"] ?? null;
 
         if (!$idEvaluacion) {
             throw new Exception(
@@ -53,11 +56,14 @@ function seedDonaciones(PDO $pdo): void
             );
         }
 
-        $stmtUsuario->execute([
-            ":correo" => $donacion["usuario"]
-        ]);
+        $correo = $donacion["usuario"];
+        $stmtUsuario->bind_param("s", $correo);
+        $stmtUsuario->execute();
 
-        $idUsuario = $stmtUsuario->fetchColumn();
+        $resultado = $stmtUsuario->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idUsuario = $fila["id_usuario"] ?? null;
 
         if (!$idUsuario) {
             throw new Exception(
@@ -65,27 +71,37 @@ function seedDonaciones(PDO $pdo): void
             );
         }
 
-        $sql = "INSERT INTO donaciones
-                (id_evaluacion, id_usuario, id_solicitud,
-                 fecha_recoleccion, fecha_caducidad, estado)
+        $sql = "INSERT INTO donaciones 
+                (id_evaluacion, 
+                id_usuario, 
+                id_solicitud, 
+                fecha_recoleccion, 
+                fecha_caducidad, 
+                estado)
                 VALUES
-                (:evaluacion, :usuario, NULL,
-                 :recoleccion, :caducidad, :estado)
-                ON DUPLICATE KEY UPDATE
-                id_usuario = VALUES(id_usuario),
-                fecha_recoleccion = VALUES(fecha_recoleccion),
+                (?, ?, NULL, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE 
+                id_usuario = VALUES(id_usuario), 
+                fecha_recoleccion = VALUES(fecha_recoleccion), 
                 fecha_caducidad = VALUES(fecha_caducidad),
                 estado = VALUES(estado)";
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $conn->prepare($sql);
 
-        $stmt->execute([
-            ":evaluacion" => $idEvaluacion,
-            ":usuario" => $idUsuario,
-            ":recoleccion" => $donacion["fecha_recoleccion"],
-            ":caducidad" => $donacion["fecha_caducidad"],
-            ":estado" => $donacion["estado"]
-        ]);
+        $fechaRecoleccion = $donacion["fecha_recoleccion"];
+        $fechaCaducidad = $donacion["fecha_caducidad"];
+        $estado = $donacion["estado"];
+
+        $stmt->bind_param(
+            "iisss",
+            $idEvaluacion,
+            $idUsuario,
+            $fechaRecoleccion,
+            $fechaCaducidad,
+            $estado
+        );
+
+        $stmt->execute();
     }
 
     echo "Donaciones insertadas correctamente.\n";

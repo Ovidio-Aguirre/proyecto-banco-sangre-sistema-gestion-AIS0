@@ -1,6 +1,6 @@
 <?php
 
-function seedHospitales(PDO $pdo): void
+function seedHospitales(mysqli $conn): void
 {
     $hospitales = [
         [
@@ -33,19 +33,22 @@ function seedHospitales(PDO $pdo): void
                     FROM distritos d
                     INNER JOIN municipios m
                     ON d.id_municipio = m.id_municipio
-                    WHERE m.nombre_municipio = :municipio
-                    AND d.nombre_distrito = :distrito";
+                    WHERE m.nombre_municipio = ?
+                    AND d.nombre_distrito = ?";
 
-    $stmtDistrito = $pdo->prepare($sqlDistrito);
+    $stmtDistrito = $conn->prepare($sqlDistrito);
 
     foreach ($hospitales as $hospital) {
 
-        $stmtDistrito->execute([
-            ":municipio" => $hospital["municipio"],
-            ":distrito" => $hospital["distrito"]
-        ]);
+        $municipio = $hospital["municipio"];
+        $distrito = $hospital["distrito"];
+        $stmtDistrito->bind_param("ss", $municipio, $distrito);
+        $stmtDistrito->execute();
 
-        $idDistrito = $stmtDistrito->fetchColumn();
+        $resultado = $stmtDistrito->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idDistrito = $fila["id_distrito"] ?? null;
 
         if (!$idDistrito) {
             throw new Exception(
@@ -55,45 +58,46 @@ function seedHospitales(PDO $pdo): void
 
         $sqlBuscar = "SELECT id_hospital
                       FROM hospitales
-                      WHERE nombre_hospital = :nombre";
+                      WHERE nombre_hospital = ?";
 
-        $stmtBuscar = $pdo->prepare($sqlBuscar);
+        $stmtBuscar = $conn->prepare($sqlBuscar);
 
-        $stmtBuscar->execute([
-            ":nombre" => $hospital["nombre"]
-        ]);
+        $nombre = $hospital["nombre"];
+        $stmtBuscar->bind_param("s", $nombre);
+        $stmtBuscar->execute();
 
-        $idHospital = $stmtBuscar->fetchColumn();
+        $resultado = $stmtBuscar->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idHospital = $fila["id_hospital"] ?? null;
+  
 
         if ($idHospital) {
 
             $sql = "UPDATE hospitales
-                    SET id_distrito = :id_distrito,
-                        direccion = :direccion,
+                    SET id_distrito = ?,
+                        direccion = ?,
                         activo = 1
-                    WHERE id_hospital = :id_hospital";
+                    WHERE id_hospital = ?";
 
-            $stmt = $pdo->prepare($sql);
+            $stmt = $conn->prepare($sql);
 
-            $stmt->execute([
-                ":id_distrito" => $idDistrito,
-                ":direccion" => $hospital["direccion"],
-                ":id_hospital" => $idHospital
-            ]);
+            $direccion = $hospital["direccion"];
+            $stmt->bind_param("isi", $idDistrito, $direccion, $idHospital);
+            $stmt->execute();
 
         } else {
 
             $sql = "INSERT INTO hospitales
                     (id_distrito, nombre_hospital, direccion, activo)
-                    VALUES (:id_distrito, :nombre, :direccion, 1)";
+                    VALUES (?, ?, ?, 1)";
 
-            $stmt = $pdo->prepare($sql);
+            $stmt = $conn->prepare($sql);
 
-            $stmt->execute([
-                ":id_distrito" => $idDistrito,
-                ":nombre" => $hospital["nombre"],
-                ":direccion" => $hospital["direccion"]
-            ]);
+            $nombre = $hospital["nombre"];
+            $direccion = $hospital["direccion"];
+            $stmt->bind_param("iss", $idDistrito, $nombre, $direccion);
+            $stmt->execute();
         }
     }
 

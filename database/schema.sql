@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 31-10-2026 a las 23:13:07
+-- Tiempo de generación: 02-11-2026 a las 06:37:32
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -171,9 +171,11 @@ CREATE TABLE `solicitudes` (
   `id_paciente` int(11) NOT NULL,
   `id_hospital` int(11) NOT NULL,
   `fecha_solicitud` date NOT NULL,
+  `fecha_entrega` date DEFAULT NULL,
   `unidades_solicitadas` int(11) NOT NULL,
   `estado` varchar(50) NOT NULL,
-  `justificacion` text DEFAULT NULL
+  `justificacion` text DEFAULT NULL,
+  `motivo_rechazo` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

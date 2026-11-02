@@ -24,37 +24,35 @@ require_once __DIR__ . "/DonacionesSeeder.php";
 
 try {
 
-    $pdo->beginTransaction();
+    $conn->begin_transaction();
 
     // Catálogos
-    seedRoles($pdo);
-    seedTiposSangre($pdo);
+    seedRoles($conn);
+    seedTiposSangre($conn);
 
     // División territorial
-    seedDepartamentos($pdo);
-    seedMunicipios($pdo);
-    seedDistritos($pdo);
+    seedDepartamentos($conn);
+    seedMunicipios($conn);
+    seedDistritos($conn);
 
     // Información del sistema
-    seedHospitales($pdo);
-    seedUsuarios($pdo);
+    seedHospitales($conn);
+    seedUsuarios($conn);
 
     // Registros de prueba
-    seedDonantes($pdo);
-    seedPacientes($pdo);
-    seedEvaluacionesDonante($pdo);
-    seedSolicitudes($pdo);
-    seedDonaciones($pdo);
+    seedDonantes($conn);
+    seedPacientes($conn);
+    seedEvaluacionesDonante($conn);
+    seedSolicitudes($conn);
+    seedDonaciones($conn);
 
-    $pdo->commit();
+    $conn->commit();
 
-    echo "\nTodos los seeders se ejecutaron correctamente.";
+    echo "Todos los seeders se ejecutaron correctamente.\n";
 
 } catch (Throwable $e) {
 
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
+    $conn->rollback();
 
-    echo "\nError: " . $e->getMessage();
+    echo "Error: " . $e->getMessage() . "\n";
 }

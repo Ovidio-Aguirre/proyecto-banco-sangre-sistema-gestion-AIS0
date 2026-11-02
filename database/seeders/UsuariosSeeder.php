@@ -1,6 +1,7 @@
+
 <?php
 
-function seedUsuarios(PDO $pdo): void
+function seedUsuarios(mysqli $conn): void
 {
     $usuarios = [
         [
@@ -19,17 +20,20 @@ function seedUsuarios(PDO $pdo): void
 
     $sqlRol = "SELECT id_rol
                FROM roles
-               WHERE rol = :rol";
+               WHERE rol = ?";
 
-    $stmtRol = $pdo->prepare($sqlRol);
+    $stmtRol = $conn->prepare($sqlRol);
 
     foreach ($usuarios as $usuario) {
 
-        $stmtRol->execute([
-            ":rol" => $usuario["rol"]
-        ]);
+        $rol = $usuario["rol"];
+        $stmtRol->bind_param("s", $rol);
+        $stmtRol->execute();
 
-        $idRol = $stmtRol->fetchColumn();
+        $resultado = $stmtRol->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idRol = $fila["id_rol"] ?? null;
 
         if (!$idRol) {
             throw new Exception(
@@ -44,55 +48,70 @@ function seedUsuarios(PDO $pdo): void
 
         $sqlBuscar = "SELECT id_usuario
                       FROM usuarios
-                      WHERE correo = :correo
-                      OR nombre_usuario = :nombre
+                      WHERE correo = ?
+                      OR nombre_usuario = ?
                       LIMIT 1";
 
-        $stmtBuscar = $pdo->prepare($sqlBuscar);
+        $stmtBuscar = $conn->prepare($sqlBuscar);
 
-        $stmtBuscar->execute([
-            ":correo" => $usuario["correo"],
-            ":nombre" => $usuario["usuario"]
-        ]);
+        $correo = $usuario["correo"];
+        $nombre = $usuario["usuario"];
 
-        $idUsuario = $stmtBuscar->fetchColumn();
+        $stmtBuscar->bind_param("ss", $correo, $nombre);
+        $stmtBuscar->execute();
+
+        $resultado = $stmtBuscar->get_result();
+        $fila = $resultado->fetch_assoc();
+
+        $idUsuario = $fila["id_usuario"] ?? null;
 
         if ($idUsuario) {
 
             $sql = "UPDATE usuarios
-                    SET id_rol = :id_rol,
-                        nombre_usuario = :nombre,
-                        contrasena = :contrasena,
-                        correo = :correo,
+                    SET id_rol = ?,
+                        nombre_usuario = ?,
+                        contrasena = ?,
+                        correo = ?,
                         activo = 1
-                    WHERE id_usuario = :id_usuario";
+                    WHERE id_usuario = ?";
 
-            $stmt = $pdo->prepare($sql);
+            $stmt = $conn->prepare($sql);
 
-            $stmt->execute([
-                ":id_rol" => $idRol,
-                ":nombre" => $usuario["usuario"],
-                ":contrasena" => $hash,
-                ":correo" => $usuario["correo"],
-                ":id_usuario" => $idUsuario
-            ]);
+            $stmt->bind_param(
+                "isssi",
+                $idRol,
+                $nombre,
+                $hash,
+                $correo,
+                $idUsuario
+            );
+
+            $stmt->execute();
 
         } else {
 
             $sql = "INSERT INTO usuarios
                     (id_rol, nombre_usuario, contrasena, correo, activo)
-                    VALUES (:id_rol, :nombre, :contrasena, :correo, 1)";
+                    VALUES (?, ?, ?, ?, 1)";
 
-            $stmt = $pdo->prepare($sql);
+            $stmt = $conn->prepare($sql);
 
-            $stmt->execute([
-                ":id_rol" => $idRol,
-                ":nombre" => $usuario["usuario"],
-                ":contrasena" => $hash,
-                ":correo" => $usuario["correo"]
-            ]);
+            $stmt->bind_param(
+                "isss",
+                $idRol,
+                $nombre,
+                $hash,
+                $correo
+            );
+
+            $stmt->execute();
         }
+
+        $stmtBuscar->close();
     }
+
+    $stmtRol->close();
 
     echo "Usuarios insertados correctamente.\n";
 }
+
