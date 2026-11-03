@@ -1,3 +1,159 @@
 <section class="donaciones">
     <h1 class="page-title">Donaciones</h1>
+    
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="registrar">Registrar donación</button>
+            <button class="page-button" data-target="historial">Historial de donaciones</button>
+            <button class="page-button" data-target="notificar">Notificar resultado</button>
+        </div>
+
+        <div class="section-content">
+            <section id="registrar" class="page-panel active">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Nueva donación</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="donante">Donante</label>
+                            <select name="id_donante" id="donante" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="fecha">Fecha de donación</label>
+                            <input type="date" name="fecha_donacion" id="fecha" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="tsangre">Tipo de Sangre</label>
+                            <select name="id_tipo_sangre" id="tsangre" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="hemoglobina">Hemoglobina (g/dL)</label>
+                            <input type="number" name="hemoglobina" id="hemoglobina" min="0" step="0.1" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="volumen">Volumen extraído (ml)</label>
+                            <input type="number" name="volumen_ml" id="volumen" min="0" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="codigo-unidad">Código de unidad</label>
+                            <input type="text" name="codigo_unidad" id="codigo-unidad" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="observaciones">Observaciones</label>
+                            <input type="text" name="observaciones" id="observaciones">
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">REGISTRAR DONACIÓN</button>
+                            <button type="button" class="sec-button" data-target="historial">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <section id="historial" class="page-panel">
+                <div class="container">
+                    <div id="donation-header">
+                        <article class="filter-group">
+                            <label for="desde">Desde</label>
+                            <input type="date" name="desde" id="desde">
+                        </article>
+                        <article class="filter-group">
+                            <label for="hasta">Hasta</label>
+                            <input type="date" name="hasta" id="hasta">
+                        </article>
+                        <article class="filter-group">
+                            <label for="buscar-estado">Estado</label>
+                            <select name="estado" id="buscar-estado">
+                                <option value="" disabled selected hidden>Todos</option>
+                                <option value="Realizada">Realizada</option>
+                                <option value="En proceso">En proceso</option>
+                                <option value="Cancelada">Cancelada</option>
+                            </select>
+                        </article>
+                        <div class="filter-buttons">
+                            <button class="main-button text">BUSCAR</button>
+                            <button class="sec-button" data-target="registrar">+ NUEVA DONACIÓN</button>
+                        </div>
+                    </div>
+                    <table class="table data-table" id="donation-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Fecha</th>
+                                <th>Donante</th>
+                                <th>Tipo</th>
+                                <th>Volumen</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+            <section id="notificar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Resultado de la donación</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="donacion">Donación</label>
+                            <select name="id_donacion" id="donacion" required>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="resultado">Resultado</label>
+                            <select name="resultado" id="resultado" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="Aceptada">Aceptada</option>
+                                <option value="Rechazada">Rechazada</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="motivo">Motivo</label>
+                            <select name="motivo" id="motivo">
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="Hemoglobina baja">Hemoglobina baja</option>
+                                <option value="Medicación reciente">Medicación reciente</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="dias-espera">Días de espera</label>
+                            <input type="number" name="dias_espera" id="dias-espera" min="0">
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">ENVIAR NOTIFICACIÓN</button>
+                            <button type="button" class="sec-button" data-target="historial">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+
+                <div class="container">
+                    <h3 class="title">Vista previa del mensaje</h3>
+                    <p class="text"><b>Para:</b> <span id="preview-donante"></span></p>
+                    <p class="text" id="preview-mensaje"></p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
 </section>

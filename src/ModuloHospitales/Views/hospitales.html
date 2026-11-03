@@ -1,3 +1,141 @@
 <section class="hospitales">
     <h1 class="page-title">Hospitales</h1>
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="consultar">Consultar hospitales</button>
+            <button class="page-button" data-target="registrar">Registrar hospital</button>
+        </div>
+
+        <div class="section-content">
+            <section id="consultar" class="page-panel active">
+                <div class="container">
+                    <div id="hospital-header">
+                        <article class="filter-group">
+                            <label for="buscar">Buscar por nombre o código</label>
+                            <input type="text" name="buscar" id="buscar">
+                        </article>
+                        <article class="filter-group">
+                            <label for="buscar-departamento">Departamento</label>
+                            <select name="departamento" id="buscar-departamento">
+                                <option value="" disabled selected hidden>Todos</option>
+                                <option value="Ahuachapán">Ahuachapán</option>
+                                <option value="Cabañas">Cabañas</option>
+                                <option value="Chalatenango">Chalatenango</option>
+                                <option value="Cuscatlán">Cuscatlán</option>
+                                <option value="La Libertad">La Libertad</option>
+                                <option value="La Paz">La Paz</option>
+                                <option value="La Unión">La Unión</option>
+                                <option value="Morazán">Morazán</option>
+                                <option value="San Miguel">San Miguel</option>
+                                <option value="San Salvador">San Salvador</option>
+                                <option value="San Vicente">San Vicente</option>
+                                <option value="Santa Ana">Santa Ana</option>
+                                <option value="Sonsonate">Sonsonate</option>
+                                <option value="Usulután">Usulután</option>
+                            </select>
+                        </article>
+                        <div class="filter-buttons">
+                            <button class="main-button text">BUSCAR</button>
+                            <button class="sec-button" data-target="registrar">+ NUEVO HOSPITAL</button>
+                        </div>
+                    </div>
+                    <table class="table data-table" id="hospital-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Departamento</th>
+                                <th>Teléfono</th>
+                                <th>Contacto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+            <section id="registrar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Datos del hospital</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="codigo">Código del hospital</label>
+                            <input type="text" name="codigo" id="codigo" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="nombre">Nombre del hospital</label>
+                            <input type="text" name="nombre" id="nombre" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="tipo">Tipo</label>
+                            <select name="tipo" id="tipo" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="Publico">Público</option>
+                                <option value="Privado">Privado</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="departamento">Departamento</label>
+                            <select name="departamento" id="departamento" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="Ahuachapán">Ahuachapán</option>
+                                <option value="Cabañas">Cabañas</option>
+                                <option value="Chalatenango">Chalatenango</option>
+                                <option value="Cuscatlán">Cuscatlán</option>
+                                <option value="La Libertad">La Libertad</option>
+                                <option value="La Paz">La Paz</option>
+                                <option value="La Unión">La Unión</option>
+                                <option value="Morazán">Morazán</option>
+                                <option value="San Miguel">San Miguel</option>
+                                <option value="San Salvador">San Salvador</option>
+                                <option value="San Vicente">San Vicente</option>
+                                <option value="Santa Ana">Santa Ana</option>
+                                <option value="Sonsonate">Sonsonate</option>
+                                <option value="Usulután">Usulután</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="municipio">Municipio</label>
+                            <input type="text" name="municipio" id="municipio" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" name="direccion" id="direccion" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="telefono">Teléfono</label>
+                            <input type="tel" name="telefono" id="telefono" placeholder="0000-0000" maxlength="9" inputmode="numeric" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="correo">Correo electrónico</label>
+                            <input type="email" name="correo" id="correo" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="contacto">Nombre del contacto</label>
+                            <input type="text" name="contacto" id="contacto" required>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">GUARDAR HOSPITAL</button>
+                            <button type="button" class="sec-button" data-target="consultar">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+        </div>
+    </div>
+
 </section>

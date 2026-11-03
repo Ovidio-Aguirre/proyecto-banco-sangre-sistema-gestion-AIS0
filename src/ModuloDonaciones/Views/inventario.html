@@ -1,3 +1,202 @@
 <section class="inventario">
     <h1 class="page-title">Inventario</h1>
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="stock">Ver stock</button>
+            <button class="page-button" data-target="ingresar">Ingresar unidades</button>
+            <button class="page-button" data-target="usar">Usar unidades</button>
+            <button class="page-button" data-target="buscar">Buscar y filtrar</button>
+            <button class="page-button" data-target="alertas">Alertas de inventario</button>
+        </div>
+
+        <div class="section-content">
+            <section id="stock" class="page-panel active">
+                <div class="container">
+                    <h3 class="title">Unidades por tipo y estado</h3>
+                    <table class="table data-table" id="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Disponible</th>
+                                <th>Reservada</th>
+                                <th>Utilizada</th>
+                                <th>Desechada</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="ingresar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Ingreso de unidad al inventario</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="codigo-unidad">Código de unidad</label>
+                            <input type="text" name="codigo_unidad" id="codigo-unidad" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="ingreso-tsangre">Tipo de Sangre</label>
+                            <select name="id_tipo_sangre" id="ingreso-tsangre" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="ingreso-donacion">Donación asociada</label>
+                            <select name="id_donacion" id="ingreso-donacion" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="fecha-extraccion">Fecha de extracción</label>
+                            <input type="date" name="fecha_extraccion" id="fecha-extraccion" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="fecha-vencimiento">Fecha de vencimiento</label>
+                            <input type="date" name="fecha_vencimiento" id="fecha-vencimiento" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="ubicacion">Ubicación</label>
+                            <input type="text" name="ubicacion" id="ubicacion" required>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">REGISTRAR INGRESO</button>
+                            <button type="button" class="sec-button" data-target="stock">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <section id="usar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Registrar uso de unidad</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="uso-unidad">Unidad disponible</label>
+                            <select name="id_unidad" id="uso-unidad" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="destino">Destino (paciente o centro hospitalario)</label>
+                            <input type="text" name="destino" id="destino" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="fecha-uso">Fecha de uso</label>
+                            <input type="date" name="fecha_uso" id="fecha-uso" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="responsable">Responsable</label>
+                            <input type="text" name="responsable" id="responsable" required>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">REGISTRAR USO</button>
+                            <button type="button" class="sec-button" data-target="stock">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+
+                <div class="container">
+                    <h3 class="title">Unidad seleccionada</h3>
+                    <p class="text"><b>Tipo:</b> <span id="detalle-tipo"></span></p>
+                    <p class="text"><b>Estado actual:</b> <span id="detalle-estado"></span></p>
+                    <p class="text"><b>Extracción:</b> <span id="detalle-extraccion"></span></p>
+                    <p class="text"><b>Vence:</b> <span id="detalle-vencimiento"></span></p>
+                    <p class="text"><b>Ubicación:</b> <span id="detalle-ubicacion"></span></p>
+                </div>
+            </section>
+
+            <section id="buscar" class="page-panel">
+                <div class="container">
+                    <div id="inventory-header">
+                        <article class="filter-group">
+                            <label for="filtro-tipo">Tipo de Sangre</label>
+                            <select name="tipo" id="filtro-tipo">
+                                <option value="" disabled selected hidden>Todos</option>
+                            </select>
+                        </article>
+                        <article class="filter-group">
+                            <label for="filtro-estado">Estado</label>
+                            <select name="estado" id="filtro-estado">
+                                <option value="" disabled selected hidden>Todos</option>
+                                <option value="Disponible">Disponible</option>
+                                <option value="Reservada">Reservada</option>
+                                <option value="Utilizada">Utilizada</option>
+                                <option value="Desechada">Desechada</option>
+                            </select>
+                        </article>
+                        <article class="filter-group">
+                            <label for="vence-antes">Vence antes de</label>
+                            <input type="date" name="vence_antes" id="vence-antes">
+                        </article>
+                        <div class="filter-buttons">
+                            <button class="main-button text">BUSCAR</button>
+                            <button class="sec-button" type="reset">LIMPIAR</button>
+                        </div>
+                    </div>
+                    <table class="table data-table" id="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Unidad</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Extracción</th>
+                                <th>Vencimiento</th>
+                                <th>Ubicación</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+            <section id="alertas" class="page-panel">
+                <div class="container">
+                    <h3 class="title">Niveles bajos por tipo sanguíneo</h3>
+                    <table class="table data-table" id="low-stock-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Disponible</th>
+                                <th>Mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="container">
+                    <h3 class="title">Unidades próximas a vencer</h3>
+                    <table class="table data-table" id="expiring-table">
+                        <thead>
+                            <tr>
+                                <th>Unidad</th>
+                                <th>Tipo</th>
+                                <th>Vence</th>
+                                <th>Días restantes</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
 </section>
