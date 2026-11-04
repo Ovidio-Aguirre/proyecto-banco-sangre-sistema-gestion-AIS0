@@ -111,7 +111,7 @@ function validarFecha(mixed $valor, string $campo = 'fecha', bool $fechaFutura =
     if (!$fecha || $fecha->format('Y-m-d') !== $valor) {
         respuesta(400, ['success' => false, 'mensaje' => "$campo inválida, use el formato YYYY-MM-DD"]);
     }
-    if (!$permiteFutura && $fecha > new DateTime('today')) {
+    if (!$fechaFutura && $fecha > new DateTime('today')) {
         respuesta(400, ['success' => false, 'mensaje' => "$campo no puede ser una fecha futura"]);
     }
     return $valor;
