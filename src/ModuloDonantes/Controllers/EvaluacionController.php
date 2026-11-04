@@ -37,16 +37,7 @@ class EvaluacionController
 
         /* --- Validaciones --- */
         // Campos obligatorios vacios
-        $vacios = [];
-        foreach (['peso', 'altura', 'resultado'] as $campo) {
-            if (!isset($data[$campo]) || !is_scalar($data[$campo]) || trim((string)$data[$campo]) === '') {
-                $vacios[] = $campo;
-            }
-        }
-
-        if ($vacios){
-            respuesta(400, ['success' => false, 'mensaje' => 'Campos vacios', 'campos' => $vacios]);
-        }
+        validarCamposRequeridos($data, ['peso', 'altura', 'resultado']);
 
         // Formatos
         if (!is_numeric($data['peso']) || $data['peso'] <= 0 || $data['peso'] > 999.99) {
