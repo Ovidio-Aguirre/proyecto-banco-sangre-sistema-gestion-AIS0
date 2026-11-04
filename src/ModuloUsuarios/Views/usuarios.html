@@ -1,4 +1,164 @@
 <section class="usuarios">
     <h1 class="page-title">Usuarios</h1>
      <p class="page-subtitle">Gestion de cuentas del sistema</p>
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="consultar">Consultar usuarios</button>
+            <button class="page-button" data-target="crear">Crear usuario</button>
+        </div>
+
+        <div class="section-content">
+            <section id="consultar" class="page-panel active">
+                <div class="container">
+                    <div id="user-header">
+                        <article class="filter-group">
+                            <label for="buscar">Buscar por nombre o usuario</label>
+                            <input type="text" name="buscar" id="buscar">
+                        </article>
+                        <article class="filter-group">
+                            <label for="buscar-rol">Rol</label>
+                            <select name="rol" id="buscar-rol">
+                                <option value="" disabled selected hidden>Todos</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="medico">Personal médico</option>
+                                <option value="recoleccion">Personal de recolección</option>
+                            </select>
+                        </article>
+                        <div class="filter-buttons">
+                            <button class="main-button text">BUSCAR</button>
+                            <button class="sec-button" data-target="crear">+ NUEVO USUARIO</button>
+                        </div>
+                    </div>
+                    <table class="table data-table" id="user-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+            <section id="crear" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Nueva cuenta de personal</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" name="nombre" id="nombre" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="apellido">Apellido</label>
+                            <input type="text" name="apellido" id="apellido" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="correo">Correo electrónico</label>
+                            <input type="email" name="correo" id="correo" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="usuario">Nombre de usuario</label>
+                            <input type="text" name="usuario" id="usuario" autocomplete="off" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="rol">Rol</label>
+                            <select name="rol" id="rol" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="medico">Personal médico</option>
+                                <option value="recoleccion">Personal de recolección</option>
+                            </select>
+                        </article>
+                        <article class="form-group">
+                            <label for="contrasena">Contraseña temporal</label>
+                            <input type="password" name="contrasena" id="contrasena" autocomplete="new-password" minlength="8" required>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">CREAR USUARIO</button>
+                            <button type="button" class="sec-button" data-target="consultar">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <section id="editar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Editar usuario</h3>
+                    <input type="hidden" name="id_usuario">
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="editar-nombre">Nombre</label>
+                            <input type="text" name="nombre" id="editar-nombre" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="editar-apellido">Apellido</label>
+                            <input type="text" name="apellido" id="editar-apellido" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="editar-correo">Correo electrónico</label>
+                            <input type="email" name="correo" id="editar-correo" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="editar-usuario">Nombre de usuario</label>
+                            <input type="text" name="usuario" id="editar-usuario" readonly>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="editar-rol">Rol</label>
+                            <select name="rol" id="editar-rol" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="medico">Personal médico</option>
+                                <option value="recoleccion">Personal de recolección</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="editar-estado">Estado</label>
+                            <select name="estado" id="editar-estado" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">GUARDAR CAMBIOS</button>
+                            <button type="button" class="sec-button" data-target="consultar">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <section id="desactivar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">¿Desactivar la cuenta?</h3>
+                    <input type="hidden" name="id_usuario">
+                    <p class="text">El usuario <b id="desactivar-usuario"></b> ya no podrá ingresar al sistema. Podrá reactivarlo desde Editar usuario.</p>
+                    <div class="form-buttons">
+                        <button type="submit" class="main-button">SÍ, DESACTIVAR</button>
+                        <button type="button" class="sec-button" data-target="consultar">CANCELAR</button>
+                    </div>
+                </form>
+            </section>
+
+        </div>
+    </div>
+
 </section>
