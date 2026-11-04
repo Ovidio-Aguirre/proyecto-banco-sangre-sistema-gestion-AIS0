@@ -1,4 +1,24 @@
 <section>
     <h1>Login</h1>
-    <p>Si puedes ver este mensaje, el layout está cargando la vista correctamente.</p>
+
+    <form class="container" action="" method="POST">
+        <h3 class="title">Iniciar sesión</h3>
+        <p class="subtext">Ingrese sus credenciales para continuar</p>
+
+        <article class="form-group">
+            <label for="usuario">Usuario</label>
+            <input type="text" name="usuario" id="usuario" autocomplete="username" required>
+        </article>
+
+        <article class="form-group">
+            <label for="contrasena">Contraseña</label>
+            <input type="password" name="contrasena" id="contrasena" autocomplete="current-password" required>
+        </article>
+
+        <div class="form-buttons">
+            <button type="submit" class="main-button">INGRESAR</button>
+        </div>
+
+        <p class="subtext">¿Olvidó su contraseña? Contacte al administrador.</p>
+    </form>
 </section>
