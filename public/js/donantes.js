@@ -23,6 +23,18 @@
     llenarSelect(selectFiltro, TIPOS_SANGRE, 'Todos');
     llenarSelect(selectTipo, TIPOS_SANGRE);
 
+    // DUI: 00000000-0
+    form.dui.addEventListener('input', () => {
+        const d = form.dui.value.replace(/\D/g, '').slice(0, 9);
+        form.dui.value = d.length > 8 ? `${d.slice(0, 8)}-${d.slice(8)}` : d;
+    });
+
+    // Contacto: 0000-0000
+    form.contacto.addEventListener('input', () => {
+        const d = form.contacto.value.replace(/\D/g, '').slice(0, 8);
+        form.contacto.value = d.length > 4 ? `${d.slice(0, 4)}-${d.slice(4)}` : d;
+    });
+
     /* --- LISTAR --- */
     async function cargarDonantes() {
         const params = {};
@@ -48,7 +60,7 @@
         // La lista de donaciones viene de la más reciente a la más antigua:
         // la primera que aparezca de cada donante es su última donación
         const ultimaDonacion = {};
-        (resDonaciones.data.donaciones ?? []).forEach(don => {
+        (resDonaciones.data?.donaciones ?? []).forEach(don => {
             if (!(don.id_donante in ultimaDonacion)) ultimaDonacion[don.id_donante] = don.fecha_recoleccion;
         });
 
@@ -83,7 +95,7 @@
             const [resDonante, resEvaluaciones, resDonaciones] = await Promise.all([
                 api(`donantes/${id}`),
                 api(`donantes/${id}/evaluaciones`, { params: { historial: 1 } }),
-                api('donaciones')
+                api(`donantes/${id}/donaciones`)
             ]);
             if (!resDonante.ok) return alert(mensajeError(resDonante));
             const d = resDonante.data.donante;
@@ -92,7 +104,7 @@
             document.getElementById('hist-dui').textContent = d.dui;
             document.getElementById('hist-tipo').textContent = TIPOS_SANGRE[d.id_tipo_sangre];
 
-            const evaluaciones = resEvaluaciones.data.evaluaciones ?? [];
+            const evaluaciones = resEvaluaciones.data?.evaluaciones ?? [];
             tablaEvaluaciones.innerHTML = evaluaciones.length
                 ? evaluaciones.map(ev => `
                     <tr class="text">
@@ -104,8 +116,7 @@
                     </tr>`).join('')
                 : filaMensaje(5, 'Sin evaluaciones registradas');
 
-            // No hay ruta de historial por donante, se filtran las donaciones por su id
-            const donaciones = (resDonaciones.data.donaciones ?? []).filter(x => String(x.id_donante) === String(id));
+            const donaciones = resDonaciones.data?.donaciones ?? [];
             tablaDonaciones.innerHTML = donaciones.length
                 ? donaciones.map(x => `
                     <tr class="text">

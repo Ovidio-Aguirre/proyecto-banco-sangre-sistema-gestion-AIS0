@@ -137,12 +137,14 @@ class Donacion{
     ): array{
         $this->marcarVencidas(); //Actualizar donaciones vencidas
         $sql = "SELECT d.id_donacion, d.id_evaluacion, e.id_donante,
-                   dn.nombre, dn.apellido, dn.id_tipo_sangre,
-                   d.fecha_recoleccion, d.fecha_caducidad, d.estado
-            FROM donaciones d
-            JOIN evaluaciones_donante e ON e.id_evaluacion = d.id_evaluacion
-            JOIN donantes dn ON dn.id_donante = e.id_donante
-            WHERE 1 = 1";
+                        dn.nombre, dn.apellido, dn.id_tipo_sangre,
+                        d.fecha_recoleccion, d.fecha_caducidad, d.estado,
+                        u.nombre_usuario AS registrado_por
+                FROM donaciones d
+                JOIN evaluaciones_donante e ON e.id_evaluacion = d.id_evaluacion
+                JOIN donantes dn ON dn.id_donante = e.id_donante
+                LEFT JOIN usuarios u ON u.id_usuario = d.id_usuario
+                WHERE 1 = 1";
         $tipos  = "";
         $params = [];
 
@@ -331,6 +333,35 @@ class Donacion{
         $stmt->execute();
 
         return 'actualizada';
+    }
+
+    /**
+     * Evaluaciones APTAS de hoy
+     * @return array Lista de evaluaciones elegibles para registrar donacion
+     */
+    public function obtenerEvaluacionesElegibles(): array
+    {
+        $result = $this->conn->query(
+            "SELECT e.id_evaluacion, dn.id_donante, dn.nombre, dn.apellido, dn.dui
+            FROM evaluaciones_donante e
+            JOIN donantes dn ON dn.id_donante = e.id_donante
+            WHERE dn.activo = 1
+            AND e.resultado = 'APTO'
+            AND e.fecha_evaluacion = CURDATE()
+            AND e.id_evaluacion = (
+                SELECT e2.id_evaluacion
+                FROM evaluaciones_donante e2
+                WHERE e2.id_donante = e.id_donante
+                ORDER BY e2.fecha_evaluacion DESC, e2.id_evaluacion DESC
+                LIMIT 1
+            )
+            AND NOT EXISTS (
+                SELECT 1 FROM donaciones d WHERE d.id_evaluacion = e.id_evaluacion
+            )
+            ORDER BY dn.apellido, dn.nombre"
+        );
+
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     /** 

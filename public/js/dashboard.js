@@ -1,16 +1,20 @@
 const filtroGlobal = document.getElementById('period-filter');
 const etiquetaPeriodo = document.getElementById('period-value');
 
+const ETIQUETAS_PERIODO = {
+    'hoy': 'Hoy',
+    'semanal': 'Esta semana',
+    'mensual': 'Este mes',
+    '3-meses': 'Últimos 3 meses',
+    '6-meses': 'Últimos 6 meses',
+    'anual': 'Este año'
+};
+const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-if (filtroGlobal && etiquetaPeriodo) {
-    filtroGlobal.addEventListener('change', actualizarPeriodoGrafica);
-    actualizarPeriodoGrafica();
-}
-
-crearGrafico({
+const graficoSangre = crearGrafico({
     idCanvas: 'blood-chart',
-    etiquetas: ['A+','A-','B+','B-','AB+','AB-','O+', 'O-'],
-    datos: [48, 12, 36, 8, 14, 4, 55, 18],
+    etiquetas: [],
+    datos: [],
     label: 'Unidades',
     tipo: 'bar',
     orientacion: 'horizontal',
@@ -18,15 +22,69 @@ crearGrafico({
     tituloEjeY: 'Tipo de sangre'
 });
 
-crearGrafico({
+const graficoDonaciones = crearGrafico({
     idCanvas: 'donations-chart',
-    etiquetas: ['Ago','Sept','Oct'],
-    datos: [48, 12, 26],
+    etiquetas: [],
+    datos: [],
     label: 'Donaciones',
     tipo: 'line',
-    tituloEjeX: 'Mes',
+    tituloEjeX: 'Fecha',
     tituloEjeY: 'Cantidad de donaciones'
 });
+
+/* --- CARGA DE DATOS --- */
+// Unidades disponibles por tipo (histórico, no depende del filtro)
+async function cargarInventario() {
+    const res = await api('inventario');
+    if (!res.ok || !graficoSangre) return;
+
+    const inventario = res.data.inventario ?? [];
+    graficoSangre.data.labels = inventario.map(t => t.tipo_sangre);
+    graficoSangre.data.datasets[0].data = inventario.map(t => Number(t.disponibles));
+    graficoSangre.update();
+}
+
+// Tarjetas y tendencia, según el periodo elegido
+async function cargarPeriodo() {
+    const periodo = filtroGlobal.value;
+    etiquetaPeriodo.textContent = ETIQUETAS_PERIODO[periodo] ?? '';
+
+    const [resResumen, resTendencia] = await Promise.all([
+        api('reportes/resumen', { params: { periodo } }),
+        api('reportes/donaciones-mensuales', { params: { periodo } })
+    ]);
+
+    if (resResumen.ok) {
+        const r = resResumen.data.resumen;
+        document.getElementById('stat-donantes').textContent = r.donantes;
+        document.getElementById('stat-donaciones').textContent = r.donaciones;
+        document.getElementById('stat-solicitudes').textContent = r.solicitudes.total;
+        document.getElementById('stat-atendidas').textContent = r.solicitudes.atendidas;
+    }
+
+    if (resTendencia.ok && graficoDonaciones) {
+        const serie = resTendencia.data.donaciones ?? [];
+        const porDia = serie.length > 0 && serie[0].fecha.length === 10;
+
+        graficoDonaciones.data.labels = serie.map(p => formatearFecha(p.fecha));
+        graficoDonaciones.data.datasets[0].data = serie.map(p => p.total);
+        graficoDonaciones.options.scales.x.title.text = porDia ? 'Día' : 'Mes';
+        graficoDonaciones.options.scales.x.title.display = true;
+        graficoDonaciones.update();
+    }
+}
+
+// 'YYYY-MM-DD' -> 'dd/mm' | 'YYYY-MM' -> 'Mes'
+function formatearFecha(fecha) {
+    const [anio, mes, dia] = fecha.split('-');
+    return dia ? `${dia}/${mes}` : `${MESES[Number(mes) - 1]} ${anio}`;
+}
+
+if (filtroGlobal && etiquetaPeriodo) {
+    filtroGlobal.addEventListener('change', cargarPeriodo);
+    cargarPeriodo();
+    cargarInventario();
+}
 
 // ---- UTILIDADES ----
 function crearGrafico({
@@ -43,9 +101,9 @@ function crearGrafico({
 }) {
     const canvas = document.getElementById(idCanvas);
 
-    if (!canvas) return;
+    if (!canvas) return null;
 
-    new Chart(canvas, {
+    return new Chart(canvas, {
         type: tipo,
 
         data: {
@@ -107,37 +165,4 @@ function crearGrafico({
             },
         }
     });
-}
-
-function obtenerPeriodoGrafica(periodo) {
-    switch (periodo) {
-        case '6-meses':
-            return {
-                tipo: 'ultimos-meses',
-                meses: 6,
-                etiqueta: 'Últimos 6 meses'
-            };
-
-        case 'anual':
-            return {
-                tipo: 'anio-actual',
-                etiqueta: 'Este año'
-            };
-
-        default:
-            return {
-                tipo: 'ultimos-meses',
-                meses: 3,
-                etiqueta: 'Últimos 3 meses'
-            };
-    }
-}
-
-function actualizarPeriodoGrafica() {
-    const periodo = obtenerPeriodoGrafica(filtroGlobal.value);
-
-    etiquetaPeriodo.textContent = periodo.etiqueta;
-
-    // Aquí actualizas los datos de la gráfica
-    // utilizando periodo.tipo y periodo.meses.
 }

@@ -37,7 +37,7 @@ $baseUrl = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
     <script src="<?= $baseUrl ?>/public/js/api.js"></script>
     <script src="<?= $baseUrl ?>/public/js/auth.js"></script>
 
-    <?php if (in_array($currentPage, ['donantes', 'hospitales', 'solicitudes', 'usuarios'], true)): ?>
+    <?php if (in_array($currentPage, ['donantes', 'donaciones', 'inventario', 'hospitales', 'solicitudes', 'usuarios'], true)): ?>
         <?php if ($currentPage === 'hospitales'): ?>
             <script src="<?= $baseUrl ?>/public/js/geo.js"></script>
         <?php endif; ?>

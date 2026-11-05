@@ -47,6 +47,7 @@ try {
         'auth'          => fn() => new AuthController(new Usuario($conn)),
         'usuarios'      => fn() => new UsuarioController(new Usuario($conn)),
         'roles'         => fn() => new RolController(new Rol($conn)),
+        'reportes'      => fn() => new ReporteController(new Reporte($conn)),
     ];
 
     $recurso = $partes[0] ?? '';
