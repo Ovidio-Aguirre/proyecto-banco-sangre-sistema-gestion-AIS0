@@ -9,6 +9,11 @@ const TIPOS_SANGRE = {
     5: 'AB+', 6: 'AB-', 7: 'O+', 8: 'O-'
 };
 
+// Vistas a las que se redirige (ajustar a la navegación real)
+const PAGINA_LOGIN  = 'index.php?page=login';
+const PAGINA_INICIO = 'index.php?page=dashboard';
+const PAGINA_CAMBIO = 'index.php?page=perfil';
+
 /**
  * Hace una petición a la API y devuelve { ok, status, data }.
  * Nunca lanza error: si el servidor no responde, ok = false.
@@ -29,6 +34,16 @@ async function api(ruta, { metodo = 'GET', cuerpo = null, params = null } = {}) 
     try {
         const respuesta = await fetch(url, opciones);
         const data = await respuesta.json().catch(() => ({}));
+
+        // Sin sesión: volver al login (excepto en el propio login)
+        if (respuesta.status === 401 && ruta !== 'auth/login') {
+            window.location.href = PAGINA_LOGIN;
+        }
+        // Contraseña temporal: obligar a cambiarla
+        if (respuesta.status === 403 && data.debe_cambiar_contrasena) {
+            window.location.href = PAGINA_CAMBIO;
+        }
+
         return { ok: respuesta.ok, status: respuesta.status, data };
     } catch (error) {
         return { ok: false, status: 0, data: { mensaje: 'No se pudo conectar con el servidor' } };
@@ -61,6 +76,14 @@ function llenarSelect(select, opciones, textoTodos = null) {
         select.add(vacio);
     }
     Object.entries(opciones).forEach(([valor, texto]) => select.add(new Option(texto, valor)));
+}
+
+// Obtiene los roles de la API como { id: nombre }
+async function cargarRoles() {
+    const res = await api('roles');
+    const roles = {};
+    (res.data.roles ?? []).forEach(r => { roles[r.id_rol] = r.rol; });
+    return roles;
 }
 
 // Fila que ocupa toda la tabla (mensajes de "sin resultados", etc.)

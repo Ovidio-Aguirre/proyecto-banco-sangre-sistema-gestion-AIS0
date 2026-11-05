@@ -47,8 +47,13 @@
                     <div class="form-grid">
 
                         <article class="form-group">
-                            <label for="usuario">Nombre de usuario</label>
-                            <input type="text" name="nombre_usuario" id="usuario" maxlength="50" autocomplete="off" required>
+                            <label for="nombre">Nombre</label>
+                            <input type="text" name="nombre" id="nombre" maxlength="50" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="apellido">Apellido</label>
+                            <input type="text" name="apellido" id="apellido" maxlength="50" required>
                         </article>
 
                         <article class="form-group">
@@ -61,11 +66,6 @@
                             <select name="id_rol" id="rol" required>
                                 <option value="" disabled selected hidden>Seleccione</option>
                             </select>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="contrasena">Contraseña temporal</label>
-                            <input type="password" name="contrasena" id="contrasena" autocomplete="new-password" minlength="8" required>
                         </article>
 
                         <div class="form-buttons">
@@ -85,7 +85,7 @@
 
                         <article class="form-group">
                             <label for="editar-usuario">Nombre de usuario</label>
-                            <input type="text" name="nombre_usuario" id="editar-usuario" maxlength="50" required>
+                            <input type="text" name="nombre_usuario" id="editar-usuario" readonly>
                         </article>
 
                         <article class="form-group">

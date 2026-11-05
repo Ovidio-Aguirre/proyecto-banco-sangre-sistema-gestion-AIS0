@@ -21,9 +21,11 @@ $baseUrl = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
     <?php endif; ?>
 </head>
 <body>
-    <?php require __DIR__ . '/components/topbar.php'; ?>
+    <?php if ($currentPage !== 'login'): ?>
+        <?php require __DIR__ . '/components/topbar.php'; ?>
+    <?php endif; ?>
 
-    <?php if ($currentPage !== 'perfil'): ?>
+    <?php if (!in_array($currentPage, ['login', 'perfil'], true)): ?>
         <?php require __DIR__ . '/components/nav.php'; ?>
     <?php endif; ?>
     
@@ -32,9 +34,10 @@ $baseUrl = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
     </main>
 
     <script src="<?= $baseUrl ?>/public/js/pages.js"></script>
+    <script src="<?= $baseUrl ?>/public/js/api.js"></script>
+    <script src="<?= $baseUrl ?>/public/js/auth.js"></script>
 
-    <?php if (in_array($currentPage, ['donantes', 'hospitales', 'solicitudes'])): ?>
-        <script src="<?= $baseUrl ?>/public/js/api.js"></script>
+    <?php if (in_array($currentPage, ['donantes', 'hospitales', 'solicitudes', 'usuarios'], true)): ?>
         <?php if ($currentPage === 'hospitales'): ?>
             <script src="<?= $baseUrl ?>/public/js/geo.js"></script>
         <?php endif; ?>

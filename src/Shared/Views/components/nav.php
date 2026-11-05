@@ -11,7 +11,9 @@
 
     <a href="index.php?page=hospitales" class="<?= ($currentPage ?? '') === 'hospitales' ? 'active' : '' ?>">Hospitales</a>
 
-    <a href="index.php?page=reportes" class="<?= ($currentPage ?? '') === 'reportes' ? 'active' : '' ?>">Reportes</a>
+    <!--<a href="index.php?page=reportes" class="<?= ($currentPage ?? '') === 'reportes' ? 'active' : '' ?>">Reportes</a> -->
 
-    <a href="index.php?page=usuarios" class="<?= ($currentPage ?? '') === 'usuarios' ? 'active' : '' ?>">Usuarios</a>
+    <?php if (($_SESSION['rol'] ?? '') === ROL_ADMIN): ?>
+        <a href="index.php?page=usuarios" class="<?= ($currentPage ?? '') === 'usuarios' ? 'active' : '' ?>">Usuarios</a>
+    <?php endif; ?>
 </nav>
