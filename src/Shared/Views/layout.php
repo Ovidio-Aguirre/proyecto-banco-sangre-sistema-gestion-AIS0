@@ -1,5 +1,5 @@
 <?php
-$baseUrl = '/' . basename(realpath(__DIR__ . '/../../..'));
+$baseUrl = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
 ?>
 
 <!DOCTYPE html>
@@ -32,5 +32,13 @@ $baseUrl = '/' . basename(realpath(__DIR__ . '/../../..'));
     </main>
 
     <script src="<?= $baseUrl ?>/public/js/pages.js"></script>
+
+    <?php if (in_array($currentPage, ['donantes', 'hospitales', 'solicitudes'])): ?>
+        <script src="<?= $baseUrl ?>/public/js/api.js"></script>
+        <?php if ($currentPage === 'hospitales'): ?>
+            <script src="<?= $baseUrl ?>/public/js/geo.js"></script>
+        <?php endif; ?>
+        <script src="<?= $baseUrl ?>/public/js/<?= $currentPage ?>.js"></script>
+    <?php endif; ?>
 </body>
 </html>
