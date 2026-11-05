@@ -13,16 +13,13 @@
                 <div class="container">
                     <div id="user-header">
                         <article class="filter-group">
-                            <label for="buscar">Buscar por nombre o usuario</label>
+                            <label for="buscar">Buscar por usuario o correo</label>
                             <input type="text" name="buscar" id="buscar">
                         </article>
                         <article class="filter-group">
                             <label for="buscar-rol">Rol</label>
-                            <select name="rol" id="buscar-rol">
+                            <select name="id_rol" id="buscar-rol">
                                 <option value="" disabled selected hidden>Todos</option>
-                                <option value="administrador">Administrador</option>
-                                <option value="medico">Personal médico</option>
-                                <option value="recoleccion">Personal de recolección</option>
                             </select>
                         </article>
                         <div class="filter-buttons">
@@ -34,7 +31,6 @@
                         <thead>
                             <tr>
                                 <th>Usuario</th>
-                                <th>Nombre</th>
                                 <th>Correo</th>
                                 <th>Rol</th>
                                 <th>Estado</th>
@@ -44,40 +40,29 @@
                     </table>
                 </div>
             </section>
+
             <section id="crear" class="page-panel">
                 <form class="container" action="" method="POST">
                     <h3 class="title">Nueva cuenta de personal</h3>
                     <div class="form-grid">
 
                         <article class="form-group">
-                            <label for="nombre">Nombre</label>
-                            <input type="text" name="nombre" id="nombre" required>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="apellido">Apellido</label>
-                            <input type="text" name="apellido" id="apellido" required>
+                            <label for="usuario">Nombre de usuario</label>
+                            <input type="text" name="nombre_usuario" id="usuario" maxlength="50" autocomplete="off" required>
                         </article>
 
                         <article class="form-group">
                             <label for="correo">Correo electrónico</label>
-                            <input type="email" name="correo" id="correo" required>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="usuario">Nombre de usuario</label>
-                            <input type="text" name="usuario" id="usuario" autocomplete="off" required>
+                            <input type="email" name="correo" id="correo" maxlength="100" required>
                         </article>
 
                         <article class="form-group">
                             <label for="rol">Rol</label>
-                            <select name="rol" id="rol" required>
+                            <select name="id_rol" id="rol" required>
                                 <option value="" disabled selected hidden>Seleccione</option>
-                                <option value="administrador">Administrador</option>
-                                <option value="medico">Personal médico</option>
-                                <option value="recoleccion">Personal de recolección</option>
                             </select>
                         </article>
+
                         <article class="form-group">
                             <label for="contrasena">Contraseña temporal</label>
                             <input type="password" name="contrasena" id="contrasena" autocomplete="new-password" minlength="8" required>
@@ -99,41 +84,28 @@
                     <div class="form-grid">
 
                         <article class="form-group">
-                            <label for="editar-nombre">Nombre</label>
-                            <input type="text" name="nombre" id="editar-nombre" required>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="editar-apellido">Apellido</label>
-                            <input type="text" name="apellido" id="editar-apellido" required>
+                            <label for="editar-usuario">Nombre de usuario</label>
+                            <input type="text" name="nombre_usuario" id="editar-usuario" maxlength="50" required>
                         </article>
 
                         <article class="form-group">
                             <label for="editar-correo">Correo electrónico</label>
-                            <input type="email" name="correo" id="editar-correo" required>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="editar-usuario">Nombre de usuario</label>
-                            <input type="text" name="usuario" id="editar-usuario" readonly>
+                            <input type="email" name="correo" id="editar-correo" maxlength="100" required>
                         </article>
 
                         <article class="form-group">
                             <label for="editar-rol">Rol</label>
-                            <select name="rol" id="editar-rol" required>
+                            <select name="id_rol" id="editar-rol" required>
                                 <option value="" disabled selected hidden>Seleccione</option>
-                                <option value="administrador">Administrador</option>
-                                <option value="medico">Personal médico</option>
-                                <option value="recoleccion">Personal de recolección</option>
                             </select>
                         </article>
 
                         <article class="form-group">
                             <label for="editar-estado">Estado</label>
-                            <select name="estado" id="editar-estado" required>
+                            <select name="activo" id="editar-estado" required>
                                 <option value="" disabled selected hidden>Seleccione</option>
-                                <option value="activo">Activo</option>
-                                <option value="inactivo">Inactivo</option>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
                             </select>
                         </article>
 

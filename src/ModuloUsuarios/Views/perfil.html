@@ -10,32 +10,17 @@
         <div class="section-content">
             <section id="datos" class="page-panel active">
                 <form class="container" action="" method="POST">
-                    <h3 class="title">Datos personales</h3>
+                    <h3 class="title">Datos de la cuenta</h3>
                     <div class="form-grid">
 
                         <article class="form-group">
-                            <label for="nombre">Nombre</label>
-                            <input type="text" name="nombre" id="nombre" required>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="apellido">Apellido</label>
-                            <input type="text" name="apellido" id="apellido" required>
+                            <label for="usuario">Usuario</label>
+                            <input type="text" name="nombre_usuario" id="usuario" readonly>
                         </article>
 
                         <article class="form-group">
                             <label for="correo">Correo electrónico</label>
-                            <input type="email" name="correo" id="correo" required>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="telefono">Contacto</label>
-                            <input type="tel" name="telefono" id="telefono" placeholder="0000-0000" maxlength="9" inputmode="numeric">
-                        </article>
-
-                        <article class="form-group">
-                            <label for="usuario">Usuario</label>
-                            <input type="text" name="usuario" id="usuario" readonly>
+                            <input type="email" name="correo" id="correo" maxlength="100" required>
                         </article>
 
                         <article class="form-group">
