@@ -1,0 +1,71 @@
+<section>
+    <h1>Perfil</h1>
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="datos">Mis datos</button>
+            <button class="page-button" data-target="password">Cambiar contraseña</button>
+        </div>
+
+        <div class="section-content">
+            <section id="datos" class="page-panel active">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Datos de la cuenta</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="usuario">Usuario</label>
+                            <input type="text" name="nombre_usuario" id="usuario" readonly>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="correo">Correo electrónico</label>
+                            <input type="email" name="correo" id="correo" maxlength="100" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="rol">Rol</label>
+                            <input type="text" name="rol" id="rol" readonly>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">GUARDAR CAMBIOS</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <section id="password" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Cambiar contraseña</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="actual">Contraseña actual</label>
+                            <input type="password" name="contrasena_actual" id="actual" autocomplete="current-password" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="nueva">Nueva contraseña</label>
+                            <input type="password" name="contrasena_nueva" id="nueva" autocomplete="new-password" minlength="8" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="confirmar">Confirmar nueva contraseña</label>
+                            <input type="password" name="contrasena_confirmar" id="confirmar" autocomplete="new-password" minlength="8" required>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">CAMBIAR CONTRASEÑA</button>
+                            <button type="button" class="sec-button" data-target="datos">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+        </div>
+    </div>
+
+</section>
