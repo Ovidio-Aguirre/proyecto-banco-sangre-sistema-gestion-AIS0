@@ -23,6 +23,13 @@ class DonacionController implements Controlador
             return;
         }
 
+        // Ruta /donaciones/elegibles
+        if ($id === 'elegibles'){
+            if (isset($partes[2])){ noEncontrado(); }
+            $metodo === 'GET' ? $this->listarElegibles() : noPermitido();
+            return;
+        }
+
         $idDonacion = validarId($id, 'ID de donacion inválido');
 
         // Ruta /donaciones/{id}/solicitud
@@ -82,6 +89,12 @@ class DonacionController implements Controlador
         respuesta(200, ['success' => true, 'donaciones' => $donaciones]);
     }
 
+    // GET /donaciones/elegibles
+    private function listarElegibles(): void
+    {
+        respuesta(200, ['success' => true, 'evaluaciones' => $this->modelo->obtenerEvaluacionesElegibles()]);
+    }
+    
     // GET /donaciones/{id}
     private function obtenerDonacion(int $idDonacion): void
     {

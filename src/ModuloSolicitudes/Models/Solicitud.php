@@ -10,7 +10,11 @@
         //========== GET ==========
 
         public function listarSolicitudes(){
-            $sql = "SELECT * FROM solicitudes WHERE estado != 'INHABILITADA'";
+            $sql = "SELECT s.*, p.nombre_paciente, p.apellido_paciente, p.id_tipo_sangre, h.nombre_hospital
+                    FROM solicitudes s
+                    LEFT JOIN pacientes p ON p.id_paciente = s.id_paciente
+                    LEFT JOIN hospitales h ON h.id_hospital = s.id_hospital
+                    WHERE s.estado != 'INHABILITADA'";
             $solicitudes = $this->conn->query($sql);
             return $solicitudes->fetch_all(MYSQLI_ASSOC);
         }
@@ -78,7 +82,7 @@
 
             //por estado
             if ($estado !== ''){
-                $sql .= " AND estado = ?";
+                $sql .= " AND s.estado = ?";
                 $parametros[] = $estado;
                 $tipoParametro .= "s";
             }
@@ -220,16 +224,16 @@
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         //========== PATCH ==========
         function entregarSolicitud($estado, $id){
-
-            if($this->validacionesPATCH($id) != 0){
-                return $this->validacionesPATCH($id);
+            $validacion = $this->validacionesPATCH($id);
+            if ($validacion !== 0){
+                return $validacion;
             }
-            $fecha = new DateTime();
-            $fecha = $fecha->format('Y-m-d');
+
+            $fecha = (new DateTime())->format('Y-m-d');
             $sql = "UPDATE solicitudes
-            SET estado = ?, fecha_entrega = ?
-            WHERE id_solicitud = ?
-            AND estado = 'APROBADA' AND estado != 'INHABILITADA'";
+                    SET estado = ?, fecha_entrega = ?
+                    WHERE id_solicitud = ?
+                    AND estado = 'APROBADA'";
 
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("ssi", $estado, $fecha, $id);
@@ -239,32 +243,17 @@
 
         //validaciones
         function validacionesPATCH($id){
-            //solo las solicitudes aprobadas
-            $sql = "SELECT id_solicitud
-            FROM solicitudes
-            WHERE id_solicitud = ?
-            AND estado = 'APROBADA'";
-
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare("SELECT estado FROM solicitudes WHERE id_solicitud = ?");
             $stmt->bind_param("i", $id);
             $stmt->execute();
-            if($stmt->get_result()->num_rows === 0){
-                return 1;
+            $fila = $stmt->get_result()->fetch_assoc();
+
+            if ($fila !== null && $fila['estado'] === 'ENTREGADA'){
+                return 2; // ya entregada
             }
-
-            //si ya esta entregada
-            $sql = "SELECT id_solicitud
-            FROM solicitudes
-            WHERE id_solicitud = ?
-            AND estado = 'ENTREGADA'";
-
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
-            if($stmt->get_result()->num_rows > 0){
-                return 2;
+            if ($fila === null || $fila['estado'] !== 'APROBADA'){
+                return 1; // no existe o no está aprobada
             }
-
             return 0;
         }
     }

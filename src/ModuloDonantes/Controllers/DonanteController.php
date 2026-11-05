@@ -3,7 +3,8 @@ class DonanteController implements Controlador
 {
     public function __construct(
         private Donante $modelo,
-        private EvaluacionController $evaluaciones
+        private EvaluacionController $evaluaciones,
+        private DonacionController $donaciones
     ){}
 
     public function control(string $metodo, array $partes): void
@@ -31,6 +32,15 @@ class DonanteController implements Controlador
             }
             // Manda el {id} a EvaluacionController
             $this->evaluaciones->control($metodo,$idDonante);
+            return;
+        }
+
+        // Ruta /donantes/{id}/donaciones
+        if ($sub === 'donaciones'){
+            if (isset($partes[3])){
+                noEncontrado();
+            }
+            $this->donaciones->historial($metodo, $idDonante);
             return;
         }
 

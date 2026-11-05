@@ -19,8 +19,7 @@
                                 <th>Tipo</th>
                                 <th>Disponible</th>
                                 <th>Reservada</th>
-                                <th>Utilizada</th>
-                                <th>Desechada</th>
+                                <th>Vencida</th>
                                 <th>Total</th>
                             </tr>
                         </thead>
@@ -45,11 +44,6 @@
                             <select name="id_solicitud" id="uso-solicitud" required>
                                 <option value="" disabled selected hidden>Seleccione</option>
                             </select>
-                        </article>
-
-                        <article class="form-group">
-                            <label for="fecha-entrega">Fecha de entrega</label>
-                            <input type="date" name="fecha_entrega" id="fecha-entrega" required>
                         </article>
 
                         <div class="form-buttons">
@@ -83,17 +77,16 @@
                         <article class="filter-group">
                             <label for="filtro-tipo">Tipo de Sangre</label>
                             <select name="id_tipo_sangre" id="filtro-tipo">
-                                <option value="" disabled selected hidden>Todos</option>
+                                <option value="">Todos</option>
                             </select>
                         </article>
                         <article class="filter-group">
                             <label for="filtro-estado">Estado</label>
                             <select name="estado" id="filtro-estado">
-                                <option value="" disabled selected hidden>Todos</option>
-                                <option value="Disponible">Disponible</option>
-                                <option value="Reservada">Reservada</option>
-                                <option value="Utilizada">Utilizada</option>
-                                <option value="Desechada">Desechada</option>
+                                <option value="">Todos</option>
+                                <option value="DISPONIBLE">Disponible</option>
+                                <option value="RESERVADA">Reservada</option>
+                                <option value="VENCIDA">Vencida</option>
                             </select>
                         </article>
                         <article class="filter-group">
@@ -101,8 +94,8 @@
                             <input type="date" name="caduca_antes" id="caduca-antes">
                         </article>
                         <div class="filter-buttons">
-                            <button class="main-button text">BUSCAR</button>
-                            <button class="sec-button" type="reset">LIMPIAR</button>
+                            <button type="button" class="main-button text">BUSCAR</button>
+                            <button type="button" class="sec-button">LIMPIAR</button>
                         </div>
                     </div>
                     <table class="table data-table" id="inventory-table">
@@ -113,7 +106,7 @@
                                 <th>Estado</th>
                                 <th>Recolección</th>
                                 <th>Caducidad</th>
-                                <th>Solicitud</th>
+                                <th>Días restantes</th>
                             </tr>
                         </thead>
                     </table>

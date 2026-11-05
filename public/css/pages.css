@@ -78,6 +78,11 @@
     border-radius: 10px;
 }
 
+.form-group input[readonly] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .form-buttons{
     display: flex;
     grid-column: 1 / -1;
@@ -109,6 +114,14 @@
     transform: scale(1.05);
 }
 
+button {
+    cursor: pointer;
+}
+
+.main-button, .sec-button {
+    transition: transform 0.15s;
+}
+
 /* --- TABLES --- */
 .filter-group {
     display: flex;
@@ -125,7 +138,17 @@
     border-radius: 10px;
 }
 
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 .table-button {
+    display: inline-block;
+    min-width: 108px;
+    box-sizing: border-box;
+    text-align: center;
+    white-space: nowrap;
     font-size: var(--font-size-note);
     font-weight: var(--font-weight-semibold);
     color: var(--color-primary);
@@ -164,8 +187,19 @@
     min-width: 70px;
 }
 
+.data-table td article {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
 /* Modulos */
 .pill {
+    display: inline-block;
+    min-width: 52px;
+    box-sizing: border-box;
+    text-align: center;
+    white-space: nowrap;
     background-color: var(--color-primary);
     color: var(--color-background);
     padding: 5px 10px;
@@ -178,8 +212,12 @@
     gap: 10px;
 }
 
-#donor-header, #hospital-header, #request-header, #user-header { grid-template-columns: 2fr 1fr auto; }
-#donation-header, #inventory-header, #request-history-header { grid-template-columns: 1fr 1fr 1fr auto; }
+#donor-header, #donation-header, #inventory-header,
+#hospital-header, #request-header, #request-history-header, #user-header {
+    display: grid;
+    align-items: end;
+    gap: 10px;
+}
 
 
 
