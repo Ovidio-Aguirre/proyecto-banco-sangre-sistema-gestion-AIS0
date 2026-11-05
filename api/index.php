@@ -28,8 +28,11 @@ try {
     $rutas = [
         'donantes' => fn() => new DonanteController(
             new Donante($conn),
-            new EvaluacionController(new EvaluacionDonante($conn))
+            new EvaluacionController(new EvaluacionDonante($conn)),
+            new DonacionController(new Donacion($conn))
         ),
+        'donaciones' => fn() => new DonacionController(new Donacion($conn)),
+        'inventario' => fn() => new InventarioController(new Inventario($conn)),
         'hospitales'  => fn() => new HospitalController(new Hospital($conn)),
         'solicitudes' => fn() => new SolicitudController(new Solicitud($conn)),
         'pacientes'  => fn() => new PacienteController(new Paciente($conn)),

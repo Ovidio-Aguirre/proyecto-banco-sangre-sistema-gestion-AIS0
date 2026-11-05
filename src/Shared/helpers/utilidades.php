@@ -1,5 +1,9 @@
 <?php
-// Devuelve la respuesta JSON
+/* --- FUNCIONES JSON --- */
+/** 
+ * Devuelve una respuesta HTTP en formato JSON 
+ * @return void Finaliza la ejecucion del script
+ */ 
 function respuesta(int $codigo, array $datos): void
 {
     http_response_code($codigo);
@@ -7,7 +11,10 @@ function respuesta(int $codigo, array $datos): void
     exit;
 }
 
-// Lee el body y responde 400 si es invalido
+/**
+ * Lee el contenido de un JSON y lo convierte en array
+ * @return array Datos decodificados
+ */
 function leerJson(): array
 {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -17,7 +24,11 @@ function leerJson(): array
     return $data;
 }
 
-// Leer y validar IDs
+/* --- VALIDACIONES --- */
+/**
+ * Valida que el ID sea un numero entero positivo, con mensaje personalizado de error
+ * @return int ID validado
+ */
 function validarId(mixed $valor, string $mensaje = "ID invalido") : int
 {
     $id = filter_var($valor, FILTER_VALIDATE_INT);
@@ -27,19 +38,11 @@ function validarId(mixed $valor, string $mensaje = "ID invalido") : int
     return $id;
 }
 
-function noPermitido(): void
-{
-    respuesta(405, ['success' => false, 'mensaje' => 'Método no permitido']);
-}
-
-function noEncontrado(): void
-{
-    respuesta(404, ['success' => false, 'mensaje' => 'Ruta no encontrada']);
-}
-
-//=====================================================================
-
-function validarCampoEntero($campo): int
+/**
+ * Validar campos definidos con formato entero
+ * @return int Valor validado
+ */
+function validarCampoEntero(mixed $campo): int
 {
     $valor = filter_var($campo, FILTER_VALIDATE_INT);
 
@@ -52,7 +55,12 @@ function validarCampoEntero($campo): int
 
     return $valor;
 }
-function validarCamposVacios($campos = []){
+
+/**
+ * Validar al menos un campo con valor para realizar busqueda 
+ * @return void Devuelve respuesta HTTP si todos estan vacios
+ */
+function validarCamposVacios(array $campos = []) : void{
     $vacio = true;
     foreach($campos as $campo){
         if($campo !== '' && $campo !== NULL){
@@ -64,9 +72,64 @@ function validarCamposVacios($campos = []){
     }
 }
 
-function validarFecha($fecha){
-    $fechaValidada = DateTime::createFromFormat('!Y-m-d', $fecha);
-    if (!$fechaValidada || $fechaValidada->format('Y-m-d') !== $fecha || $fechaValidada > new DateTime('today')){
-        respuesta(400, ['success' => false, 'Mensaje:' => 'Tipo de fecha ingresada no es valida']);
+/** 
+ * Validar todos los campos obligatorios
+ * @return void Devuelve respuesta HTTP si hay campos invalidos
+ */
+function validarCamposRequeridos(array $data, array $requeridos) : void
+{
+    $invalidos = [];
+
+    foreach ($requeridos as $campo) {
+        if (
+            !isset($data[$campo]) ||
+            !is_scalar($data[$campo]) ||
+            trim((string)$data[$campo]) === ''
+        ) {
+            $invalidos[] = $campo;
+        }
     }
+
+    if (!empty($invalidos)) {
+        respuesta(400, [
+            'success' => false,
+            'mensaje' => 'Campos inválidos o vacíos',
+            'campos' => $invalidos
+        ]);
+    }
+}
+
+/**
+ * Validar formato de fecha de filtro
+ * @param bool @fechaFutura     false: rechaza fechas posteriores a hoy
+ * @return string Fecha validada
+ */
+function validarFecha(mixed $valor, string $campo = 'fecha', bool $fechaFutura = false): string
+{
+    $fecha = is_string($valor) ? DateTime::createFromFormat('!Y-m-d', $valor) : false;
+
+    if (!$fecha || $fecha->format('Y-m-d') !== $valor) {
+        respuesta(400, ['success' => false, 'mensaje' => "$campo inválida, use el formato YYYY-MM-DD"]);
+    }
+    if (!$fechaFutura && $fecha > new DateTime('today')) {
+        respuesta(400, ['success' => false, 'mensaje' => "$campo no puede ser una fecha futura"]);
+    }
+    return $valor;
+}
+
+/* --- CONTROL DE METODOS --- */
+function noPermitido(): void
+{
+    respuesta(405, ['success' => false, 'mensaje' => 'Método no permitido']);
+}
+
+function noEncontrado(): void
+{
+    respuesta(404, ['success' => false, 'mensaje' => 'Ruta no encontrada']);
+}
+
+/* --- AUTENTICACION --- */
+function usuarioActual(): int
+{
+    return 1; // LEER SESION
 }

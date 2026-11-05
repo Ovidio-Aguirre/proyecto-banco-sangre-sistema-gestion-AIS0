@@ -175,16 +175,7 @@ class DonanteController implements Controlador
             
         /* --- Validaciones --- */
         // Campos obligatorios vacios
-        $vacios = [];
-        foreach ($requeridos as $campo){
-            if (!isset($data[$campo]) || !is_scalar($data[$campo]) || trim((string)$data[$campo]) === ''){
-                $vacios[] = $campo;
-            }
-        }
-
-        if ($vacios){
-            respuesta(400, ['success' => false, 'mensaje' => 'Campos vacios', 'campos' => $vacios]);
-        }
+        validarCamposRequeridos($data, $requeridos);
         
         // Formatos
         $idTipoSangre = filter_var($data['id_tipo_sangre'], FILTER_VALIDATE_INT);
@@ -206,11 +197,8 @@ class DonanteController implements Controlador
             respuesta(400, ['success' => false, 'mensaje' => 'Sexo debe ser M o F']);
         }
 
-        $fechaNacimiento = (string)$data['fecha_nacimiento'];
-        $fecha = DateTime::createFromFormat('Y-m-d', $fechaNacimiento);
-        if (!$fecha || $fecha->format('Y-m-d') !== $fechaNacimiento || $fecha > new DateTime('today')) {
-            respuesta(400, ['success' => false, 'mensaje' => 'Fecha inválida, utilice formato YYYY-MM-DD']);
-        }
+
+        $fechaNacimiento = validarFecha($data['fecha_nacimiento'], 'fecha_nacimiento');
 
         return [
             'id_tipo_sangre'    => $idTipoSangre,
