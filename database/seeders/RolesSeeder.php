@@ -4,9 +4,7 @@ function seedRoles(mysqli $conn): void
 {
     $roles = [
         "Administrador",
-        "Médico",
-        "Recepcionista",
-        "Auditor"
+        "Médico"
     ];
 
     $sql = "INSERT INTO roles (rol)
