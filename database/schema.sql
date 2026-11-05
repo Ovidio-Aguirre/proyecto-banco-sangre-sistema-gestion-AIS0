@@ -198,11 +198,16 @@ CREATE TABLE `tipo_sangre` (
 CREATE TABLE `usuarios` (
   `id_usuario` int(11) NOT NULL,
   `id_rol` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `apellido` varchar(50) NOT NULL,
   `nombre_usuario` varchar(50) NOT NULL,
   `contrasena` varchar(255) NOT NULL,
   `correo` varchar(100) NOT NULL,
-  `activo` tinyint(4) NOT NULL DEFAULT 1
+  `activo` tinyint(4) NOT NULL DEFAULT 1,
+  `debe_cambiar_contrasena` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Índices para tablas volcadas
@@ -303,7 +308,9 @@ ALTER TABLE `tipo_sangre`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id_usuario`),
-  ADD KEY `id_rol` (`id_rol`);
+  ADD KEY `id_rol` (`id_rol`),
+  ADD UNIQUE KEY `uq_usuarios_nombre_usuario` (`nombre_usuario`),
+  ADD UNIQUE KEY `uq_usuarios_correo` (`correo`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas

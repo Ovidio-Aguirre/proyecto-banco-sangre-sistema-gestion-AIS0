@@ -1,4 +1,3 @@
-
 <?php
 
 function seedUsuarios(mysqli $conn): void
@@ -6,12 +5,16 @@ function seedUsuarios(mysqli $conn): void
     $usuarios = [
         [
             "rol" => "Administrador",
+            "nombre" => "Administrador",
+            "apellido" => "Sistema",
             "usuario" => "admin",
             "contrasena" => "Admin123*",
             "correo" => "admin@bancosangre.test"
         ],
         [
             "rol" => "Médico",
+            "nombre" => "Médico",
+            "apellido" => "Demo",
             "usuario" => "medico",
             "contrasena" => "Medico123*",
             "correo" => "medico@bancosangre.test"
@@ -54,59 +57,62 @@ function seedUsuarios(mysqli $conn): void
 
         $stmtBuscar = $conn->prepare($sqlBuscar);
 
-        $correo = $usuario["correo"];
-        $nombre = $usuario["usuario"];
+        $correo        = $usuario["correo"];
+        $nombreUsuario = $usuario["usuario"];
+        $nombre        = $usuario["nombre"];
+        $apellido      = $usuario["apellido"];
 
-        $stmtBuscar->bind_param("ss", $correo, $nombre);
+        $stmtBuscar->bind_param("ss", $correo, $nombreUsuario);
         $stmtBuscar->execute();
 
-        $resultado = $stmtBuscar->get_result();
-        $fila = $resultado->fetch_assoc();
-
+        $fila = $stmtBuscar->get_result()->fetch_assoc();
         $idUsuario = $fila["id_usuario"] ?? null;
 
         if ($idUsuario) {
 
             $sql = "UPDATE usuarios
                     SET id_rol = ?,
+                        nombre = ?,
+                        apellido = ?,
                         nombre_usuario = ?,
                         contrasena = ?,
                         correo = ?,
-                        activo = 1
+                        activo = 1,
+                        debe_cambiar_contrasena = 0
                     WHERE id_usuario = ?";
 
             $stmt = $conn->prepare($sql);
-
             $stmt->bind_param(
-                "isssi",
+                "isssssi",
                 $idRol,
                 $nombre,
+                $apellido,
+                $nombreUsuario,
                 $hash,
                 $correo,
                 $idUsuario
             );
 
-            $stmt->execute();
-
         } else {
 
             $sql = "INSERT INTO usuarios
-                    (id_rol, nombre_usuario, contrasena, correo, activo)
-                    VALUES (?, ?, ?, ?, 1)";
+                    (id_rol, nombre, apellido, nombre_usuario, contrasena, correo, activo)
+                    VALUES (?, ?, ?, ?, ?, ?, 1)";
 
             $stmt = $conn->prepare($sql);
-
             $stmt->bind_param(
-                "isss",
+                "isssss",
                 $idRol,
                 $nombre,
+                $apellido,
+                $nombreUsuario,
                 $hash,
                 $correo
             );
-
-            $stmt->execute();
         }
 
+        $stmt->execute();
+        $stmt->close();
         $stmtBuscar->close();
     }
 
@@ -114,4 +120,3 @@ function seedUsuarios(mysqli $conn): void
 
     echo "Usuarios insertados correctamente.\n";
 }
-
