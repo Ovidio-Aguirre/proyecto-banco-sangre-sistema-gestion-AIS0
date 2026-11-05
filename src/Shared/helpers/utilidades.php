@@ -68,7 +68,7 @@ function validarCamposVacios(array $campos = []) : void{
         }
     }
     if($vacio){
-        respuesta(400, ['success' => false, 'Mensaje:' => 'Campo vacio']);
+        respuesta(400, ['success' => false, 'mensaje' => 'Campo vacio']);
     }
 }
 
@@ -129,7 +129,30 @@ function noEncontrado(): void
 }
 
 /* --- AUTENTICACION --- */
+const ROL_ADMIN  = 'Administrador';
+const ROL_MEDICO = 'Médico';
+
+/**
+ * Obtener el id del usuario autenticado
+ * @return int ID usuario, respuesta 401 si no hay sesión
+ */
 function usuarioActual(): int
 {
-    return 1; // LEER SESION
+    if (!isset($_SESSION['id_usuario'])) {
+        respuesta(401, ['success' => false, 'mensaje' => 'No autenticado']);
+    }
+    return (int)$_SESSION['id_usuario'];
+}
+
+/**
+ * Validar que el usuario tenga el rol requerido
+ * @param array $roles Nombres de roles permitidos
+ * @return void Respuestas: 401 sin sesión|403 si el rol no está permitido
+ */
+function requerirRol(array $roles): void
+{
+    usuarioActual();
+    if (!in_array($_SESSION['rol'] ?? '', $roles, true)) {
+        respuesta(403, ['success' => false, 'mensaje' => 'No tiene permiso para esta acción']);
+    }
 }
