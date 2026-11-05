@@ -1,3 +1,144 @@
 <section class="donaciones">
     <h1 class="page-title">Donaciones</h1>
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="evaluar">Evaluar donante</button>
+            <button class="page-button" data-target="registrar">Registrar donación</button>
+            <button class="page-button" data-target="historial">Historial de donaciones</button>
+        </div>
+
+        <div class="section-content">
+            <section id="evaluar" class="page-panel active">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Evaluación del donante</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="donante">Donante</label>
+                            <select name="id_donante" id="donante" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="fecha-evaluacion">Fecha de evaluación</label>
+                            <input type="date" name="fecha_evaluacion" id="fecha-evaluacion" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="peso">Peso (kg)</label>
+                            <input type="number" name="peso" id="peso" min="0" max="999.99" step="0.01" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="altura">Altura (m)</label>
+                            <input type="number" name="altura" id="altura" min="0" max="9.99" step="0.01" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="resultado">Resultado</label>
+                            <select name="resultado" id="resultado" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="APTO">Apto</option>
+                                <option value="NO_APTO">No apto</option>
+                                <option value="PENDIENTE">Pendiente</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="motivo">Motivo (obligatorio si no es apto)</label>
+                            <input type="text" name="motivo" id="motivo" maxlength="255">
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">GUARDAR EVALUACIÓN</button>
+                            <button type="button" class="sec-button" data-target="historial">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <section id="registrar" class="page-panel">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Nueva donación</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="evaluacion">Evaluación (donante apto)</label>
+                            <select name="id_evaluacion" id="evaluacion" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="fecha-recoleccion">Fecha de recolección</label>
+                            <input type="date" name="fecha_recoleccion" id="fecha-recoleccion" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="fecha-caducidad">Fecha de caducidad</label>
+                            <input type="date" name="fecha_caducidad" id="fecha-caducidad" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="estado">Estado</label>
+                            <input type="text" name="estado" id="estado" value="Disponible" readonly>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">REGISTRAR DONACIÓN</button>
+                            <button type="button" class="sec-button" data-target="historial">CANCELAR</button>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <section id="historial" class="page-panel">
+                <div class="container">
+                    <div id="donation-header">
+                        <article class="filter-group">
+                            <label for="desde">Desde</label>
+                            <input type="date" name="desde" id="desde">
+                        </article>
+                        <article class="filter-group">
+                            <label for="hasta">Hasta</label>
+                            <input type="date" name="hasta" id="hasta">
+                        </article>
+                        <article class="filter-group">
+                            <label for="buscar-estado">Estado</label>
+                            <select name="estado" id="buscar-estado">
+                                <option value="" disabled selected hidden>Todos</option>
+                                <option value="Disponible">Disponible</option>
+                                <option value="Reservada">Reservada</option>
+                                <option value="Utilizada">Utilizada</option>
+                                <option value="Desechada">Desechada</option>
+                            </select>
+                        </article>
+                        <div class="filter-buttons">
+                            <button class="main-button text">BUSCAR</button>
+                            <button class="sec-button" data-target="evaluar">+ NUEVA DONACIÓN</button>
+                        </div>
+                    </div>
+                    <table class="table data-table" id="donation-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Donante</th>
+                                <th>Tipo</th>
+                                <th>Recolección</th>
+                                <th>Caducidad</th>
+                                <th>Estado</th>
+                                <th>Registrada por</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
 </section>

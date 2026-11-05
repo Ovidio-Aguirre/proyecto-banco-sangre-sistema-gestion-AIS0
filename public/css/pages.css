@@ -164,7 +164,7 @@
     min-width: 70px;
 }
 
-/* Tabla donantes */
+/* Modulos */
 .pill {
     background-color: var(--color-primary);
     color: var(--color-background);
@@ -172,9 +172,14 @@
     border-radius: 15px;
 }
 
-#donor-header{
+#donor-header, #donation-header, #inventory-header {
     display: grid;
-    grid-template-columns: 2fr 1fr auto;
     align-items: end;
     gap: 10px;
 }
+
+#donor-header, #hospital-header, #request-header, #user-header { grid-template-columns: 2fr 1fr auto; }
+#donation-header, #inventory-header, #request-history-header { grid-template-columns: 1fr 1fr 1fr auto; }
+
+
+

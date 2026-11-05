@@ -1,3 +1,75 @@
 <section class="reportes">
     <h1 class="page-title">Reportes</h1>
+
+    <div class="page-body">
+        <div class="section-content">
+            <section id="generar" class="page-panel active">
+                <form class="container" action="" method="POST">
+                    <h3 class="title">Parámetros del reporte</h3>
+                    <div class="form-grid">
+
+                        <article class="form-group">
+                            <label for="tipo-reporte">Tipo de reporte</label>
+                            <select name="tipo_reporte" id="tipo-reporte" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="donaciones">Donaciones</option>
+                                <option value="donantes">Donantes</option>
+                                <option value="inventario">Inventario</option>
+                                <option value="solicitudes">Solicitudes</option>
+                            </select>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="desde">Desde</label>
+                            <input type="date" name="desde" id="desde" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="hasta">Hasta</label>
+                            <input type="date" name="hasta" id="hasta" required>
+                        </article>
+
+                        <article class="form-group">
+                            <label for="formato">Formato</label>
+                            <select name="formato" id="formato" required>
+                                <option value="" disabled selected hidden>Seleccione</option>
+                                <option value="pdf">PDF</option>
+                                <option value="excel">Excel (.xlsx)</option>
+                            </select>
+                        </article>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="main-button">GENERAR REPORTE</button>
+                            <button type="reset" class="sec-button">LIMPIAR</button>
+                        </div>
+
+                    </div>
+                </form>
+
+                <div class="container">
+                    <h3 class="title">Vista previa del reporte</h3>
+                    <table class="table data-table" id="report-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Donante</th>
+                                <th>Tipo</th>
+                                <th>Recolección</th>
+                                <th>Caducidad</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <p class="subtext" id="report-total"></p>
+
+                    <div class="form-buttons">
+                        <button type="button" class="sec-button">DESCARGAR REPORTE</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
 </section>
