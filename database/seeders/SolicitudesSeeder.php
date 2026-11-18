@@ -4,178 +4,135 @@
 function seedSolicitudes(mysqli $conn): void
 {
     $solicitudes = [
-        [
-            "paciente" => "Pedro",
-            "apellido" => "Ramírez",
-            "hospital" => "Hospital Nacional Rosales",
-            "fecha" => "2026-09-20",
-            "fecha_entrega" => "2026-09-22",
-            "unidades" => 2,
-            "estado" => "PENDIENTE",
-            "justificacion" => "Solicitud de unidades de sangre para paciente.",
-            "motivo_rechazo" => null
-        ],
-        [
-            "paciente" => "Laura",
-            "apellido" => "Gómez",
-            "hospital" => "Hospital Nacional de Niños Benjamín Bloom",
-            "fecha" => "2026-09-21",
-            "fecha_entrega" => "2026-09-23",
-            "unidades" => 1,
-            "estado" => "APROBADA",
-            "justificacion" => "Solicitud de una unidad de sangre.",
-            "motivo_rechazo" => null
-        ],
-        [
-            "paciente" => "José",
-            "apellido" => "Castro",
-            "hospital" => "Hospital Nacional San Juan de Dios de Santa Ana",
-            "fecha" => "2026-09-22",
-            "fecha_entrega" => null,
-            "unidades" => 3,
-            "estado" => "RECHAZADA",
-            "justificacion" => null,
-            "motivo_rechazo" => "no se presentó la justificación médica que respalde la cantidad de unidades de sangre solicitadas."
-        ]
+        // PENDIENTES: para probar aprobar y rechazar
+        ["paciente_nombre" => "José",  "paciente_apellido" => "Castro",  "paciente_nacimiento" => "1975-12-10",
+         "hospital" => "Hospital Nacional Rosales",
+         "fecha_solicitud" => "2026-11-17", "unidades" => 1, "estado" => "PENDIENTE",
+         "justificacion" => "Anemia severa, requiere transfusión", "motivo_rechazo" => null, "fecha_entrega" => null],
+
+        ["paciente_nombre" => "Laura", "paciente_apellido" => "Gómez",   "paciente_nacimiento" => "1998-08-21",
+         "hospital" => "Hospital Nacional de Niños Benjamín Bloom",
+         "fecha_solicitud" => "2026-11-18", "unidades" => 2, "estado" => "PENDIENTE",
+         "justificacion" => "Cirugía programada con riesgo de sangrado", "motivo_rechazo" => null, "fecha_entrega" => null],
+
+        // APROBADAS: para probar asignar unidades y entregar
+        ["paciente_nombre" => "Pedro", "paciente_apellido" => "Ramírez", "paciente_nacimiento" => "1980-04-15",
+         "hospital" => "Hospital Nacional San Juan de Dios de Santa Ana",
+         "fecha_solicitud" => "2026-11-16", "unidades" => 2, "estado" => "APROBADA",
+         "justificacion" => "Hemorragia posoperatoria", "motivo_rechazo" => null, "fecha_entrega" => null],
+
+        ["paciente_nombre" => "Laura", "paciente_apellido" => "Gómez",   "paciente_nacimiento" => "1998-08-21",
+         "hospital" => "Hospital Nacional San Juan de Dios de San Miguel",
+         "fecha_solicitud" => "2026-11-15", "unidades" => 3, "estado" => "APROBADA",
+         "justificacion" => "Trauma por accidente vehicular", "motivo_rechazo" => null, "fecha_entrega" => null],
+
+        // RECHAZADA: con motivo
+        ["paciente_nombre" => "José",  "paciente_apellido" => "Castro",  "paciente_nacimiento" => "1975-12-10",
+         "hospital" => "Hospital Nacional Rosales",
+         "fecha_solicitud" => "2026-11-10", "unidades" => 4, "estado" => "RECHAZADA",
+         "justificacion" => "Reserva preventiva de unidades", "motivo_rechazo" => "No se justifica la cantidad solicitada", "fecha_entrega" => null],
+
+        // ENTREGADA: con fecha de entrega
+        ["paciente_nombre" => "Pedro", "paciente_apellido" => "Ramírez", "paciente_nacimiento" => "1980-04-15",
+         "hospital" => "Hospital Nacional Rosales",
+         "fecha_solicitud" => "2026-11-05", "unidades" => 1, "estado" => "ENTREGADA",
+         "justificacion" => "Anemia crónica", "motivo_rechazo" => null, "fecha_entrega" => "2026-11-08"],
     ];
 
-    $sqlPaciente = "SELECT id_paciente
-                    FROM pacientes
-                    WHERE nombre_paciente = ?
-                    AND apellido_paciente = ?
-                    LIMIT 1";
+    $stmtPaciente = $conn->prepare(
+        "SELECT id_paciente FROM pacientes
+         WHERE nombre_paciente = ? AND apellido_paciente = ? AND fecha_nacimiento = ?
+         LIMIT 1"
+    );
 
-    $stmtPaciente = $conn->prepare($sqlPaciente);
+    $stmtHospital = $conn->prepare(
+        "SELECT id_hospital FROM hospitales WHERE nombre_hospital = ?"
+    );
 
-    $sqlHospital = "SELECT id_hospital
-                    FROM hospitales
-                    WHERE nombre_hospital = ?";
+    $stmtBuscar = $conn->prepare(
+        "SELECT id_solicitud FROM solicitudes
+         WHERE id_paciente = ? AND id_hospital = ?
+         AND fecha_solicitud = ? AND justificacion = ?
+         LIMIT 1"
+    );
 
-    $stmtHospital = $conn->prepare($sqlHospital);
+    $stmtUpdate = $conn->prepare(
+        "UPDATE solicitudes
+         SET unidades_solicitadas = ?, estado = ?, fecha_entrega = ?, motivo_rechazo = ?
+         WHERE id_solicitud = ?"
+    );
+
+    $stmtInsert = $conn->prepare(
+        "INSERT INTO solicitudes
+         (id_paciente, id_hospital, fecha_solicitud, fecha_entrega,
+          unidades_solicitadas, estado, justificacion, motivo_rechazo)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    );
 
     foreach ($solicitudes as $solicitud) {
 
-        $nombre = $solicitud["paciente"];
-        $apellido = $solicitud["apellido"];
-
-        $stmtPaciente->bind_param("ss", $nombre, $apellido);
+        $nombre = $solicitud["paciente_nombre"];
+        $apellido = $solicitud["paciente_apellido"];
+        $nacimiento = $solicitud["paciente_nacimiento"];
+        $stmtPaciente->bind_param("sss", $nombre, $apellido, $nacimiento);
         $stmtPaciente->execute();
-
-        $resultado = $stmtPaciente->get_result();
-        $fila = $resultado->fetch_assoc();
-
+        $fila = $stmtPaciente->get_result()->fetch_assoc();
         $idPaciente = $fila["id_paciente"] ?? null;
 
         if (!$idPaciente) {
             throw new Exception(
-                "No se encontró el paciente: " . $solicitud["paciente"]
+                "No se encontró el paciente: " . $nombre . " " . $apellido
             );
         }
 
-        $nombre = $solicitud["hospital"];
-
-        $stmtHospital->bind_param("s", $nombre);
+        $hospital = $solicitud["hospital"];
+        $stmtHospital->bind_param("s", $hospital);
         $stmtHospital->execute();
-
-        $resultado = $stmtHospital->get_result();
-        $fila = $resultado->fetch_assoc();
-
+        $fila = $stmtHospital->get_result()->fetch_assoc();
         $idHospital = $fila["id_hospital"] ?? null;
 
         if (!$idHospital) {
             throw new Exception(
-                "No se encontró el hospital: " . $solicitud["hospital"]
+                "No se encontró el hospital: " . $hospital
             );
         }
 
-        $sqlBuscar = "SELECT id_solicitud
-                      FROM solicitudes
-                      WHERE id_paciente = ?
-                      AND id_hospital = ?
-                      AND fecha_solicitud = ?
-                      LIMIT 1";
-
-        $stmtBuscar = $conn->prepare($sqlBuscar);
-
-        $fecha = $solicitud["fecha"];
-
-        $stmtBuscar->bind_param(
-            "iis",
-            $idPaciente,
-            $idHospital,
-            $fecha
-        );
-
+        $fechaSolicitud = $solicitud["fecha_solicitud"];
+        $justificacion = $solicitud["justificacion"];
+        $stmtBuscar->bind_param("iiss", $idPaciente, $idHospital, $fechaSolicitud, $justificacion);
         $stmtBuscar->execute();
-
-        $resultado = $stmtBuscar->get_result();
-        $fila = $resultado->fetch_assoc();
-
+        $fila = $stmtBuscar->get_result()->fetch_assoc();
         $idSolicitud = $fila["id_solicitud"] ?? null;
-
-        if ($idSolicitud) {
-
-            $sql = "UPDATE solicitudes
-                    SET unidades_solicitadas = ?,
-                        estado = ?,
-                        justificacion = ?,
-                        fecha_entrega = ?,
-                        motivo_rechazo = ?
-                    WHERE id_solicitud = ?";
-
-        } else {
-
-            $sql = "INSERT INTO solicitudes
-                    (id_paciente, id_hospital, fecha_solicitud,
-                     unidades_solicitadas, estado, justificacion,
-                     fecha_entrega, motivo_rechazo)
-                    VALUES
-                    (?, ?, ?, ?, ?, ?, ?, ?)";
-        }
-
-        $stmt = $conn->prepare($sql);
 
         $unidades = $solicitud["unidades"];
         $estado = $solicitud["estado"];
-        $justificacion = $solicitud["justificacion"];
         $fechaEntrega = $solicitud["fecha_entrega"];
-        $motivoRechazo = $solicitud["motivo_rechazo"];
+        $motivo = $solicitud["motivo_rechazo"];
 
         if ($idSolicitud) {
-
-            $stmt->bind_param(
-                "issssi",
-                $unidades,
-                $estado,
-                $justificacion,
-                $fechaEntrega,
-                $motivoRechazo,
-                $idSolicitud
-            );
-
+            $stmtUpdate->bind_param("isssi", $unidades, $estado, $fechaEntrega, $motivo, $idSolicitud);
+            $stmtUpdate->execute();
         } else {
-
-            $stmt->bind_param(
-                "iisissss",
+            $stmtInsert->bind_param(
+                "iississs",
                 $idPaciente,
                 $idHospital,
-                $fecha,
+                $fechaSolicitud,
+                $fechaEntrega,
                 $unidades,
                 $estado,
                 $justificacion,
-                $fechaEntrega,
-                $motivoRechazo
+                $motivo
             );
+            $stmtInsert->execute();
         }
-
-        $stmt->execute();
-
-        $stmtBuscar->close();
-        $stmt->close();
     }
 
     $stmtPaciente->close();
     $stmtHospital->close();
+    $stmtBuscar->close();
+    $stmtUpdate->close();
+    $stmtInsert->close();
 
     echo "Solicitudes insertadas correctamente.\n";
 }

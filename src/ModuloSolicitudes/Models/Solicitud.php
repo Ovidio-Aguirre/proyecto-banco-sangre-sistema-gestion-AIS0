@@ -10,7 +10,12 @@
         //========== GET ==========
 
         public function listarSolicitudes(){
-            $sql = "SELECT s.*, p.nombre_paciente, p.apellido_paciente, p.id_tipo_sangre, h.nombre_hospital
+            $sql = "SELECT s.*, p.nombre_paciente, p.apellido_paciente, p.id_tipo_sangre, h.nombre_hospital,
+                    (SELECT COUNT(*) FROM donaciones d
+                      WHERE d.id_solicitud = s.id_solicitud
+                        AND d.estado IN ('EN_EVALUACION','DISPONIBLE','RESERVADA','UTILIZADA')
+                        AND (d.estado = 'UTILIZADA' OR d.fecha_caducidad >= CURDATE())
+                    ) AS unidades_asignadas
                     FROM solicitudes s
                     LEFT JOIN pacientes p ON p.id_paciente = s.id_paciente
                     LEFT JOIN hospitales h ON h.id_hospital = s.id_hospital
@@ -49,16 +54,20 @@
                 $where .= " AND (p.nombre_paciente LIKE ? OR p.apellido_paciente LIKE ?)";
                 $parametros[] = "%".$paciente."%";
                 $parametros[] = "%".$paciente."%";
-                $tipoParametro .= "s";
-                $tipoParametro .= "s";
+                $tipoParametro .= "ss";
             }
 
             //por hospital
             if ($hospital !== ''){
-                $select .= " ,h.nombre_hospital";
-                $inner[] = " INNER JOIN hospitales h ON s.id_hospital  = h.id_hospital";
                 $where .= " AND (h.nombre_hospital LIKE ?)";
                 $parametros[] = "%".$hospital."%";
+                $tipoParametro .= "s";
+            }
+
+            //por estado
+            if ($estado !== ''){
+                $where .= " AND s.estado = ?";
+                $parametros[] = $estado;
                 $tipoParametro .= "s";
             }
 
@@ -68,25 +77,17 @@
                 $ordenPor = " ORDER BY p.apellido_paciente DESC";
             }
             
-            $sql = "SELECT s.*";
-            //Si se ingresaron alguno de los datos de paciente o hospital
-            if($select !== ''){
-                $sql .= $select . " FROM solicitudes s ";
-                $sql .= implode(" ", $inner);
-                $sql .= " WHERE s.estado != 'INHABILITADA' ";
-                $sql .= $where;
-            }
-            else{
-                $sql .= " FROM solicitudes s WHERE estado != 'INHABILITADA'";
-            }
-
-            //por estado
-            if ($estado !== ''){
-                $sql .= " AND s.estado = ?";
-                $parametros[] = $estado;
-                $tipoParametro .= "s";
-            }
-            $sql .= $ordenPor;
+            $sql = "SELECT s.*, p.nombre_paciente, p.apellido_paciente, p.id_tipo_sangre, h.nombre_hospital,
+                    (SELECT COUNT(*) FROM donaciones d
+                      WHERE d.id_solicitud = s.id_solicitud
+                        AND d.estado IN ('EN_EVALUACION','DISPONIBLE','RESERVADA','UTILIZADA')
+                        AND (d.estado = 'UTILIZADA' OR d.fecha_caducidad >= CURDATE())
+                    ) AS unidades_asignadas
+                    FROM solicitudes s
+                    LEFT JOIN pacientes p ON p.id_paciente = s.id_paciente
+                    LEFT JOIN hospitales h ON h.id_hospital = s.id_hospital
+                    WHERE s.estado != 'INHABILITADA'";
+            $sql .= $where . $ordenPor;
 
             //ejecutamos
             $stmt = $this->conn->prepare($sql);
@@ -150,7 +151,7 @@
 
             $sql = "SELECT id_paciente FROM pacientes WHERE id_paciente = ?";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("s", $paciente); 
+            $stmt->bind_param("i", $paciente); 
             $stmt->execute();
             if ($stmt->get_result()->num_rows == 0) {
                 return 1;
@@ -170,54 +171,32 @@
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         //========== PUT ==========
 
-        //--- Modificar una solicitud ---
-        public function actualizarSolicitud($id,$idPaciente, $idHospital, $unidades, $justificacion, $estado, $motivo){
-            $validacion = $this->validacionesPUT($id, $idPaciente, $idHospital);
-            
-            if($validacion !== 0){
-                return $validacion;
-            }
-
-            $sql = "UPDATE solicitudes SET id_paciente = ?, id_hospital = ?, unidades_solicitadas = ?, justificacion = ?, estado = ?, motivo_rechazo = ? WHERE id_solicitud = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("iiisssi", $idPaciente, $idHospital, $unidades, $justificacion, $estado, $motivo, $id); 
-            $stmt->execute();
-
-            return 0;
-        }
-
-        //validaciones
-        public function validacionesPUT($id, $paciente, $hospital){
-            //Si no existe la id 
-            $sql = "SELECT * FROM hospitales WHERE id_hospital= ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $hospital); 
-            $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0) {
-                return 1;
-            }
-            $sql = "SELECT * FROM pacientes WHERE id_paciente = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $paciente); 
-            $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0) {
-                return 2;
-            }
-            $sql = "SELECT * FROM solicitudes WHERE id_solicitud = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id); 
-            $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0) {
+        //--- Aprobar/Rechazar una solicitud ---
+        public function resolverSolicitud($id, $estado, $motivo = null){
+            if (!in_array($estado, ['APROBADA', 'RECHAZADA'], true)) {
                 return 3;
             }
-            $sql = "SELECT * FROM solicitudes WHERE id_solicitud = ? AND (estado != 'PENDIENTE')";
+
+            $sql = "SELECT estado FROM solicitudes WHERE id_solicitud = ?";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id); 
+            $stmt->bind_param("i", $id);
             $stmt->execute();
-            if ($stmt->get_result()->num_rows > 0) {
-                return 4;
-            } 
-            
+            $fila = $stmt->get_result()->fetch_assoc();
+
+            if ($fila === null) {
+                return 1;
+            }
+            if ($fila['estado'] !== 'PENDIENTE') {
+                return 2;
+            }
+
+            $motivo = ($estado === 'RECHAZADA') ? $motivo : null;
+
+            $sql = "UPDATE solicitudes SET estado = ?, motivo_rechazo = ? WHERE id_solicitud = ? AND estado = 'PENDIENTE'";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ssi", $estado, $motivo, $id);
+            $stmt->execute();
+
             return 0;
         }
 
@@ -229,16 +208,50 @@
                 return $validacion;
             }
 
-            $fecha = (new DateTime())->format('Y-m-d');
-            $sql = "UPDATE solicitudes
-                    SET estado = ?, fecha_entrega = ?
-                    WHERE id_solicitud = ?
-                    AND estado = 'APROBADA'";
+            $this->conn->begin_transaction();
+            try {
+                // Comparar unidades solicitadas
+                $sql = "SELECT s.unidades_solicitadas,
+                               (SELECT COUNT(*) FROM donaciones d
+                                 WHERE d.id_solicitud = s.id_solicitud
+                                   AND d.estado = 'RESERVADA'
+                                   AND d.fecha_caducidad >= CURDATE()) AS reservadas
+                        FROM solicitudes s
+                        WHERE s.id_solicitud = ?
+                        FOR UPDATE";
+                $stmt = $this->conn->prepare($sql);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $fila = $stmt->get_result()->fetch_assoc();
 
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("ssi", $estado, $fecha, $id);
+                if ((int)$fila['reservadas'] < (int)$fila['unidades_solicitadas']) {
+                    $this->conn->rollback();
+                    return 3; // unidades asignadas incompletas
+                }
 
-            return $stmt->execute();
+                // Las unidades pasan a UTILIZADA al entregar
+                $sql = "UPDATE donaciones SET estado = 'UTILIZADA'
+                        WHERE id_solicitud = ? AND estado = 'RESERVADA'";
+                $stmt = $this->conn->prepare($sql);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+
+                $fecha = (new DateTime())->format('Y-m-d');
+                $sql = "UPDATE solicitudes
+                        SET estado = ?, fecha_entrega = ?
+                        WHERE id_solicitud = ?
+                        AND estado = 'APROBADA'";
+
+                $stmt = $this->conn->prepare($sql);
+                $stmt->bind_param("ssi", $estado, $fecha, $id);
+                $ok = $stmt->execute();
+
+                $this->conn->commit();
+                return $ok;
+            } catch (Throwable $e) {
+                $this->conn->rollback();
+                throw $e;
+            }
         }
 
         //validaciones
