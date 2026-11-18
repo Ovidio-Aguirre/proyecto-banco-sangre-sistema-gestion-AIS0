@@ -33,8 +33,8 @@
     // Acciones válidas por estado (según Donacion::TRANSICIONES y los métodos del modelo)
     const ACCIONES = {
         EN_EVALUACION: [['disponible', 'Disponible'], ['descartar', 'Descartar'], ['reasignar', 'Reasignar']],
-        DISPONIBLE:    [['vincular', 'Vincular'], ['reasignar', 'Reasignar']],
-        RESERVADA:     [['utilizar', 'Utilizar'], ['desvincular', 'Desvincular']],
+        DISPONIBLE:    [['reasignar', 'Reasignar']],
+        RESERVADA:     [],
         VENCIDA:       [['descartar', 'Descartar']],
         DESCARTADA:    [],
         UTILIZADA:     []
@@ -209,23 +209,10 @@
         let res;
 
         // PUT /donaciones/{id} -> cambio manual de estado
-        if (['disponible', 'descartar', 'utilizar'].includes(accion)) {
-            const estado = { disponible: 'DISPONIBLE', descartar: 'DESCARTADA', utilizar: 'UTILIZADA' }[accion];
+         if (['disponible', 'descartar'].includes(accion)) {
+            const estado = { disponible: 'DISPONIBLE', descartar: 'DESCARTADA' }[accion];
             if (!confirm(`¿Cambiar el estado a "${ESTADOS[estado]}"?`)) return;
             res = await api(`donaciones/${id}`, { metodo: 'PUT', cuerpo: { estado } });
-        }
-
-        // PATCH /donaciones/{id}/solicitud -> vincular
-        if (accion === 'vincular') {
-            const idSolicitud = Number(prompt('ID de la solicitud a vincular:'));
-            if (!Number.isInteger(idSolicitud) || idSolicitud <= 0) return;
-            res = await api(`donaciones/${id}/solicitud`, { metodo: 'PATCH', cuerpo: { id_solicitud: idSolicitud } });
-        }
-
-        // PATCH /donaciones/{id}/solicitud -> desvincular (id_solicitud: null)
-        if (accion === 'desvincular') {
-            if (!confirm('¿Desvincular la solicitud? La donación volverá a Disponible.')) return;
-            res = await api(`donaciones/${id}/solicitud`, { metodo: 'PATCH', cuerpo: { id_solicitud: null } });
         }
 
         // PATCH /donaciones/{id}/reasignar -> otra evaluación apta del día

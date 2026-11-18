@@ -115,12 +115,9 @@ class DonacionController implements Controlador
             respuesta(400, ['success' => false, 'mensaje' => 'Falta el campo id_donante']);
         }
         $idDonante   = validarId($data['id_donante'], 'ID de donante inválido');
-        $idSolicitud = isset($data['id_solicitud'])
-            ? validarId($data['id_solicitud'], 'ID de solicitud inválido')
-            : null;
         $idUsuario = usuarioActual(); // LEER SESION
 
-        $res = $this->modelo->registrarDonacion($idDonante, $idUsuario, $idSolicitud);
+        $res = $this->modelo->registrarDonacion($idDonante, $idUsuario);
 
         switch ($res['estado']) {
             case 'donante_no_disponible':
@@ -189,8 +186,16 @@ class DonacionController implements Controlador
         switch ($res) {
             case 'donacion_no_existe':
                 respuesta(404, ['success' => false, 'mensaje' => 'Donación no encontrada']);
+            case 'solicitud_no_existe':
+                respuesta(404, ['success' => false, 'mensaje' => 'Solicitud no encontrada']);
             case 'estado_invalido':
                 respuesta(409, ['success' => false, 'mensaje' => 'La donación no se puede vincular/desvincular en su estado actual']);
+            case 'solicitud_no_aprobada':
+                respuesta(409, ['success' => false, 'mensaje' => 'La solicitud no está aprobada']);
+            case 'solicitud_completa':
+                respuesta(409, ['success' => false, 'mensaje' => 'La solicitud ya tiene todas las unidades solicitadas']);
+            case 'tipo_incompatible':
+                respuesta(409, ['success' => false, 'mensaje' => 'El tipo de sangre no es compatible con el paciente']);
             default:
                 respuesta(200, [
                     'success'  => true,

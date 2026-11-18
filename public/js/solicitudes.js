@@ -16,17 +16,12 @@
     const selectEstadoHistorial = document.getElementById('historial-estado');
     const btnBuscarHistorial = document.querySelector('#request-history-header .main-button');
 
-    const formNueva = document.querySelector('#nueva form');
-    const selectHospital = document.getElementById('hospital');
-    const selectTipoPaciente = document.getElementById('tsangre-paciente');
     const formAprobar = document.querySelector('#aprobar form');
     const formRechazar = document.querySelector('#rechazar form');
-
-    // La API pone sola la fecha de entrega al marcar la solicitud como entregada,
-    // por eso en el formulario de aprobar ese campo no se pide
-    const fechaEntrega = document.getElementById('fecha-entrega');
-    fechaEntrega.required = false;
-    fechaEntrega.closest('.form-group').hidden = true;
+    const formAsignar = document.querySelector('#asignar form');
+    const cuerpoAsignadas = document.getElementById('assigned-body');
+    const cuerpoCompatibles = document.getElementById('compatible-body');
+    const btnAsignar = document.getElementById('asignar-guardar');
 
     // Datos de apoyo para mostrar nombres en vez de ids
     let hospitales = {};   // id -> hospital
@@ -34,8 +29,6 @@
     let solicitudes = [];  // lista tal como la devuelve la API
 
     const ESTADOS = { PENDIENTE: 'Pendiente', APROBADA: 'Aprobada', RECHAZADA: 'Rechazada', ENTREGADA: 'Entregada' };
-
-    llenarSelect(selectTipoPaciente, TIPOS_SANGRE);
 
     const codigo = id => 'SOL-' + String(id).padStart(3, '0');
     const nombrePaciente = p => p ? `${p.nombre_paciente} ${p.apellido_paciente}` : '—';
@@ -52,7 +45,7 @@
         const [listaHospitales, listaPacientes, listaSolicitudes] = await Promise.all([
             listar('hospitales', 'Hospitales'),
             listar('pacientes', 'Pacientes'),
-            listar('solicitudes', 'Pacientes') // la API de solicitudes devuelve la lista bajo la clave "Pacientes"
+            listar('solicitudes', 'solicitudes')
         ]);
 
         if (listaHospitales === null || listaPacientes === null || listaSolicitudes === null) {
@@ -66,7 +59,6 @@
         pacientes = Object.fromEntries(listaPacientes.map(p => [p.id_paciente, p]));
         solicitudes = listaSolicitudes;
 
-        llenarSelect(selectHospital, Object.fromEntries(listaHospitales.map(h => [h.id_hospital, h.nombre_hospital])));
         pintarConsulta();
         pintarHistorial();
     }
@@ -96,7 +88,8 @@
                 acciones = `<button class="table-button" data-accion="aprobar">Aprobar</button>
                             <button class="table-button" data-accion="rechazar">Rechazar</button>`;
             } else if (s.estado === 'APROBADA') {
-                acciones = `<button class="table-button" data-accion="entregar">Entregar</button>`;
+                acciones = `<button class="table-button" data-accion="asignar">Asignar</button>
+                            <button class="table-button" data-accion="entregar">Entregar</button>`;
             }
             return `
             <tr class="text" data-id="${s.id_solicitud}">
@@ -164,16 +157,9 @@
         cambiarPanel(contenedor, panel);
     }
 
-    // La API cambia el estado con PUT y necesita todos los datos de la solicitud
+    // La API solo pide el nuevo estado y el motivo de rechazo en caso de aplicar
     function cuerpoActualizacion(s, estado, motivo = null) {
-        return {
-            idPaciente: Number(s.id_paciente),
-            idHospital: Number(s.id_hospital),
-            unidadesSolicitadas: Number(s.unidades_solicitadas),
-            justificacion: s.justificacion,
-            estado,
-            motivoRechazo: motivo
-        };
+        return { estado, motivoRechazo: motivo };
     }
 
     const buscarSolicitud = id => solicitudes.find(s => String(s.id_solicitud) === String(id));
@@ -185,7 +171,7 @@
 
         if (boton.dataset.accion === 'aprobar') abrirPanel('aprobar', formAprobar, solicitud);
         if (boton.dataset.accion === 'rechazar') abrirPanel('rechazar', formRechazar, solicitud);
-
+        if (boton.dataset.accion === 'asignar') abrirAsignar(solicitud);
         if (boton.dataset.accion === 'entregar') {
             if (!confirm('¿Marcar esta solicitud como entregada?')) return;
             const res = await api(`solicitudes/${solicitud.id_solicitud}`, { metodo: 'PATCH' });
@@ -219,61 +205,120 @@
         cargarDatos();
     });
 
-    /* --- NUEVA SOLICITUD --- */
-    // La API pide un paciente ya registrado: primero se registra (o se reutiliza si ya existe)
-    async function obtenerIdPaciente(datos) {
-        const res = await api('pacientes', {
-            metodo: 'POST',
-            cuerpo: {
-                nombrePaciente: datos.nombre,
-                apellidoPaciente: datos.apellido,
-                tipoSangre: datos.tipoSangre,
-                fechaPaciente: datos.nacimiento,
-                sexoPaciente: datos.sexo
-            }
-        });
-        // 409 = el paciente ya estaba registrado, se busca su id
-        if (!res.ok && res.status !== 409) return { error: mensajeError(res) };
+    /* --- ASIGNAR UNIDADES --- */
+    let cupoRestante = 0;
 
-        const lista = await listar('pacientes', 'Pacientes');
-        const paciente = (lista ?? []).find(p =>
-            p.nombre_paciente.toLowerCase() === datos.nombre.toLowerCase()
-            && p.apellido_paciente.toLowerCase() === datos.apellido.toLowerCase()
-            && p.fecha_nacimiento === datos.nacimiento);
+    // GET /solicitudes/{id}/unidades-compatibles
+    async function cargarAsignacion(idSolicitud) {
+        const res = await api(`solicitudes/${idSolicitud}/unidades-compatibles`);
+        if (!res.ok) {
+            alert(mensajeError(res));
+            return false;
+        }
 
-        return paciente ? { id: paciente.id_paciente } : { error: 'No se pudo encontrar al paciente' };
+        const d = res.data;
+        cupoRestante = Number(d.cupo_restante);
+
+        document.getElementById('asignar-tipo').textContent = d.tipo_requerido ?? '—';
+        document.getElementById('asignar-progreso').textContent =
+            `${d.unidades_asignadas} de ${d.unidades_solicitadas}`;
+        document.getElementById('asignar-cupo').textContent = cupoRestante;
+
+        // Unidades ya asignadas (solo las RESERVADA se pueden desvincular)
+        const asignadas = d.asignadas ?? [];
+        cuerpoAsignadas.innerHTML = asignadas.length
+            ? asignadas.map(u => `
+                <tr class="text" data-id="${u.id_donacion}">
+                    <td>DON-${String(u.id_donacion).padStart(3, '0')}</td>
+                    <td><span class="pill">${esc(u.tipo_sangre)}</span></td>
+                    <td>${esc(u.fecha_caducidad)}</td>
+                    <td>${esc(u.estado === 'RESERVADA' ? 'Reservada' : 'Utilizada')}</td>
+                    <td>${u.estado === 'RESERVADA'
+                        ? '<article><button type="button" class="table-button" data-accion="desvincular">Desvincular</button></article>'
+                        : '—'}</td>
+                </tr>`).join('')
+            : filaMensaje(5, 'Aún no hay unidades asignadas');
+
+        // Unidades compatibles disponibles
+        const unidades = d.unidades ?? [];
+        if (d.estado !== 'APROBADA') {
+            cuerpoCompatibles.innerHTML = filaMensaje(6, 'La solicitud no está aprobada');
+        } else if (cupoRestante === 0) {
+            cuerpoCompatibles.innerHTML = filaMensaje(6, 'La solicitud ya tiene todas las unidades asignadas');
+        } else if (!unidades.length) {
+            cuerpoCompatibles.innerHTML = filaMensaje(6, 'No hay unidades compatibles disponibles');
+        } else {
+            cuerpoCompatibles.innerHTML = unidades.map(u => `
+                <tr class="text">
+                    <td><input type="checkbox" name="unidad" value="${u.id_donacion}"></td>
+                    <td>DON-${String(u.id_donacion).padStart(3, '0')}</td>
+                    <td><span class="pill">${esc(u.tipo_sangre)}</span></td>
+                    <td>${esc(u.fecha_recoleccion)}</td>
+                    <td>${esc(u.fecha_caducidad)}</td>
+                    <td>${Number(u.dias_para_vencer) === 0 ? 'Hoy' : esc(u.dias_para_vencer)}</td>
+                </tr>`).join('');
+        }
+
+        actualizarSeleccion();
+        return true;
     }
 
-    formNueva.addEventListener('submit', async e => {
-        e.preventDefault();
+    // Limita la selección al cupo restante (el backend lo vuelve a validar)
+    function actualizarSeleccion() {
+        const casillas = cuerpoCompatibles.querySelectorAll('input[name="unidad"]');
+        const marcadas = cuerpoCompatibles.querySelectorAll('input[name="unidad"]:checked');
 
-        const justificacion = formNueva.justificacion.value.trim();
-        if (!justificacion) return alert('La justificación es obligatoria');
+        document.getElementById('asignar-seleccionadas').textContent = marcadas.length;
+        casillas.forEach(c => { c.disabled = !c.checked && marcadas.length >= cupoRestante; });
+        btnAsignar.disabled = marcadas.length === 0;
+    }
 
-        const paciente = await obtenerIdPaciente({
-            nombre: formNueva.nombre_paciente.value.trim(),
-            apellido: formNueva.apellido_paciente.value.trim(),
-            nacimiento: formNueva.fecha_nacimiento.value,
-            sexo: formNueva.sexo.value,
-            tipoSangre: Number(selectTipoPaciente.value)
-        });
-        if (paciente.error) return alert(paciente.error);
+    cuerpoCompatibles.addEventListener('change', actualizarSeleccion);
 
-        const res = await api('solicitudes', {
-            metodo: 'POST',
-            cuerpo: {
-                idPaciente: Number(paciente.id),
-                idHospital: Number(selectHospital.value),
-                unidadesSolicitadas: Number(formNueva.unidades_solicitadas.value),
-                justificacion
-            }
+    async function abrirAsignar(solicitud) {
+        formAsignar.id_solicitud.value = solicitud.id_solicitud;
+        document.getElementById('asignar-hospital').textContent = hospitales[solicitud.id_hospital]?.nombre_hospital ?? '—';
+        document.getElementById('asignar-paciente').textContent = nombrePaciente(pacientes[solicitud.id_paciente]);
+
+        if (await cargarAsignacion(solicitud.id_solicitud)) cambiarPanel(contenedor, 'asignar');
+    }
+
+    // PATCH /donaciones/{id}/solicitud con id_solicitud: null
+    cuerpoAsignadas.addEventListener('click', async e => {
+        const boton = e.target.closest('[data-accion="desvincular"]');
+        if (!boton) return;
+        if (!confirm('¿Desvincular esta unidad? Volverá a estar Disponible.')) return;
+
+        const idDonacion = boton.closest('tr').dataset.id;
+        const res = await api(`donaciones/${idDonacion}/solicitud`, {
+            metodo: 'PATCH',
+            cuerpo: { id_solicitud: null }
         });
         if (!res.ok) return alert(mensajeError(res));
 
-        alert('Solicitud registrada');
-        formNueva.reset();
-        cambiarPanel(contenedor, 'consultar');
-        cargarDatos();
+        await cargarAsignacion(formAsignar.id_solicitud.value);
+    });
+
+    // POST /solicitudes/{id}/unidades
+    formAsignar.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const ids = [...cuerpoCompatibles.querySelectorAll('input[name="unidad"]:checked')]
+            .map(c => Number(c.value));
+        if (!ids.length) return alert('Seleccione al menos una unidad');
+
+        const idSolicitud = formAsignar.id_solicitud.value;
+        const res = await api(`solicitudes/${idSolicitud}/unidades`, {
+            metodo: 'POST',
+            cuerpo: { ids }
+        });
+        if (!res.ok) {
+            await cargarAsignacion(idSolicitud); // refresca por si otra persona ya tomó alguna unidad
+            return alert(mensajeError(res));
+        }
+
+        alert('Unidades asignadas correctamente');
+        await cargarAsignacion(idSolicitud);
     });
 
     cargarDatos();

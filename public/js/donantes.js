@@ -18,6 +18,10 @@
     const tablaDonaciones = document.querySelector('#don-hist-table').createTBody();
 
     let idEditando = null; // null = registrando uno nuevo
+    const ESTADOS_DON = {
+        EN_EVALUACION: 'En evaluación', DISPONIBLE: 'Disponible', RESERVADA: 'Reservada',
+        UTILIZADA: 'Utilizada', VENCIDA: 'Vencida', DESCARTADA: 'Descartada'
+    };
 
     // Los selects de tipo de sangre usan los ids reales (A+, A-, ...)
     llenarSelect(selectFiltro, TIPOS_SANGRE, 'Todos');
@@ -60,9 +64,11 @@
         // La lista de donaciones viene de la más reciente a la más antigua:
         // la primera que aparezca de cada donante es su última donación
         const ultimaDonacion = {};
-        (resDonaciones.data?.donaciones ?? []).forEach(don => {
-            if (!(don.id_donante in ultimaDonacion)) ultimaDonacion[don.id_donante] = don.fecha_recoleccion;
-        });
+        (resDonaciones.data?.donaciones ?? [])
+            .filter(don => !['DESCARTADA', 'EN_EVALUACION'].includes(don.estado))
+            .forEach(don => {
+                if (!(don.id_donante in ultimaDonacion)) ultimaDonacion[don.id_donante] = don.fecha_recoleccion;
+            });
 
         cuerpo.innerHTML = donantes.map(d => `
             <tr class="text" data-id="${d.id_donante}">
@@ -123,7 +129,7 @@
                         <td>DON-${String(x.id_donacion).padStart(3, '0')}</td>
                         <td>${esc(x.fecha_recoleccion)}</td>
                         <td>${esc(x.fecha_caducidad)}</td>
-                        <td>${esc(x.estado)}</td>
+                        <td>${esc(ESTADOS_DON[x.estado] ?? x.estado)}</td>
                     </tr>`).join('')
                 : filaMensaje(4, 'Sin donaciones registradas');
 

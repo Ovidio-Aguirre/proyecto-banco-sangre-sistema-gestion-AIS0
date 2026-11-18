@@ -7,10 +7,22 @@ class Donacion{
     private const TRANSICIONES = [
         'EN_EVALUACION' => ['DESCARTADA', 'DISPONIBLE'],
         'DISPONIBLE'    => [],
-        'RESERVADA'     => ['UTILIZADA'],
+        'RESERVADA'     => [],
         'VENCIDA'       => ['DESCARTADA'],
         'DESCARTADA'    => [],
         'UTILIZADA'     => [],
+    ];
+
+    // Tabla de compatibilidad sanguinea
+    private const COMPATIBILIDAD = [
+        'O-'  => ['O-'],
+        'O+'  => ['O-', 'O+'],
+        'A-'  => ['O-', 'A-'],
+        'A+'  => ['O-', 'O+', 'A-', 'A+'],
+        'B-'  => ['O-', 'B-'],
+        'B+'  => ['O-', 'O+', 'B-', 'B+'],
+        'AB-' => ['O-', 'A-', 'B-', 'AB-'],
+        'AB+' => ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
     ];
 
     public function __construct(mysqli $dbConnection){
@@ -24,8 +36,7 @@ class Donacion{
      */
     public function registrarDonacion(
         int $idDonante, 
-        int $idUsuario, 
-        ?int $idSolicitud = null
+        int $idUsuario 
     ) : array
     {
         // Validar donante activo
@@ -70,9 +81,9 @@ class Donacion{
         $stmt = $this->conn->prepare(
             "INSERT INTO donaciones
             (id_evaluacion, id_usuario, id_solicitud, fecha_recoleccion, fecha_caducidad, estado)
-            VALUES (?, ?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 42 DAY), 'EN_EVALUACION')"
+            VALUES (?, ?, NULL, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 42 DAY), 'EN_EVALUACION')"
         );
-        $stmt->bind_param("iii", $idEvaluacion, $idUsuario, $idSolicitud);
+        $stmt->bind_param("ii", $idEvaluacion, $idUsuario);
         $stmt->execute();
 
         return ['estado' => 'creado','id_donacion' => $this->conn->insert_id]; 
@@ -231,6 +242,11 @@ class Donacion{
      */
     public function asignarSolicitud(int $idDonacion, ?int $idSolicitud) : string
     {
+        //Vincular solicitud asignada
+        if ($idSolicitud !== null) {
+            return $this->asignarUnidades($idSolicitud, [$idDonacion]);
+        }
+
         $this->marcarVencidas(); //Actualizar donaciones vencidas
 
         // Evaluar estado de donacion
@@ -245,28 +261,209 @@ class Donacion{
             return 'donacion_no_existe';
         }
 
-        if ($idSolicitud !== null) {
-            // Vincular solo desde DISPONIBLE
-            if ($actual['estado'] !== 'DISPONIBLE') {
-                return 'estado_invalido';
-            }
-            $stmt = $this->conn->prepare(
-                "UPDATE donaciones SET estado = 'RESERVADA', id_solicitud = ?
-                WHERE id_donacion = ?"
-            );
-            $stmt->bind_param("ii", $idSolicitud, $idDonacion);
-        } else {
-            // Desvincular solo desde RESERVADA
-            if ($actual['estado'] !== 'RESERVADA') {
-                return 'estado_invalido';
-            }
-            $stmt = $this->conn->prepare(
-                "UPDATE donaciones SET estado = 'DISPONIBLE', id_solicitud = NULL
-                WHERE id_donacion = ?"
-            );
-            $stmt->bind_param("i", $idDonacion);
+        // Desvincular solo desde RESERVADA
+        if ($actual['estado'] !== 'RESERVADA') {
+            return 'estado_invalido';
         }
+        $stmt = $this->conn->prepare(
+            "UPDATE donaciones SET estado = 'DISPONIBLE', id_solicitud = NULL
+            WHERE id_donacion = ?"
+        );
+        $stmt->bind_param("i", $idDonacion);
         $stmt->execute();
+
+        return 'actualizada';
+    }
+
+    /**
+     * Asignar unidades a solicitud APROBADA
+     * @return string actualizada|sin_unidades
+     */
+    public function asignarUnidades(int $idSolicitud, array $idsDonacion) : string
+    {
+        $ids = array_values(array_unique(array_map('intval', $idsDonacion)));
+        if (!$ids) {
+            return 'sin_unidades';
+        }
+
+        $this->marcarVencidas(); //Actualizar donaciones vencidas
+
+        $this->conn->begin_transaction();
+        try {
+            $resultado = $this->validarYAsignar($idSolicitud, $ids);
+            if ($resultado === 'actualizada') {
+                $this->conn->commit();
+            } else {
+                $this->conn->rollback();
+            }
+            return $resultado;
+        } catch (Throwable $e) {
+            $this->conn->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Consultar unidades compatibles con la solicitud
+     * @return array|null null: solicitud no existe
+     */
+    public function obtenerUnidadesCompatibles(int $idSolicitud): ?array
+    {
+        $this->marcarVencidas(); //Actualizar donaciones vencidas
+
+        $sol = $this->infoSolicitud($idSolicitud);
+        if ($sol === null) {
+            return null;
+        }
+
+        $restante = max(0, (int)$sol['unidades_solicitadas'] - (int)$sol['asignadas']);
+        $unidades = [];
+
+        // Validar solicitud aprobada
+        if ($sol['estado'] === 'APROBADA' && $restante > 0) {
+            $tipos  = $this->tiposCompatibles($sol['tipo_requerido']);
+            $marcas = implode(',', array_fill(0, count($tipos), '?'));
+
+            // Priodidad tipo sanguineo exacto
+            $stmt = $this->conn->prepare(
+                "SELECT d.id_donacion, dn.id_tipo_sangre, ts.tipo AS tipo_sangre,
+                        d.fecha_recoleccion, d.fecha_caducidad,
+                        DATEDIFF(d.fecha_caducidad, CURDATE()) AS dias_para_vencer,
+                        (ts.tipo = ?) AS es_exacta
+                FROM donaciones d
+                JOIN evaluaciones_donante e ON e.id_evaluacion = d.id_evaluacion
+                JOIN donantes dn ON dn.id_donante = e.id_donante
+                JOIN tipo_sangre ts ON ts.id_tipo_sangre = dn.id_tipo_sangre
+                WHERE d.estado = 'DISPONIBLE'
+                  AND d.id_solicitud IS NULL
+                  AND d.fecha_caducidad >= CURDATE()
+                  AND ts.tipo IN ($marcas)
+                ORDER BY es_exacta DESC, d.fecha_caducidad ASC, d.id_donacion ASC"
+            );
+            $params = array_merge([$sol['tipo_requerido']], $tipos);
+            $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+            $stmt->execute();
+            $unidades = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        }
+
+        // Consultar unidades ya asignadas a la solicitud
+        $stmt = $this->conn->prepare(
+            "SELECT d.id_donacion, ts.tipo AS tipo_sangre, d.fecha_caducidad, d.estado
+            FROM donaciones d
+            JOIN evaluaciones_donante e ON e.id_evaluacion = d.id_evaluacion
+            JOIN donantes dn ON dn.id_donante = e.id_donante
+            JOIN tipo_sangre ts ON ts.id_tipo_sangre = dn.id_tipo_sangre
+            WHERE d.id_solicitud = ? AND d.estado IN ('RESERVADA','UTILIZADA')
+            ORDER BY d.fecha_caducidad ASC, d.id_donacion ASC"
+        );
+        $stmt->bind_param("i", $idSolicitud);
+        $stmt->execute();
+        $asignadas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        return [
+            'id_solicitud'         => $idSolicitud,
+            'estado'               => $sol['estado'],
+            'tipo_requerido'       => $sol['tipo_requerido'],
+            'unidades_solicitadas' => (int)$sol['unidades_solicitadas'],
+            'unidades_asignadas'   => (int)$sol['asignadas'],
+            'cupo_restante'        => $restante,
+            'unidades'             => $unidades,
+            'asignadas'            => $asignadas,
+        ];
+    }
+
+    /**
+     * Validar cantidad y tipo de unidades solicitades para asignar unidades
+     * @return array Datos resumen de la solicitud
+     */
+    private function infoSolicitud(int $idSolicitud, bool $bloquear = false): ?array
+    {
+        if ($bloquear) {
+            $stmt = $this->conn->prepare(
+                "SELECT 1 FROM solicitudes WHERE id_solicitud = ? FOR UPDATE"
+            );
+            $stmt->bind_param("i", $idSolicitud);
+            $stmt->execute();
+            $stmt->get_result();
+        }
+
+        $stmt = $this->conn->prepare(
+            "SELECT s.estado, s.unidades_solicitadas, ts.tipo AS tipo_requerido,
+                    (SELECT COUNT(*) FROM donaciones d
+                      WHERE d.id_solicitud = s.id_solicitud
+                        AND d.estado NOT IN ('DESCARTADA','VENCIDA')) AS asignadas
+            FROM solicitudes s
+            JOIN pacientes p ON p.id_paciente = s.id_paciente
+            JOIN tipo_sangre ts ON ts.id_tipo_sangre = p.id_tipo_sangre
+            WHERE s.id_solicitud = ?"
+        );
+        $stmt->bind_param("i", $idSolicitud);
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_assoc();
+    }
+
+    /**
+     * Logica de asignacion de unidades
+     * @return string actualizada|solicitud_no_existe|solicitud_no_aprobada
+     *                |solicitud_completa|donacion_no_existe|estado_invalido|tipo_incompatible
+     */
+    private function validarYAsignar(int $idSolicitud, array $ids): string
+    {
+        $sol = $this->infoSolicitud($idSolicitud, true);
+        if ($sol === null) {
+            return 'solicitud_no_existe';
+        }
+        if ($sol['estado'] !== 'APROBADA') {
+            return 'solicitud_no_aprobada';
+        }
+        if ((int)$sol['asignadas'] + count($ids) > (int)$sol['unidades_solicitadas']) {
+            return 'solicitud_completa';
+        }
+
+        $compatibles = $this->tiposCompatibles($sol['tipo_requerido']);
+
+        $stmtLock = $this->conn->prepare(
+            "SELECT estado, id_solicitud, id_evaluacion FROM donaciones
+             WHERE id_donacion = ? FOR UPDATE"
+        );
+        $stmtTipo = $this->conn->prepare(
+            "SELECT ts.tipo
+            FROM evaluaciones_donante e
+            JOIN donantes dn ON dn.id_donante = e.id_donante
+            JOIN tipo_sangre ts ON ts.id_tipo_sangre = dn.id_tipo_sangre
+            WHERE e.id_evaluacion = ?"
+        );
+        $stmtUpd = $this->conn->prepare(
+            "UPDATE donaciones SET estado = 'RESERVADA', id_solicitud = ?
+             WHERE id_donacion = ?"
+        );
+
+        foreach ($ids as $idDonacion) {
+            $stmtLock->bind_param("i", $idDonacion);
+            $stmtLock->execute();
+            $don = $stmtLock->get_result()->fetch_assoc();
+
+            if ($don === null) {
+                return 'donacion_no_existe';
+            }
+            // Solo unidades DISPONIBLES y libres
+            if ($don['estado'] !== 'DISPONIBLE' || $don['id_solicitud'] !== null) {
+                return 'estado_invalido';
+            }
+
+            $idEvaluacion = (int)$don['id_evaluacion'];
+            $stmtTipo->bind_param("i", $idEvaluacion);
+            $stmtTipo->execute();
+            $tipo = $stmtTipo->get_result()->fetch_assoc()['tipo'] ?? null;
+
+            if ($tipo === null || !in_array($tipo, $compatibles, true)) {
+                return 'tipo_incompatible';
+            }
+
+            $stmtUpd->bind_param("ii", $idSolicitud, $idDonacion);
+            $stmtUpd->execute();
+        }
 
         return 'actualizada';
     }
@@ -364,6 +561,7 @@ class Donacion{
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    // -------------- UTILIDADES -------------- //
     /** 
      * Actualizar estado VENCIDA en donaciones caducadas
      * @return int cantidad de donaciones afectadas
@@ -377,5 +575,13 @@ class Donacion{
         );
         $stmt->execute();
         return $stmt->affected_rows;
+    }
+
+    /**
+     * Devolver compatibilidad sanguinea
+     */
+    private function tiposCompatibles(string $tipoRequerido): array
+    {
+        return self::COMPATIBILIDAD[$tipoRequerido] ?? [$tipoRequerido];
     }
 }

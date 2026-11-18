@@ -42,7 +42,7 @@ try {
         'donaciones'    => fn() => new DonacionController(new Donacion($conn)),
         'inventario'    => fn() => new InventarioController(new Inventario($conn)),
         'hospitales'    => fn() => new HospitalController(new Hospital($conn)),
-        'solicitudes'   => fn() => new SolicitudController(new Solicitud($conn)),
+        'solicitudes' => fn() => new SolicitudController(new Solicitud($conn), new Donacion($conn)),
         'pacientes'     => fn() => new PacienteController(new Paciente($conn)),
         'auth'          => fn() => new AuthController(new Usuario($conn)),
         'usuarios'      => fn() => new UsuarioController(new Usuario($conn)),
