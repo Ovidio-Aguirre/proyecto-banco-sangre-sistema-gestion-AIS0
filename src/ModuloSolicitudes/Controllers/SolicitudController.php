@@ -216,6 +216,10 @@ class SolicitudController implements Controlador
 
                 switch ($resultado) {
                     case 'actualizada':
+                        registrarActividad(
+                            'Asignar unidades',
+                            count($ids) . ' unidad(es) asignadas a SOL-' . str_pad((string)$id, 3, '0', STR_PAD_LEFT)
+                        );
                         respuesta(200, ['success' => true, 'mensaje' => 'Unidades asignadas correctamente']);
                         break;
                     case 'sin_unidades':
@@ -281,6 +285,11 @@ class SolicitudController implements Controlador
                         respuesta(400, ['success' => false, 'mensaje' => 'Estado inválido']);
                         break;
                     default:
+                        registrarActividad(
+                            $estado === 'APROBADA' ? 'Aprobar solicitud' : 'Rechazar solicitud',
+                            'SOL-' . str_pad((string)$id, 3, '0', STR_PAD_LEFT)
+                                . ($estado === 'APROBADA' ? ' aprobada' : ' rechazada')
+                        );
                         respuesta(200, ['success' => true, 'mensaje' => 'Solicitud actualizada correctamente']);
                 }
             }
@@ -308,6 +317,11 @@ class SolicitudController implements Controlador
                         'mensaje' => 'No se pudo entregar la solicitud'
                     ]);
                 }
+
+                registrarActividad(
+                    'Entregar solicitud',
+                    'SOL-' . str_pad((string)$id, 3, '0', STR_PAD_LEFT) . ' entregada'
+                );
 
                 respuesta(200, [
                     'success' => true,

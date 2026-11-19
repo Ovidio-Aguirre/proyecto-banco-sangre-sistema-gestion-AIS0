@@ -139,9 +139,11 @@
             );
 
             if($resultado === 0){
+                registrarActividad('Registrar hospital', $nombre);
                 respuesta(201, ['success' => true, 'mensaje' => 'Nuevo hospital ingresado exitosamente']);
             }
             else if($resultado === 3){
+                registrarActividad('Reactivar hospital', $nombre);
                 respuesta(200, ['success' => true, 'mensaje' => 'Hospital reactivado']);
             }
             else if($resultado === 2){
@@ -187,6 +189,7 @@
                     respuesta(409, ['success' => false, 'mensaje' => 'Ya existe un hospital con ese nombre en el distrito']);
                     break;
                 default:
+                    registrarActividad('Editar hospital', $nombre);
                     respuesta(200, ['success' => true, 'mensaje' => 'Hospital actualizado correctamente']);
             }
         }
@@ -201,6 +204,7 @@
                 respuesta(409, ['success' => false, 'mensaje' => 'El hospital tiene solicitudes pendientes o aprobadas']);
             }
             if($resultado){
+                registrarActividad('Desactivar hospital', 'Hospital #' . $id . ' desactivado');
                 respuesta(200, ['success' => true, 'mensaje' => $resultado]);
             }
             else{

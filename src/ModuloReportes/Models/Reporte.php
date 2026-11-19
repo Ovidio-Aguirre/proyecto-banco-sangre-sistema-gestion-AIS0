@@ -109,6 +109,68 @@ class Reporte
     }
 
     /**
+     * Obtener acciones registradas, con paginación y filtros opcionales
+     * @return array ['actividad' => [...], 'total' => int]
+     */
+    public function obtenerActividad(
+        int $limite,
+        int $offset = 0,
+        ?string $busqueda = null,
+        ?string $desde = null,
+        ?string $hasta = null
+    ): array
+    {
+        $where  = " WHERE 1 = 1";
+        $tipos  = "";
+        $params = [];
+
+        if ($busqueda !== null) {
+            $where .= " AND (r.accion LIKE ? OR r.descripcion LIKE ? OR u.nombre_usuario LIKE ?)";
+            $like = "%" . $busqueda . "%";
+            array_push($params, $like, $like, $like);
+            $tipos .= "sss";
+        }
+        if ($desde !== null) {
+            $where .= " AND DATE(r.fecha_hora) >= ?";
+            $params[] = $desde;
+            $tipos .= "s";
+        }
+        if ($hasta !== null) {
+            $where .= " AND DATE(r.fecha_hora) <= ?";
+            $params[] = $hasta;
+            $tipos .= "s";
+        }
+
+        $from = " FROM registro_actividad r LEFT JOIN usuarios u ON u.id_usuario = r.id_usuario";
+
+        // Total con los mismos filtros
+        $stmt = $this->conn->prepare("SELECT COUNT(*) AS total" . $from . $where);
+        if ($params) {
+            $stmt->bind_param($tipos, ...$params);
+        }
+        $stmt->execute();
+        $total = (int)$stmt->get_result()->fetch_assoc()['total'];
+
+        // Página solicitada
+        $stmt = $this->conn->prepare(
+            "SELECT r.id_actividad, r.accion, r.descripcion, r.fecha_hora,
+                DATE_FORMAT(r.fecha_hora, '%d/%m/%Y') AS fecha,
+                DATE_FORMAT(r.fecha_hora, '%h:%i %p') AS hora,
+                u.nombre_usuario" . $from . $where . "
+            ORDER BY r.fecha_hora DESC, r.id_actividad DESC
+            LIMIT ? OFFSET ?"
+        );
+        $paramsPagina = array_merge($params, [$limite, $offset]);
+        $stmt->bind_param($tipos . "ii", ...$paramsPagina);
+        $stmt->execute();
+
+        return [
+            'actividad' => $stmt->get_result()->fetch_all(MYSQLI_ASSOC),
+            'total'     => $total
+        ];
+    }
+
+    /**
      * Calcular el primer día del periodo solicitado
      * @return DateTime Inicio del rango a las 00:00 (valor desconocido equivale a mensual)
      */

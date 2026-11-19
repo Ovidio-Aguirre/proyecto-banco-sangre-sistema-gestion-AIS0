@@ -1,0 +1,44 @@
+<section class="actividad">
+    <h1 class="page-title">Registro de actividad</h1>
+
+    <div class="page-body">
+        <div class="container">
+            <div id="activity-header">
+                <article class="filter-group">
+                    <label for="buscar">Buscar por acción o usuario</label>
+                    <input type="text" name="buscar" id="buscar">
+                </article>
+                <article class="filter-group">
+                    <label for="desde">Desde</label>
+                    <input type="date" name="desde" id="desde">
+                </article>
+                <article class="filter-group">
+                    <label for="hasta">Hasta</label>
+                    <input type="date" name="hasta" id="hasta">
+                </article>
+                <div class="filter-buttons">
+                    <button type="button" class="main-button text" id="activity-search">BUSCAR</button>
+                    <button type="button" class="sec-button" id="activity-clear">LIMPIAR</button>
+                </div>
+            </div>
+
+            <table class="table data-table" id="activity-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Usuario</th>
+                        <th>Acción</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="pagination">
+                <button type="button" class="sec-button" id="activity-prev">ANTERIOR</button>
+                <p class="text" id="activity-info"></p>
+                <button type="button" class="sec-button" id="activity-next">SIGUIENTE</button>
+            </div>
+        </div>
+    </div>
+</section>

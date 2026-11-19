@@ -156,3 +156,29 @@ function requerirRol(array $roles): void
         respuesta(403, ['success' => false, 'mensaje' => 'No tiene permiso para esta acción']);
     }
 }
+
+/* --- REGISTRO DE ACTIVIDAD --- */
+/**
+ * Registrar una acción del usuario autenticado en registro_actividad
+ * Un fallo al registrar nunca interrumpe la operación principal
+ * @return void
+ */
+function registrarActividad(string $accion, string $descripcion): void
+{
+    global $conn;
+
+    try {
+        $idUsuario   = usuarioActual();
+        $accion      = mb_substr($accion, 0, 50);
+        $descripcion = mb_substr($descripcion, 0, 255);
+
+        $stmt = $conn->prepare(
+            "INSERT INTO registro_actividad (id_usuario, accion, descripcion, fecha_hora)
+            VALUES (?, ?, ?, NOW())"
+        );
+        $stmt->bind_param("iss", $idUsuario, $accion, $descripcion);
+        $stmt->execute();
+    } catch (Throwable $e) {
+        error_log('registrarActividad: ' . $e->getMessage());
+    }
+}

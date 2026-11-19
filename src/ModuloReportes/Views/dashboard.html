@@ -49,37 +49,18 @@
             </div>
         </section>
 
-        <!--<section class="info-panel">
+        <section class="info-panel">
             <div class="container" id="actions-log">
                 <div class="panel-header">
                     <p class="text-title">Acciones recientes</p>
-                    <a href="#" class="subtext" id="actions-detail">Mostrar mas</a>
+                    <?php if (($_SESSION['rol'] ?? '') === ROL_ADMIN): ?>
+                        <a href="index.php?page=actividad" class="subtext" id="actions-detail">Mostrar mas</a>
+                    <?php endif; ?>
                 </div>
                 <table class="table" id="actions-table">
-                    <tbody>
-                        <tr class="subtext">
-                            <td>26/10/2026</td>
-                            <td>06:30 PM</td>
-                            <td>Descargar reporte</td>
-                            <td>rglinares</td>
-                        </tr>
-                        <tr class="subtext">
-                            <td>26/10/2026</td>
-                            <td>01:45 PM</td>
-                            <td>Aceptar solicitud</td>
-                            <td>jadiaz</td>
-                        </tr>
-                        <tr class="subtext">
-                            <td>26/10/2026</td>
-                            <td>10:00 AM</td>
-                            <td>Registrar donante</td>
-                            <td>lpguevara</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
-        </section>-->
-        <section class="info-panel">
             <div class="container" id="alerts">
                 <div class="panel-header">
                     <p class="text-title">Alertas de inventario</p>
