@@ -76,4 +76,29 @@ class Inventario{
 
         return $resumen;
     }
+
+    /**
+     * Obtener las unidades de todos los tipos
+     * @return array [['id_donacion', 'id_tipo_sangre', 'tipo_sangre', 'fecha_recoleccion',
+     *                'fecha_caducidad', 'estado', 'dias_para_vencer'], ...]
+     */
+    public function obtenerUnidades(): array
+    {
+        $stmt = $this->conn->prepare(
+            "SELECT d.id_donacion, dn.id_tipo_sangre, t.tipo AS tipo_sangre,
+                d.fecha_recoleccion, d.fecha_caducidad,
+                CASE WHEN d.estado IN ('DISPONIBLE','RESERVADA') AND d.fecha_caducidad < CURDATE()
+                THEN 'VENCIDA' ELSE d.estado END AS estado,
+                GREATEST(DATEDIFF(d.fecha_caducidad, CURDATE()), 0) AS dias_para_vencer
+            FROM donaciones d
+            JOIN evaluaciones_donante e ON e.id_evaluacion = d.id_evaluacion
+            JOIN donantes dn ON dn.id_donante = e.id_donante
+            JOIN tipo_sangre t ON t.id_tipo_sangre = dn.id_tipo_sangre
+            WHERE d.estado IN ('DISPONIBLE', 'RESERVADA', 'VENCIDA')
+            ORDER BY d.fecha_caducidad ASC, d.id_donacion ASC"
+        );
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }

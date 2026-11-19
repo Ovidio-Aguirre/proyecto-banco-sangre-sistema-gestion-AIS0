@@ -43,7 +43,7 @@
 
     async function cargarDatos() {
         const [listaHospitales, listaPacientes, listaSolicitudes] = await Promise.all([
-            listar('hospitales', 'Hospitales'),
+            listar('hospitales', 'hospitales'),
             listar('pacientes', 'pacientes'),
             listar('solicitudes', 'solicitudes')
         ]);
@@ -58,6 +58,13 @@
         hospitales = Object.fromEntries(listaHospitales.map(h => [h.id_hospital, h]));
         pacientes = Object.fromEntries(listaPacientes.map(p => [p.id_paciente, p]));
         solicitudes = listaSolicitudes;
+
+        // Conserva datos de hospitales desactivados
+        solicitudes.forEach(s => {
+            if (!hospitales[s.id_hospital]) {
+                hospitales[s.id_hospital] = { id_hospital: s.id_hospital, nombre_hospital: s.nombre_hospital };
+            }
+        });
 
         pintarConsulta();
         pintarHistorial();

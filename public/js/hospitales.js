@@ -62,7 +62,7 @@
         if (selectFiltroDepto.value) params.departamentoHospital = selectFiltroDepto.value;
 
         const res = await api('hospitales', { params });
-        const hospitales = res.data.Hospitales ?? [];
+        const hospitales = res.data.hospitales ?? [];
 
         // Cuando no hay resultados la API responde 400, se muestra como lista vacía
         if (hospitales.length === 0) {
@@ -104,7 +104,7 @@
         if (boton.dataset.accion === 'editar') {
             const res = await api(`hospitales/${id}`);
             if (!res.ok) return alert(mensajeError(res));
-            const h = res.data.Hospital;
+            const h = res.data.hospital;
 
             // Se reconstruyen los selects en cascada hasta el distrito guardado
             const distrito = distritoPorId[h.id_distrito];

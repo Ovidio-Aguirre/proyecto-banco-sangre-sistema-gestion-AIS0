@@ -157,7 +157,7 @@
                 return 1;
             }
             else{
-                $sql = "SELECT id_hospital FROM hospitales WHERE id_hospital = ?";
+                 $sql = "SELECT id_hospital FROM hospitales WHERE id_hospital = ? AND activo = 1";
                 $stmt = $this->conn->prepare($sql);
                 $stmt->bind_param("i", $hospital); 
                 $stmt->execute();
