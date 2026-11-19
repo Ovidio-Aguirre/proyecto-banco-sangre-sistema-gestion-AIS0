@@ -4,7 +4,7 @@
     <div class="page-body">
         <div class="section-nav">
             <button class="page-button active" data-target="stock">Ver stock</button>
-            <button class="page-button" data-target="buscar">Buscar y filtrar</button>
+            <button class="page-button" data-target="buscar">Consultar unidades</button>
             <button class="page-button" data-target="alertas">Alertas de inventario</button>
         </div>
 
@@ -12,17 +12,7 @@
             <section id="stock" class="page-panel active">
                 <div class="container">
                     <h3 class="title">Unidades por tipo y estado</h3>
-                    <table class="table data-table" id="stock-table">
-                        <thead>
-                            <tr>
-                                <th>Tipo</th>
-                                <th>Disponible</th>
-                                <th>Reservada</th>
-                                <th>Vencida</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="stats-panel stock-grid" id="stock-cards"></div>
                 </div>
             </section>
 
@@ -76,7 +66,6 @@
                             <tr>
                                 <th>Tipo</th>
                                 <th>Disponible</th>
-                                <th>Mínimo</th>
                                 <th>Estado</th>
                             </tr>
                         </thead>

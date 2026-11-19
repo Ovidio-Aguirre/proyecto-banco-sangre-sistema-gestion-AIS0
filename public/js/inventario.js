@@ -1,9 +1,7 @@
 /* --- MÓDULO INVENTARIO --- */
 (function () {
-    const tablaStock = document.querySelector('#stock-table');
-    if (!tablaStock) return;
-
-    const cuerpoStock = tablaStock.tBodies[0] ?? tablaStock.createTBody();
+    const panelStock = document.getElementById('stock-cards');
+    if (!panelStock) return;
     const cuerpoInventario = document.querySelector('#inventory-table').createTBody();
     const cuerpoBajo = document.querySelector('#low-stock-table').createTBody();
     const cuerpoVence = document.querySelector('#expiring-table').createTBody();
@@ -34,7 +32,7 @@
         const res = await api('inventario');
         if (!res.ok) {
             const msg = mensajeError(res);
-            cuerpoStock.innerHTML = filaMensaje(5, msg);
+            panelStock.innerHTML = `<p class="text">${esc(msg)}</p>`
             cuerpoInventario.innerHTML = filaMensaje(6, msg);
             cuerpoBajo.innerHTML = filaMensaje(4, msg);
             cuerpoVence.innerHTML = filaMensaje(4, msg);
@@ -61,20 +59,15 @@
     /* --- VER STOCK --- */
     function pintarStock() {
         if (!resumen.length) {
-            cuerpoStock.innerHTML = filaMensaje(5, 'Sin datos de inventario');
+            panelStock.innerHTML = '<p class="text">Sin datos de inventario</p>';
             return;
         }
-        cuerpoStock.innerHTML = resumen.map(t => {
-            const disp = Number(t.disponibles), res = Number(t.reservadas), venc = Number(t.vencidas);
-            return `
-            <tr class="text">
-                <td><span class="pill">${esc(t.tipo_sangre)}</span></td>
-                <td>${disp}</td>
-                <td>${res}</td>
-                <td>${venc}</td>
-                <td>${disp + res + venc}</td>
-            </tr>`;
-        }).join('');
+        panelStock.innerHTML = resumen.map(t => `
+            <article class="card">
+                <h3 class="card-value">${esc(t.tipo_sangre)}</h3>
+                <p class="subtext">Disponibles: <b>${Number(t.disponibles)}</b></p>
+                <p class="subtext">Vencidas: <b>${Number(t.vencidas)}</b></p>
+            </article>`).join('');
     }
 
     /* --- BUSCAR Y FILTRAR --- */
@@ -128,7 +121,6 @@
                 <tr class="text">
                     <td><span class="pill">${esc(t.tipo_sangre)}</span></td>
                     <td>${Number(t.disponibles)}</td>
-                    <td>${STOCK_MINIMO}</td>
                     <td>${Number(t.disponibles) === 0 ? 'Agotado' : 'Bajo'}</td>
                 </tr>`).join('')
             : filaMensaje(4, 'Todos los tipos tienen stock suficiente');
@@ -150,5 +142,11 @@
     }
 
     /* --- INICIO --- */
+    // Abrir un panel desde la URL
+    window.addEventListener('load', () => {
+        const panel = location.hash.slice(1);
+        if (panel) cambiarPanel(document.querySelector('.page-body'), panel);
+    });
+
     cargarInventario();
 })();
