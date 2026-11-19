@@ -50,9 +50,10 @@
 
             respuesta(200, [
                 'success' => true,
-                'Hospital' => $resultado
+                'hospital' => $resultado
             ]);
         }
+
         private function buscarHospital(): void {
             //Busqueda por Nombre, departamento, municipio, distrito o orden
             if(isset($_GET["nombreHospital"])||
@@ -73,7 +74,7 @@
                 //Si existe orden
                 if($orden){
                     if($orden !== 'ASC' && $orden !== 'DESC'){
-                        respuesta(400, ['success' => false, 'error' => 'Tipo de orden invalido']);
+                        respuesta(400, ['success' => false, 'mensaje' => 'Tipo de orden inválido']);
                         exit;
                     }
                 } 
@@ -96,23 +97,20 @@
             else{
                 $resultado = $this->modelo->listarHospitales();
             }
-            
-            if($resultado){
-                if($resultado === 1){
-                    respuesta(400, ['success' => false, 'error' => 'Departamento fuera de rango']);
-                }
-                else if($resultado === 2){
-                    respuesta(400, ['success' => false, 'error' => 'Municipio fuera de rango']);
-                }
-                else if($resultado === 3){
-                    respuesta(400, ['success' => false, 'error' => 'Distrito fuera de rango']);
-                }
-                respuesta(200, ['success' => true, 'Hospitales' => $resultado]);
+
+            // El modelo devuelve 1, 2 o 3 si el departamento, municipio o distrito no existe
+            if($resultado === 1){
+                respuesta(400, ['success' => false, 'mensaje' => 'Departamento fuera de rango']);
             }
-            else{
-                respuesta(400, ['success' => false, 'error' => 'No se encontro ningun hopital o se encuentra eliminado']);
+            if($resultado === 2){
+                respuesta(400, ['success' => false, 'mensaje' => 'Municipio fuera de rango']);
             }
-            
+            if($resultado === 3){
+                respuesta(400, ['success' => false, 'mensaje' => 'Distrito fuera de rango']);
+            }
+
+            // Sin resultados no es un error: lista vacia con 200
+            respuesta(200, ['success' => true, 'hospitales' => $resultado ?: []]);
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -121,13 +119,13 @@
 
             $datosHospital = leerJson();
 
-            $nombre = $datosHospital['nombreHospital'] ?? null;
-            $direccion = $datosHospital['direccionHospital'] ?? null;
+            $nombre = isset($datosHospital['nombreHospital']) && is_string($datosHospital['nombreHospital']) ? trim($datosHospital['nombreHospital']) : null;
+            $direccion = isset($datosHospital['direccionHospital']) && is_string($datosHospital['direccionHospital']) ? trim($datosHospital['direccionHospital']) : null;
             $distrito = $datosHospital['distritoHospital'] ?? null;
 
             //Si alguno de los campos ingresados esta vacio
-            if ( $nombre === '' || $nombre === NULL || $direccion === '' || $direccion === NULL || $distrito === ''|| $direccion === NULL ) {
-                respuesta(400, ['success' => false, 'Mensaje:' => 'Todos los campos son abligatorios']);
+            if ( $nombre === '' || $nombre === NULL || $direccion === '' || $direccion === NULL || $distrito === '' || $distrito === NULL ) {
+                respuesta(400, ['success' => false, 'mensaje' => 'Todos los campos son obligatorios']);
                 exit;
             }
 
@@ -141,13 +139,16 @@
             );
 
             if($resultado === 0){
-                respuesta(201, ['success' => true, 'Mensaje:' => 'Nuevo Hospital ingresado Exitosamente']);
+                respuesta(201, ['success' => true, 'mensaje' => 'Nuevo hospital ingresado exitosamente']);
+            }
+            else if($resultado === 3){
+                respuesta(200, ['success' => true, 'mensaje' => 'Hospital reactivado']);
             }
             else if($resultado === 2){
-                respuesta(409, ['success' => false, 'Mensaje:' => 'ID de distrito invalida']);
+                respuesta(409, ['success' => false, 'mensaje' => 'ID de distrito inválido']);
             }
             else{
-                respuesta(409, ['success' => false, 'Mensaje:' => 'Este Hospital ya se encuentra registrado']);
+                respuesta(409, ['success' => false, 'mensaje' => 'Este hospital ya se encuentra registrado']);
             }
             
         }
@@ -159,8 +160,8 @@
             $datosHospital = leerJson();
 
             //pasamos los datos a variables
-            $nombre = $datosHospital['nombreHospital'] ?? null;
-            $direccion = $datosHospital['direccionHospital'] ?? null;
+            $nombre = isset($datosHospital['nombreHospital']) && is_string($datosHospital['nombreHospital']) ? trim($datosHospital['nombreHospital']) : null;
+            $direccion = isset($datosHospital['direccionHospital']) && is_string($datosHospital['direccionHospital']) ? trim($datosHospital['direccionHospital']) : null;
             $distrito = $datosHospital['distritoHospital'] ?? null;
 
             validarCampoEntero($distrito);
@@ -177,13 +178,16 @@
             //Segun la respuesta mostramos el mensaje
             switch($resultado){
                 case 1:
-                    respuesta(404, ['success' => false, 'Mensaje:' => 'ID no existe']);
+                    respuesta(404, ['success' => false, 'mensaje' => 'Hospital no existe o está inactivo']);
                     break;
                 case 2:
-                    respuesta(404, ['success' => false, 'Mensaje:' => 'ID municipio no existe']);
+                    respuesta(404, ['success' => false, 'mensaje' => 'ID de distrito no existe']);
+                    break;
+                case 3:
+                    respuesta(409, ['success' => false, 'mensaje' => 'Ya existe un hospital con ese nombre en el distrito']);
                     break;
                 default:
-                    respuesta(200, ['success' => true, 'Mensaje:' => 'Hospital Actualizado correctamente']);
+                    respuesta(200, ['success' => true, 'mensaje' => 'Hospital actualizado correctamente']);
             }
         }
 
@@ -193,11 +197,14 @@
 
             $resultado = $this->modelo->eliminar($id);
 
+            if($resultado === 1){
+                respuesta(409, ['success' => false, 'mensaje' => 'El hospital tiene solicitudes pendientes o aprobadas']);
+            }
             if($resultado){
-                respuesta(200, ['success' => true, 'Mensaje:' => $resultado]);
+                respuesta(200, ['success' => true, 'mensaje' => $resultado]);
             }
             else{
-                respuesta(404, ['success' => false, 'Mensaje:' => 'Hospital no encontrado o eliminado']);
+                respuesta(404, ['success' => false, 'mensaje' => 'Hospital no encontrado o eliminado']);
             }
         }
     }

@@ -160,6 +160,22 @@
             if($validacion !== 0){
                 return $validacion;
             }
+
+            //Si existe desactivado, se reactiva con la dirección enviada
+            $sql = "SELECT id_hospital FROM hospitales WHERE nombre_hospital = ? AND id_distrito = ? AND activo = 0 LIMIT 1";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("si", $nombre, $distrito);
+            $stmt->execute();
+            $inactivo = $stmt->get_result()->fetch_assoc();
+
+            if ($inactivo !== null) {
+                $sql = "UPDATE hospitales SET direccion = ?, activo = 1 WHERE id_hospital = ?";
+                $stmt = $this->conn->prepare($sql);
+                $stmt->bind_param("si", $direccion, $inactivo['id_hospital']);
+                $stmt->execute();
+                return 3;
+            }
+
             $sql = "INSERT INTO hospitales 
             (nombre_hospital, direccion, id_distrito) VALUES (?,?,?)";
             $stmt = $this->conn->prepare($sql);
@@ -172,7 +188,7 @@
         //Funcion que valida si ya esta un hopital con el mismo nombre en el mismo municipio en la BD
         public function validacionDuplicadoHospital($nombre, $distrito){
         //si ya existe el hospital
-            $sql = "SELECT id_hospital FROM hospitales WHERE nombre_hospital = ? AND id_distrito = ?";
+            $sql = "SELECT id_hospital FROM hospitales WHERE nombre_hospital = ? AND id_distrito = ? AND activo = 1";
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("si", $nombre, $distrito); 
             $stmt->execute();
@@ -195,7 +211,7 @@
 
         //--- Modificar un hospital ---
         public function actualizarHospital($id, $nombre, $direccion, $distrito){
-            $validacion = $this->validacionesPUT($id,$distrito);
+            $validacion = $this->validacionesPUT($id, $distrito, $nombre);
             
             if($validacion !== 0){
                 return $validacion;
@@ -210,8 +226,8 @@
 
         //validaciones
         public function validacionesPUT($id, $distrito){
-            //Si no existe la id 
-            $sql = "SELECT * FROM hospitales WHERE id_hospital = ?";
+            //Si no existe la id (solo hospitales activos)
+            $sql = "SELECT * FROM hospitales WHERE id_hospital = ? AND activo = 1";
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id); 
             $stmt->execute();
@@ -226,6 +242,14 @@
             if ($stmt->get_result()->num_rows <= 0) {
                 return 2;
             }
+            //si otro hospital activo ya tiene ese nombre en ese distrito
+            $sql = "SELECT id_hospital FROM hospitales WHERE nombre_hospital = ? AND id_distrito = ? AND id_hospital != ? AND activo = 1";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("sii", $nombre, $distrito, $id);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows > 0) {
+                return 3;
+            }
             return 0;
         }
 
@@ -236,6 +260,15 @@
             //Si la id no existe o fue ilimnada de la DB
             if($this->validacionEliminar($id) === false){
                 return false;
+            }
+
+            //No se puede desactivar un hospital con solicitudes en curso
+            $sql = "SELECT 1 FROM solicitudes WHERE id_hospital = ? AND estado IN ('PENDIENTE','APROBADA') LIMIT 1";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            if ($stmt->get_result()->num_rows > 0) {
+                return 1;
             }
 
             $sql = "UPDATE hospitales SET activo = 0  WHERE id_hospital = ?";
