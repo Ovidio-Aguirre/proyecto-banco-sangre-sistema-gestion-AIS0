@@ -139,8 +139,15 @@ button {
 }
 
 .filter-buttons {
-    display: flex;
-    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-buttons .main-button,
+.filter-buttons .sec-button {
+    box-sizing: border-box;
+    min-width: 170px;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .table-button {
@@ -206,12 +213,6 @@ button {
     border-radius: 15px;
 }
 
-#donor-header, #donation-header, #inventory-header {
-    display: grid;
-    align-items: end;
-    gap: 10px;
-}
-
 #donor-header, #donation-header, #inventory-header,
 #hospital-header, #request-header, #request-history-header, #user-header {
     display: grid;
@@ -219,5 +220,17 @@ button {
     gap: 10px;
 }
 
+/* Tarjetas de inventario */
+.stock-grid {
+    flex-wrap: wrap;
+}
 
+.stock-grid .card {
+    flex: 0 0 calc(25% - 15px);
+}
 
+@media (max-width: 900px) {
+    .stock-grid .card {
+        flex-basis: calc(50% - 10px);
+    }
+}

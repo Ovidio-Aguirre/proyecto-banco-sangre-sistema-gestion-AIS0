@@ -34,13 +34,11 @@ const graficoDonaciones = crearGrafico({
 
 /* --- CARGA DE DATOS --- */
 // Unidades disponibles por tipo (histórico, no depende del filtro)
-async function cargarInventario() {
-    const res = await api('inventario');
-    if (!res.ok || !graficoSangre) return;
+function pintarGraficoInventario(resumen) {
+    if (!graficoSangre) return;
 
-    const inventario = res.data.inventario ?? [];
-    graficoSangre.data.labels = inventario.map(t => t.tipo_sangre);
-    graficoSangre.data.datasets[0].data = inventario.map(t => Number(t.disponibles));
+    graficoSangre.data.labels = resumen.map(t => t.tipo_sangre);
+    graficoSangre.data.datasets[0].data = resumen.map(t => Number(t.disponibles));
     graficoSangre.update();
 }
 
@@ -72,6 +70,74 @@ async function cargarPeriodo() {
         graficoDonaciones.options.scales.x.title.display = true;
         graficoDonaciones.update();
     }
+}
+
+// Mismos umbrales que inventario.js
+const STOCK_MINIMO = 5;
+const DIAS_ALERTA = 7;
+const MAX_ALERTAS = 5;
+
+// Alertas de inventario
+function pintarAlertas(resumen, unidades) {
+    const tabla = document.getElementById('alerts-table');
+    if (!tabla) return;
+    const cuerpo = tabla.tBodies[0] ?? tabla.createTBody();
+
+    const codigo = id => `DON-${String(id).padStart(3, '0')}`;
+    const textoDias = n => n === 0 ? 'hoy' : n === 1 ? 'en 1 día' : `en ${n} días`;
+
+    const vencimientos = unidades
+        .filter(u => u.estado !== 'VENCIDA' && Number(u.dias_para_vencer) <= DIAS_ALERTA)
+        .sort((a, b) => Number(a.dias_para_vencer) - Number(b.dias_para_vencer))
+        .map(u => ({
+            categoria: 'Vencimiento',
+            texto: `${codigo(u.id_donacion)} (${u.tipo_sangre}) vence ${textoDias(Number(u.dias_para_vencer))}`
+        }));
+
+    const bajos = resumen
+        .filter(t => Number(t.disponibles) < STOCK_MINIMO)
+        .sort((a, b) => Number(a.disponibles) - Number(b.disponibles))
+        .map(t => ({
+            categoria: 'Inventario',
+            texto: Number(t.disponibles) === 0
+                ? `${t.tipo_sangre} agotado (0/${STOCK_MINIMO})`
+                : `${t.tipo_sangre} por debajo del mínimo (${Number(t.disponibles)}/${STOCK_MINIMO})`
+        }));
+
+    const alertas = [...vencimientos, ...bajos].slice(0, MAX_ALERTAS);
+
+    cuerpo.innerHTML = alertas.length
+        ? alertas.map(a => `
+            <tr class="subtext">
+                <td>${esc(a.categoria)}</td>
+                <td>${esc(a.texto)}</td>
+            </tr>`).join('')
+        : filaMensaje(2, 'Sin alertas de inventario');
+}
+
+// Una sola carga de inventario para el gráfico y las alertas
+async function cargarInventario() {
+    const [resStock, resUnidades] = await Promise.all([
+        api('inventario'),
+        api('inventario/unidades')
+    ]);
+
+    const cuerpoAlertas = document.getElementById('alerts-table')?.tBodies[0];
+
+    if (!resStock.ok) {
+        if (cuerpoAlertas) cuerpoAlertas.innerHTML = filaMensaje(2, mensajeError(resStock));
+        return;
+    }
+
+    const resumen = resStock.data.inventario ?? [];
+    pintarGraficoInventario(resumen); // el gráfico solo necesita el resumen
+
+    if (!resUnidades.ok) {
+        if (cuerpoAlertas) cuerpoAlertas.innerHTML = filaMensaje(2, mensajeError(resUnidades));
+        return;
+    }
+
+    pintarAlertas(resumen, resUnidades.data.unidades ?? []);
 }
 
 // 'YYYY-MM-DD' -> 'dd/mm' | 'YYYY-MM' -> 'Mes'

@@ -32,6 +32,10 @@
 
     const codigo = id => 'SOL-' + String(id).padStart(3, '0');
     const nombrePaciente = p => p ? `${p.nombre_paciente} ${p.apellido_paciente}` : '—';
+    const textoUnidades = s =>
+        s.estado === 'APROBADA'
+            ? `${Number(s.unidades_asignadas ?? 0)} de ${s.unidades_solicitadas}`
+            : String(s.unidades_solicitadas);
 
     /* --- CARGA DE DATOS --- */
     // Las listas vacías la API las responde con 400, aquí se toman como lista vacía
@@ -104,7 +108,7 @@
                 <td>${esc(hospitales[s.id_hospital]?.nombre_hospital ?? '—')}</td>
                 <td>${esc(nombrePaciente(paciente))}</td>
                 <td><span class="pill">${esc(TIPOS_SANGRE[paciente?.id_tipo_sangre] ?? '—')}</span></td>
-                <td>${esc(s.unidades_solicitadas)}</td>
+                <td>${esc(textoUnidades(s))}</td>
                 <td>${esc(s.fecha_solicitud)}</td>
                 <td>${esc(ESTADOS[s.estado] ?? s.estado)}</td>
                 <td><article>${acciones}</article></td>
@@ -267,6 +271,7 @@
         }
 
         actualizarSeleccion();
+        cargarDatos();
         return true;
     }
 
