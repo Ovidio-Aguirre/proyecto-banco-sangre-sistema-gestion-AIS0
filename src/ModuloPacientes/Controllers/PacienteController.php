@@ -29,7 +29,6 @@
 
                 match ($metodo) {
                     'GET'    => $this->obtenerPaciente($idPaciente),
-                    'PUT'    => $this->modificarPaciente($idPaciente),
                     default  => noPermitido(),
                 };
             }
@@ -45,9 +44,10 @@
 
                 respuesta(200, [
                     'success' => true,
-                    'Hospital' => $resultado
+                    'paciente' => $resultado
                 ]);
             }
+            
             function buscarPaciente(): void{
                 //Busqueda por Nombre o apellido, tipo de sangre o sexo
                 if(isset($_GET["busquedaPaciente"])||
@@ -68,7 +68,7 @@
                     //Si existe orden
                     if($orden){
                         if($orden !== 'ASC' && $orden !== 'DESC'){
-                            respuesta(400, ['success' => false, 'error' => 'Tipo de orden inválido']);
+                            respuesta(400, ['success' => false, 'mensaje' => 'Tipo de orden inválido']);
                             exit;
                         }
                     } 
@@ -76,7 +76,7 @@
                     //Si existe sexo
                     if($sexo){
                         if($sexo !== 'M' && $sexo !== 'F'){
-                            respuesta(400, ['success' => false, 'error' => 'Tipo de sexo inválido']);
+                            respuesta(400, ['success' => false, 'mensaje' => 'Tipo de sexo inválido']);
                             exit;
                         }
                     }
@@ -94,15 +94,12 @@
                     $resultado = $this->modelo->listarPacientes();
                 }
                 
-                if($resultado){
-                    if($resultado === 1){
-                        respuesta(400, ['success' => false, 'Mensaje' => 'Tipo de sangre inválido']);
-                    }
-                    respuesta(200, ['success' => true, 'Pacientes' => $resultado]);
+                //Valida si el tipo de sangre no existe
+                if($resultado === 1){
+                    respuesta(400, ['success' => false, 'mensaje' => 'Tipo de sangre inválido']);
                 }
-                else{
-                    respuesta(400, ['success' => false, 'Mensaje' => 'No se encontro ningun paciente']);
-                }
+                // Sin resultados, lista vacia
+                respuesta(200, ['success' => true, 'pacientes' => $resultado ?: []]);
             }
 
             //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -119,7 +116,7 @@
 
                 //Si alguno de los campos ingresados esta vacio
                 if ( $nombre === '' || $apellido === '' || $tipo === '' || $fecha === ''|| $sexo === '') {
-                    respuesta(400, ['success' => false, 'Mensaje:' => 'Todos los campos son abligatorios']);
+                    respuesta(400, ['success' => false, 'mensaje' => 'Todos los campos son obligatorios']);
                     exit;
                 }
 
@@ -128,7 +125,7 @@
 
                 //sexo no puede ser distinto a M o F
                 if($sexo !== 'M' && $sexo !== 'F'){
-                    respuesta(400, ['success' => false, 'Mensaje:' => 'Tipo de sexo inválido']);
+                    respuesta(400, ['success' => false, 'mensaje' => 'Tipo de sexo inválido']);
                     exit;
                 }
 
@@ -141,64 +138,16 @@
                 );
 
                 if($resultado === 0){
-                    respuesta(201, ['success' => true, 'Mensaje:' => 'Nuevo registro de paciente ingresado correctamente']);
+                    respuesta(201, ['success' => true, 'mensaje' => 'Nuevo registro de paciente ingresado correctamente']);
                 }
                 else if($resultado === 2){
-                    respuesta(400, ['success' => false, 'Mensaje:' => 'Tipo de sangre invalido']);
+                    respuesta(400, ['success' => false, 'mensaje' => 'Tipo de sangre inválido']);
                 }
                 else{
-                    respuesta(409, ['success' => false, 'Mensaje:' => 'Este paciente ya esta registrado']);
+                    respuesta(409, ['success' => false, 'mensaje' => 'Este paciente ya está registrado']);
                 }
                 
             }
 
-            //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            //========== PUT ==========
-            function modificarPaciente(int $id): void {
-                $datosPaciente = leerJson();
-
-                //pasamos los datos a variables
-                $nombre = $datosPaciente['nombrePaciente'] ?? null;
-                $apellido = $datosPaciente['apellidoPaciente'] ?? null;
-                $tipo = $datosPaciente['tipoSangre'] ?? null;
-                $fecha = $datosPaciente['fechaPaciente'] ?? null;
-                $sexo = $datosPaciente['sexoPaciente'] ?? null;
-                $sexo = strtoupper($sexo);
-
-                validarCamposVacios([$nombre]);
-                validarCamposVacios([$apellido]);
-                validarCampoEntero($tipo);
-
-                //el ingreso de fecha debe ser año, mes, dia y debe ser anterior al dia de hoy
-                validarFecha($fecha);
-
-                //sexo no puede ser distinto a M o F
-                if($sexo !== 'M' && $sexo !== 'F'){
-                    respuesta(400, ['success' => false, 'Mensaje:' => 'Caracter de sexo invaido']);
-                    exit;
-                }
-                
-
-                $resultado = $this->modelo->actualizarPaciente(
-                    $id,
-                    $nombre,
-                    $apellido,
-                    $tipo,
-                    $fecha,
-                    $sexo
-                );
-
-                //Segun la respuesta mostramos un mensaje u otro
-                switch($resultado){
-                    case 1:
-                        respuesta(404, ['success' => false, 'Mensaje:' => 'ID ingresado es invalido']);
-                        break;
-                    case 2:
-                        respuesta(404, ['success' => false, 'Mensaje:' => 'El tipo de sangre ingresado es invalido']);
-                        break;
-                    default:
-                        respuesta(200, ['success' => true, 'Mensaje:' => 'Paciente actualizado correctamente']);
-                }
-            }
         }
 ?>
