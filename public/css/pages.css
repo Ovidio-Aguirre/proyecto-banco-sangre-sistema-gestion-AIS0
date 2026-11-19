@@ -254,3 +254,61 @@ button {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* --- LOGIN --- */
+#login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 48px); /* 48px = padding de .main-content */
+    background-color: var(--color-bg-secondary);
+}
+
+.login-card {
+    display: flex;
+    width: 100%;
+    max-width: 800px;
+    min-height: 400px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--color-background);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.login-brand {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    text-align: center;
+}
+
+.login-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    padding: 30px 40px;
+}
+
+.login-form .form-buttons {
+    padding-top: 0;
+}
+
+body:has(#login) {
+    background-color: var(--color-bg-secondary);
+}
+
+@media (max-width: 700px) {
+    .login-card {
+        flex-direction: column;
+    }
+    .login-brand {
+        padding: 20px;
+    }
+}
