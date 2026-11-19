@@ -21,6 +21,12 @@ class InventarioController implements Controlador
             return;
         }
 
+        // Ruta /inventario/unidades
+        if ($id === 'unidades'){
+            $this->listarUnidades();
+            return;
+        }
+
         // Ruta /inventario/{idTipoSangre}
         $this->obtenerPorTipo(validarId($id, 'ID de tipo de sangre inválido'));
     }
@@ -30,6 +36,12 @@ class InventarioController implements Controlador
     private function listarInventario(): void
     {
         respuesta(200, ['success' => true, 'inventario' => $this->modelo->obtenerInventario()]);
+    }
+
+    // GET /inventario/unidades
+    private function listarUnidades(): void
+    {
+        respuesta(200, ['success' => true, 'unidades' => $this->modelo->obtenerUnidades()]);
     }
 
     // GET /inventario/{idTipoSangre}

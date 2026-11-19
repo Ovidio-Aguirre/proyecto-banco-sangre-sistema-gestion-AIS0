@@ -42,14 +42,15 @@
         }
         resumen = res.data.inventario ?? [];
 
-        const detalles = await Promise.all(resumen.map(t => api(`inventario/${t.id_tipo_sangre}`)));
-        unidades = detalles.flatMap((r, i) => r.ok
-            ? (r.data.inventario?.unidades ?? []).map(u => ({
-                ...u,
-                id_tipo_sangre: resumen[i].id_tipo_sangre,
-                tipo_sangre: resumen[i].tipo_sangre
-            }))
-            : []);
+        // Una sola petición con todas las unidades (ya traen id_tipo_sangre y tipo_sangre)
+        const resUnidades = await api('inventario/unidades');
+        if (!resUnidades.ok) {
+            const msg = mensajeError(resUnidades);
+            cuerpoInventario.innerHTML = filaMensaje(6, msg);
+            cuerpoVence.innerHTML = filaMensaje(4, msg);
+            return;
+        }
+        unidades = resUnidades.data.unidades ?? [];
 
         llenarFiltroTipo();
         pintarStock();
