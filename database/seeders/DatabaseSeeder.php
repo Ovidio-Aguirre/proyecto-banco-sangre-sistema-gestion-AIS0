@@ -14,6 +14,7 @@ require_once __DIR__ . "/DistritosSeeder.php";
 // Información del sistema
 require_once __DIR__ . "/HospitalesSeeder.php";
 require_once __DIR__ . "/UsuariosSeeder.php";
+require_once __DIR__ . "/ActividadesSeeder.php";
 
 // Registros de prueba
 require_once __DIR__ . "/DonantesSeeder.php";
