@@ -34,7 +34,7 @@
 
             //buscamos por nombre o apellido
             if ($busqueda !== ''){
-                $sql .= " AND nombre_paciente LIKE ? OR apellido_paciente LIKE ?";
+                $sql .= " AND (nombre_paciente LIKE ? OR apellido_paciente LIKE ?)";
                 $parametros[] = "%".$busqueda."%";
                 $parametros[] = "%".$busqueda."%";
                 $tipoParametro .= "s";
@@ -128,43 +128,5 @@
             return 0;
         }
 
-        //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        //========== PUT ==========
-
-        //--- Modificar un paciente ---
-        public function actualizarPaciente($id, $nombre, $apellido, $tipo, $fecha, $sexo){
-            $validacion = $this->validacionesPUT($id, $tipo);
-            
-            if($validacion !== 0){
-                return $validacion;
-            }
-
-            $sql = "UPDATE pacientes SET nombre_paciente = ?, apellido_paciente = ?, id_tipo_sangre = ?, fecha_nacimiento = ?, sexo = ? WHERE id_paciente = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("ssissi", $nombre, $apellido, $tipo, $fecha, $sexo, $id); 
-            $stmt->execute();
-
-            return 0;
-        }
-
-        //validaciones
-        public function validacionesPUT($id, $tipo){
-            //Si no existe la id 
-            $sql = "SELECT * FROM pacientes WHERE id_paciente = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id); 
-            $stmt->execute();
-            if ($stmt->get_result()->num_rows == 0) {
-                return 1;
-            }
-            $sql = "SELECT * FROM tipo_sangre WHERE id_tipo_sangre = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $tipo); 
-            $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0) {
-                return 2;
-            }
-            return 0;
-        }
     }
 ?>

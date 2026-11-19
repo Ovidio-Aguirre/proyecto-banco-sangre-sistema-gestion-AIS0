@@ -44,7 +44,7 @@
     async function cargarDatos() {
         const [listaHospitales, listaPacientes, listaSolicitudes] = await Promise.all([
             listar('hospitales', 'Hospitales'),
-            listar('pacientes', 'Pacientes'),
+            listar('pacientes', 'pacientes'),
             listar('solicitudes', 'solicitudes')
         ]);
 
