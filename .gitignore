@@ -19,3 +19,6 @@ config.local.php
 # Archivos del sistema
 .DS_Store
 Thumbs.db
+
+# Archivos de prueba locales
+body.json

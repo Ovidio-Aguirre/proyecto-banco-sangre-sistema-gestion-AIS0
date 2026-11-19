@@ -4,7 +4,7 @@
     <div class="page-body">
         <div class="section-nav">
             <button class="page-button active" data-target="consultar">Consultar donantes</button>
-            <button class="page-button" data-target="registrar">Registrar donante</button> 
+            <button class="page-button" data-target="registrar">Registrar donante</button>
         </div>
 
         <div class="section-content">
@@ -17,18 +17,14 @@
                         </article>
                         <article class="filter-group">
                             <label for="buscar-tipo">Tipo sanguineo</label>
-                            <select id="buscar-tipo" required>
+                            <select name="id_tipo_sangre" id="buscar-tipo">
                                 <option value="" disabled selected hidden>Todos</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="AB">AB</option>
-                                <option value="O">O</option>
                             </select>
                         </article>
                         <div class="filter-buttons">
-                                <button class="main-button text">BUSCAR</button>
-                                <button class="sec-button" data-target="registrar">+ NUEVO DONANTE</button>
-                            </div>
+                            <button class="main-button text">BUSCAR</button>
+                            <button class="sec-button" data-target="registrar">+ NUEVO DONANTE</button>
+                        </div>
                     </div>
                     <table class="table data-table" id="donor-table">
                         <thead>
@@ -36,27 +32,11 @@
                                 <th>DUI</th>
                                 <th>Nombre</th>
                                 <th>Tipo</th>
-                                <th>Telefono</th>
+                                <th>Contacto</th>
                                 <th>Ultima donacion</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr class="text">
-                                <td>06147890-1</td>
-                                <td>Luis Torres</td>
-                                <td><span class="pill">AB+</span></td>
-                                <td>7890-5602</td>
-                                <td>20/10/2026</td>
-                                <td>
-                                    <article>
-                                        <button class="table-button">Ver Historial</button>
-                                        <button class="table-button">Editar</button>
-                                        <button class="table-button">Eliminar</button>
-                                    </article>
-                                </td>
-                            </tr>
-                        </tbody>
                     </table>
                 </div>
             </section>
@@ -64,16 +44,17 @@
             <section id="registrar" class="page-panel">
                 <form class="container" action="" method="POST">
                     <h3 class="title">Datos del donante</h3>
+                    <input type="hidden" name="id_donante">
                     <div class="form-grid">
 
                         <article class="form-group">
                             <label for="nombre">Nombre</label>
-                            <input type="text" name="nombre" id="nombre" required>
+                            <input type="text" name="nombre" id="nombre" maxlength="50" required>
                         </article>
 
                         <article class="form-group">
                             <label for="apellido">Apellido</label>
-                            <input type="text" name="apellido" id="apellido" required>
+                            <input type="text" name="apellido" id="apellido" maxlength="50" required>
                         </article>
 
                         <article class="form-group">
@@ -82,18 +63,18 @@
                         </article>
 
                         <article class="form-group">
-                            <label for="telefono">Contacto</label>
-                            <input type="tel" name="telefono" id="telefono" placeholder="0000-0000" maxlength="9" inputmode="numeric" required>
+                            <label for="contacto">Contacto</label>
+                            <input type="tel" name="contacto" id="contacto" placeholder="0000-0000" maxlength="9" inputmode="numeric">
                         </article>
-                        
+
                         <article class="form-group">
                             <label for="nacimiento">Fecha de Nacimiento</label>
-                            <input type="date" name="nacimiento" id="nacimiento" required>
+                            <input type="date" name="fecha_nacimiento" id="nacimiento" required>
                         </article>
 
                         <article class="form-group">
                             <label for="sexo">Sexo</label>
-                            <select id="sexo" required>
+                            <select name="sexo" id="sexo" required>
                                 <option value="" disabled selected hidden>Seleccione</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Femenino</option>
@@ -101,30 +82,61 @@
                         </article>
 
                         <article class="form-group">
-                            <label for="peso">Peso (kg)</label>
-                            <input type="number" name="peso" id="peso"  min="0" step="0.1" required>
-                        </article>
-
-                        <article class="form-group">
                             <label for="tsangre">Tipo de Sangre</label>
-                            <select id="tsangre" required>
+                            <select name="id_tipo_sangre" id="tsangre" required>
                                 <option value="" disabled selected hidden>Seleccione</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="AB">AB</option>
-                                <option value="O">O</option>
                             </select>
                         </article>
 
                         <div class="form-buttons">
-                            <button type="submit" class="main-button" >GUARDAR DONANTE</button>
+                            <button type="submit" class="main-button">GUARDAR DONANTE</button>
                             <button type="button" class="sec-button" data-target="consultar">CANCELAR</button>
                         </div>
-                        
+
                     </div>
                 </form>
             </section>
+
+            <section id="historial" class="page-panel">
+                <div class="container">
+                    <h3 class="title">Historial del donante</h3>
+                    <p class="text"><b>Donante:</b> <span id="hist-nombre"></span></p>
+                    <p class="text"><b>DUI:</b> <span id="hist-dui"></span> &nbsp; <b>Tipo:</b> <span id="hist-tipo"></span></p>
+                </div>
+
+                <div class="container">
+                    <h3 class="title">Evaluaciones</h3>
+                    <table class="table data-table" id="eval-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Peso (kg)</th>
+                                <th>Altura (m)</th>
+                                <th>Resultado</th>
+                                <th>Motivo</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="container">
+                    <h3 class="title">Donaciones</h3>
+                    <table class="table data-table" id="don-hist-table">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Recoleccion</th>
+                                <th>Caducidad</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div class="form-buttons">
+                        <button type="button" class="sec-button" data-target="consultar">VOLVER AL LISTADO</button>
+                    </div>
+                </div>
+            </section>
+
         </div>
     </div>
-    
 </section>

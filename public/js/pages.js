@@ -10,9 +10,9 @@ document.querySelectorAll(".page-body").forEach(container => {
 
 /* --- FORMS --- */
 const inputDui = document.getElementById('dui');
-const telefono = document.getElementById('telefono');
+const telefono = document.getElementById('contacto');
 
-if (dui) aplicarMascara(dui, 8, 9);
+if (inputDui) aplicarMascara(inputDui, 8, 9);
 if (telefono) aplicarMascara(telefono, 4, 8);
 
 

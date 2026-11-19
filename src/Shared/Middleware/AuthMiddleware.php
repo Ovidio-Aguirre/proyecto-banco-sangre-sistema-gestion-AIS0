@@ -1,1 +1,0 @@
-//Clase encargada de validacion de sesion y permisos de roles.

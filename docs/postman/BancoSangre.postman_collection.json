@@ -1,0 +1,4235 @@
+{
+  "info": {
+    "_postman_id": "173b6733-22c9-44bc-a6bf-9f6404af789f",
+    "name": "Banco de Sangre - API (Pruebas Manuales Fase 3)",
+    "description": "Cada endpoint se prueba de forma independiente. Ejecutar 'Crear donante' antes de las carpetas 01/02. Ejecutar las carpetas completas y en orden.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Donantes",
+      "description": "Módulo Donantes. Ejecutar 'Crear donante' primero: guarda {{donante_id}}.",
+      "item": [
+        {
+          "name": "Listar donantes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar - búsqueda + tipo de sangre + orden",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes?busqueda=Juan&id_tipo_sangre=1&orden=asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ],
+              "query": [
+                {
+                  "key": "busqueda",
+                  "value": "Juan"
+                },
+                {
+                  "key": "id_tipo_sangre",
+                  "value": "1"
+                },
+                {
+                  "key": "orden",
+                  "value": "asc"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar - búsqueda vacía (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes?busqueda=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ],
+              "query": [
+                {
+                  "key": "busqueda",
+                  "value": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar - orden inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes?orden=xyz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "xyz"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"{{dui_test}}\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"contacto\": \"7777-8888\",\n  \"fecha_nacimiento\": \"1995-04-12\",\n  \"sexo\": \"M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('dui_test', String(Math.floor(10000000+Math.random()*89999999))+'-'+Math.floor(Math.random()*10));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);",
+                  "const j = pm.response.json(); if (j.id_donante) pm.collectionVariables.set('donante_id', j.id_donante);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante - DUI duplicado (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"{{dui_test}}\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"contacto\": \"7777-8888\",\n  \"fecha_nacimiento\": \"1995-04-12\",\n  \"sexo\": \"M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante - campos vacíos (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"{{dui_test}}\",\n  \"nombre\": \"\",\n  \"apellido\": \"\",\n  \"contacto\": \"7777-8888\",\n  \"fecha_nacimiento\": \"1995-04-12\",\n  \"sexo\": \"M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante - DUI inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"123\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"contacto\": \"7777-8888\",\n  \"fecha_nacimiento\": \"1995-04-12\",\n  \"sexo\": \"M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante - contacto inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"{{dui_test}}\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"contacto\": \"77778888\",\n  \"fecha_nacimiento\": \"1995-04-12\",\n  \"sexo\": \"M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante - sexo inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"{{dui_test}}\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"contacto\": \"7777-8888\",\n  \"fecha_nacimiento\": \"1995-04-12\",\n  \"sexo\": \"X\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante - fecha futura (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"{{dui_test}}\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"contacto\": \"7777-8888\",\n  \"fecha_nacimiento\": \"2999-01-01\",\n  \"sexo\": \"M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear donante - JSON inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "\"esto no es json\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener donante por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener donante inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener donante - ID inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "abc"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar donante",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tipo_sangre\": 1,\n  \"dui\": \"{{dui_test}}\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"contacto\": \"7999-0000\",\n  \"fecha_nacimiento\": \"1995-04-12\",\n  \"sexo\": \"M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar estado a inactivo (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar estado - falta campo activo (400)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reactivar donante (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Método no permitido (405)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 405', () => pm.response.to.have.status(405));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Evaluaciones de donante",
+      "description": "",
+      "item": [
+        {
+          "name": "Registrar evaluación APTO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}",
+                "evaluaciones"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"peso\": 70.5,\n  \"altura\": 1.75,\n  \"resultado\": \"APTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar evaluación NO_APTO con motivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}",
+                "evaluaciones"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"peso\": 48,\n  \"altura\": 1.6,\n  \"resultado\": \"NO_APTO\",\n  \"motivo\": \"Peso insuficiente\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "NO_APTO sin motivo (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}",
+                "evaluaciones"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"peso\": 48,\n  \"altura\": 1.6,\n  \"resultado\": \"NO_APTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resultado inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}",
+                "evaluaciones"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"peso\": 70,\n  \"altura\": 1.7,\n  \"resultado\": \"TAL VEZ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Peso inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}",
+                "evaluaciones"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"peso\": -5,\n  \"altura\": 1.7,\n  \"resultado\": \"APTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Donante inexistente (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/999999/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "999999",
+                "evaluaciones"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"peso\": 70,\n  \"altura\": 1.7,\n  \"resultado\": \"APTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Última evaluación",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}",
+                "evaluaciones"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Historial completo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/{{donante_id}}/evaluaciones?historial=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "{{donante_id}}",
+                "evaluaciones"
+              ],
+              "query": [
+                {
+                  "key": "historial",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Pacientes",
+      "description": "Campos de entrada en camelCase tal como los lee PacienteController. Ejecutar en orden: con la tabla vacía, listar responde 400.",
+      "item": [
+        {
+          "name": "Crear paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": "La API no devuelve el ID: 'Listar pacientes' lo guarda en {{paciente_id}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Ana\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('pac_apellido', 'Prueba' + Math.floor(Math.random()*1000000));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear paciente - duplicado (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Ana\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear paciente - campos vacíos (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear paciente - sexo inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Ana\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"X\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear paciente - tipo de sangre inexistente (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Otro\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 999,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear paciente - fecha futura (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Ana\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"2999-01-01\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar pacientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);",
+                  "const j = pm.response.json(); if (j.Pacientes && j.Pacientes.length) pm.collectionVariables.set('paciente_id', j.Pacientes[j.Pacientes.length-1].id_paciente);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por búsqueda, tipo de sangre, sexo y orden",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes?busquedaPaciente=Ana&tipoSangrePaciente=1&sexoPaciente=F&orden=ASC",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ],
+              "query": [
+                {
+                  "key": "busquedaPaciente",
+                  "value": "Ana"
+                },
+                {
+                  "key": "tipoSangrePaciente",
+                  "value": "1"
+                },
+                {
+                  "key": "sexoPaciente",
+                  "value": "F"
+                },
+                {
+                  "key": "orden",
+                  "value": "ASC"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtro sexo inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes?sexoPaciente=Z",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ],
+              "query": [
+                {
+                  "key": "sexoPaciente",
+                  "value": "Z"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener paciente por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{paciente_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener paciente inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar paciente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{paciente_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Ana María\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar paciente inexistente (404)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "999999"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Ana\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Método no permitido (405)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{paciente_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 405', () => pm.response.to.have.status(405));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Hospitales",
+      "description": "Ejecutar en orden: con la tabla vacía, listar responde 400.",
+      "item": [
+        {
+          "name": "Crear hospital",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            },
+            "description": "La API no devuelve el ID: 'Listar hospitales' lo guarda en {{hospital_id}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreHospital\": \"{{hosp_nombre}}\",\n  \"direccionHospital\": \"Colonia Médica, San Salvador\",\n  \"distritoHospital\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('hosp_nombre', 'Hospital Prueba ' + Math.floor(Math.random()*1000000));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear hospital - duplicado (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreHospital\": \"{{hosp_nombre}}\",\n  \"direccionHospital\": \"Colonia Médica, San Salvador\",\n  \"distritoHospital\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear hospital - campos vacíos (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreHospital\": \"\",\n  \"direccionHospital\": \"Colonia Médica, San Salvador\",\n  \"distritoHospital\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear hospital - distrito inexistente (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreHospital\": \"Otro\",\n  \"direccionHospital\": \"Colonia Médica, San Salvador\",\n  \"distritoHospital\": 99999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar hospitales",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);",
+                  "const j = pm.response.json(); if (j.Hospitales && j.Hospitales.length) pm.collectionVariables.set('hospital_id', j.Hospitales[j.Hospitales.length-1].id_hospital);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por nombre y orden",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales?nombreHospital=Hospital&ordenHospital=ASC",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ],
+              "query": [
+                {
+                  "key": "nombreHospital",
+                  "value": "Hospital"
+                },
+                {
+                  "key": "ordenHospital",
+                  "value": "ASC"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por departamento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales?departamentoHospital=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ],
+              "query": [
+                {
+                  "key": "departamentoHospital",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtro orden inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales?ordenHospital=XX",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ],
+              "query": [
+                {
+                  "key": "ordenHospital",
+                  "value": "XX"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtro departamento fuera de rango (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales?departamentoHospital=9999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ],
+              "query": [
+                {
+                  "key": "departamentoHospital",
+                  "value": "9999"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener hospital por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/{{hospital_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "{{hospital_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener hospital inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar hospital",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/{{hospital_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "{{hospital_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreHospital\": \"{{hosp_nombre}}\",\n  \"direccionHospital\": \"Nueva dirección 123\",\n  \"distritoHospital\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar hospital inexistente (404)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "999999"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreHospital\": \"{{hosp_nombre}}\",\n  \"direccionHospital\": \"Colonia Médica, San Salvador\",\n  \"distritoHospital\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar hospital (borrado lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/{{hospital_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "{{hospital_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar hospital ya eliminado (404)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/{{hospital_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "{{hospital_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Solicitudes",
+      "description": "Ejecutar en orden. Estados: PENDIENTE -> APROBADA/RECHAZADA (RECHAZADA exige motivoRechazo); APROBADA -> ENTREGADA (PATCH). Requiere columnas fecha_entrega y motivo_rechazo en la tabla solicitudes.",
+      "item": [
+        {
+          "name": "Preparación: crear paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": "Una solicitud necesita un paciente y un hospital existentes.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombrePaciente\": \"Ana\",\n  \"apellidoPaciente\": \"{{pac_apellido}}\",\n  \"tipoSangre\": 1,\n  \"fechaPaciente\": \"1990-06-20\",\n  \"sexoPaciente\": \"F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('pac_apellido', 'Sol' + Math.floor(Math.random()*1000000));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Preparación: obtener ID del paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);",
+                  "const j = pm.response.json(); const l = j.Pacientes || []; if (l.length) pm.collectionVariables.set('paciente_id', l[l.length-1].id_paciente);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Preparación: crear hospital",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreHospital\": \"{{hosp_nombre}}\",\n  \"direccionHospital\": \"Colonia Médica, San Salvador\",\n  \"distritoHospital\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('hosp_nombre', 'Hospital Sol ' + Math.floor(Math.random()*1000000));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Preparación: obtener ID del hospital",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);",
+                  "const j = pm.response.json(); const l = j.Hospitales || []; if (l.length) pm.collectionVariables.set('hospital_id', l[l.length-1].id_hospital);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud A",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 2,\n  \"justificacion\": \"Cirugía programada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 2,\n  \"justificacion\": \"Cirugía programada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud C",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 2,\n  \"justificacion\": \"Cirugía programada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud - campos vacíos (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 2,\n  \"justificacion\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud - demasiadas unidades, máx. 10 (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 11,\n  \"justificacion\": \"Cirugía programada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud - unidades 0 (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 0,\n  \"justificacion\": \"Cirugía programada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud - paciente inexistente (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": 999999,\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 2,\n  \"justificacion\": \"Cirugía programada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud - hospital inexistente (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": 999999,\n  \"unidadesSolicitadas\": 2,\n  \"justificacion\": \"Cirugía programada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar solicitudes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": "Guarda {{solicitud_id}} (B, la penúltima), {{solicitud_id_c}} (C, la última) y {{solicitud_id_a}} (A)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);",
+                  "const j = pm.response.json(); const l = j.Pacientes || []; if (l.length) pm.collectionVariables.set('solicitud_id_c', l[l.length-1].id_solicitud); if (l.length > 1) pm.collectionVariables.set('solicitud_id', l[l.length-2].id_solicitud); if (l.length > 2) pm.collectionVariables.set('solicitud_id_a', l[l.length-3].id_solicitud);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por estado y orden",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?estadoSolicitud=PENDIENTE&orden=DESC",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "estadoSolicitud",
+                  "value": "PENDIENTE"
+                },
+                {
+                  "key": "orden",
+                  "value": "DESC"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por nombre de paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?busquedaPaciente=Ana",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "busquedaPaciente",
+                  "value": "Ana"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por ID de paciente y hospital",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?idPaciente={{paciente_id}}&idHospital={{hospital_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "idPaciente",
+                  "value": "{{paciente_id}}"
+                },
+                {
+                  "key": "idHospital",
+                  "value": "{{hospital_id}}"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtro estado inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?estadoSolicitud=XYZ",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "estadoSolicitud",
+                  "value": "XYZ"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtro orden inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?orden=XX",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "XX"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener solicitud por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener solicitud inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener solicitud - ID inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "abc"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Aprobar solicitud A (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id_a}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id_a}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 3,\n  \"justificacion\": \"Actualización de solicitud\",\n  \"estado\": \"APROBADA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar solicitud ya aprobada (404)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id_a}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id_a}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 3,\n  \"justificacion\": \"Actualización de solicitud\",\n  \"estado\": \"RECHAZADA\",\n  \"motivoRechazo\": \"Intento de cambio\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar - estado inválido (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 3,\n  \"justificacion\": \"Actualización de solicitud\",\n  \"estado\": \"ENTREGADA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modificar solicitud inexistente (404)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "999999"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 3,\n  \"justificacion\": \"Actualización de solicitud\",\n  \"estado\": \"APROBADA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar solicitud C sin enviar motivo (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id_c}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id_c}}"
+              ]
+            },
+            "description": "Regla: al pasar de PENDIENTE a RECHAZADA el motivo es obligatorio.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 3,\n  \"justificacion\": \"Actualización de solicitud\",\n  \"estado\": \"RECHAZADA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar solicitud C con motivo vacío (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id_c}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id_c}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 3,\n  \"justificacion\": \"Actualización de solicitud\",\n  \"estado\": \"RECHAZADA\",\n  \"motivoRechazo\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entregar solicitud pendiente (409)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            },
+            "description": "Solo se puede entregar una solicitud APROBADA."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entregar solicitud A aprobada (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id_a}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id_a}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entregar solicitud ya entregada (409)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id_a}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id_a}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar solicitud B con motivo (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idPaciente\": \"{{paciente_id}}\",\n  \"idHospital\": \"{{hospital_id}}\",\n  \"unidadesSolicitadas\": 3,\n  \"justificacion\": \"Actualización de solicitud\",\n  \"estado\": \"RECHAZADA\",\n  \"motivoRechazo\": \"Inventario insuficiente\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verificar motivo de rechazo guardado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);",
+                  "pm.test('Guarda el motivo de rechazo', () => pm.expect(pm.response.text()).to.include('Inventario insuficiente'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entregar solicitud rechazada (409)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar solicitud - método no permitido (405)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{{solicitud_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{{solicitud_id}}"
+              ]
+            },
+            "description": "El DELETE de solicitudes fue retirado de la API."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 405', () => pm.response.to.have.status(405));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Método no permitido en la colección (405)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 405', () => pm.response.to.have.status(405));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Manejo de errores generales",
+      "description": "",
+      "item": [
+        {
+          "name": "Recurso inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/xyz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "xyz"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ruta sin recurso (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Responde JSON', () => pm.response.to.be.json);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "donante_id",
+      "value": "1"
+    },
+    {
+      "key": "paciente_id",
+      "value": "1"
+    },
+    {
+      "key": "hospital_id",
+      "value": "1"
+    },
+    {
+      "key": "solicitud_id",
+      "value": "1"
+    },
+    {
+      "key": "solicitud_id_a",
+      "value": "1"
+    },
+    {
+      "key": "solicitud_id_c",
+      "value": "1"
+    },
+    {
+      "key": "dui_test",
+      "value": "01234567-8"
+    },
+    {
+      "key": "pac_apellido",
+      "value": "Prueba"
+    },
+    {
+      "key": "hosp_nombre",
+      "value": "Hospital Prueba"
+    }
+  ]
+}

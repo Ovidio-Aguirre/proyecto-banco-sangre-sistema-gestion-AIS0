@@ -1,3 +1,104 @@
 <section class="inventario">
     <h1 class="page-title">Inventario</h1>
+
+    <div class="page-body">
+        <div class="section-nav">
+            <button class="page-button active" data-target="stock">Ver stock</button>
+            <button class="page-button" data-target="buscar">Buscar y filtrar</button>
+            <button class="page-button" data-target="alertas">Alertas de inventario</button>
+        </div>
+
+        <div class="section-content">
+            <section id="stock" class="page-panel active">
+                <div class="container">
+                    <h3 class="title">Unidades por tipo y estado</h3>
+                    <table class="table data-table" id="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Disponible</th>
+                                <th>Reservada</th>
+                                <th>Vencida</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+            <section id="buscar" class="page-panel">
+                <div class="container">
+                    <div id="inventory-header">
+                        <article class="filter-group">
+                            <label for="filtro-tipo">Tipo de Sangre</label>
+                            <select name="id_tipo_sangre" id="filtro-tipo">
+                                <option value="">Todos</option>
+                            </select>
+                        </article>
+                        <article class="filter-group">
+                            <label for="filtro-estado">Estado</label>
+                            <select name="estado" id="filtro-estado">
+                                <option value="">Todos</option>
+                                <option value="DISPONIBLE">Disponible</option>
+                                <option value="RESERVADA">Reservada</option>
+                                <option value="VENCIDA">Vencida</option>
+                            </select>
+                        </article>
+                        <article class="filter-group">
+                            <label for="caduca-antes">Caduca antes de</label>
+                            <input type="date" name="caduca_antes" id="caduca-antes">
+                        </article>
+                        <div class="filter-buttons">
+                            <button type="button" class="main-button text">BUSCAR</button>
+                            <button type="button" class="sec-button">LIMPIAR</button>
+                        </div>
+                    </div>
+                    <table class="table data-table" id="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Unidad</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Recolección</th>
+                                <th>Caducidad</th>
+                                <th>Días restantes</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+            <section id="alertas" class="page-panel">
+                <div class="container">
+                    <h3 class="title">Niveles bajos por tipo sanguíneo</h3>
+                    <table class="table data-table" id="low-stock-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Disponible</th>
+                                <th>Mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="container">
+                    <h3 class="title">Unidades próximas a caducar</h3>
+                    <table class="table data-table" id="expiring-table">
+                        <thead>
+                            <tr>
+                                <th>Unidad</th>
+                                <th>Tipo</th>
+                                <th>Caduca</th>
+                                <th>Días restantes</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
 </section>
