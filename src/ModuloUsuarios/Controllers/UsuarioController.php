@@ -95,6 +95,7 @@ class UsuarioController implements Controlador
             case 'usuario_no_generado':
                 respuesta(500, ['success' => false, 'mensaje' => 'No se pudo generar un nombre de usuario único']);
             default:
+                registrarActividad('Crear usuario', $res['nombre_usuario'] . ' (' . $correo . ')');
                 respuesta(201, [
                     'success'             => true,
                     'id_usuario'          => $res['id_usuario'],
@@ -148,6 +149,10 @@ class UsuarioController implements Controlador
             case 'correo_duplicado':
                 respuesta(409, ['success' => false, 'mensaje' => 'El correo ya está registrado']);
             default:
+                registrarActividad(
+                    'Actualizar usuario',
+                    'Usuario #' . $idUsuario . ' (' . implode(', ', array_keys($cambios)) . ')'
+                );
                 respuesta(200, ['success' => true, 'mensaje' => 'Usuario actualizado']);
         }
     }

@@ -140,6 +140,30 @@ async function cargarInventario() {
     pintarAlertas(resumen, resUnidades.data.unidades ?? []);
 }
 
+// Últimas acciones registradas
+async function cargarActividad() {
+    const tabla = document.getElementById('actions-table');
+    if (!tabla) return;
+    const cuerpo = tabla.tBodies[0] ?? tabla.createTBody();
+
+    const res = await api('reportes/actividad', { params: { limite: 5 } });
+    if (!res.ok) {
+        cuerpo.innerHTML = filaMensaje(4, mensajeError(res));
+        return;
+    }
+
+    const actividad = res.data.actividad ?? [];
+    cuerpo.innerHTML = actividad.length
+        ? actividad.map(a => `
+            <tr class="subtext" title="${esc(a.descripcion)}">
+                <td>${esc(a.fecha)}</td>
+                <td>${esc(a.hora)}</td>
+                <td>${esc(a.accion)}</td>
+                <td>${esc(a.nombre_usuario ?? '—')}</td>
+            </tr>`).join('')
+        : filaMensaje(4, 'Sin acciones registradas');
+}
+
 // 'YYYY-MM-DD' -> 'dd/mm' | 'YYYY-MM' -> 'Mes'
 function formatearFecha(fecha) {
     const [anio, mes, dia] = fecha.split('-');
@@ -150,6 +174,7 @@ if (filtroGlobal && etiquetaPeriodo) {
     filtroGlobal.addEventListener('change', cargarPeriodo);
     cargarPeriodo();
     cargarInventario();
+    cargarActividad();
 }
 
 // ---- UTILIDADES ----

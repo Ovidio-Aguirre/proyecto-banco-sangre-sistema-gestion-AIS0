@@ -79,6 +79,11 @@ class EvaluacionController
         if ($res['estado'] === 'donante_no_disponible') {
             respuesta(404, ['success' => false, 'mensaje' => 'Donante no encontrado o inactivo']);
         }
+        registrarActividad(
+            'Evaluar donante',
+            'EVA-' . str_pad((string)$res['id_evaluacion'], 3, '0', STR_PAD_LEFT)
+                . ' (' . ($data['resultado'] === 'APTO' ? 'apto' : 'no apto') . ') al donante #' . $idDonante
+        );
         respuesta(201, ['success' => true, 'id_evaluacion' => $res['id_evaluacion']]);
     }
 }

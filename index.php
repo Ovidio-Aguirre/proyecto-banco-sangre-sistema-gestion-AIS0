@@ -36,9 +36,10 @@ $pages = [
         'title' => 'Hospitales',
         'view'  => '/src/ModuloHospitales/Views/hospitales.html'
     ],
-    'reportes' => [
-        'title' => 'Reportes',
-        'view'  => '/src/ModuloReportes/Views/reportes.html'
+    'actividad' => [
+        'title' => 'Registro de actividad',
+        'view'  => '/src/ModuloReportes/Views/actividad.html',
+        'roles' => [ROL_ADMIN]
     ],
     'usuarios' => [
         'title' => 'Usuarios',

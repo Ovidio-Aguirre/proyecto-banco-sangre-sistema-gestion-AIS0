@@ -123,8 +123,10 @@ class DonanteController implements Controlador
             case 'conflicto_medico':
                 respuesta(409, ['success' => false, 'mensaje' => 'El DUI pertenece a donante inactivo y sus datos no coinciden. Verifique la informacion.']);
             case 'reactivado':
+                registrarActividad('Reactivar donante', $data['nombre'] . ' ' . $data['apellido'] . ' (' . $data['dui'] . ')');
                 respuesta(200, ['success' => true, 'id_donante' => $res['id_donante'], 'mensaje' => 'Donante reactivado']);
             default:
+                registrarActividad('Registrar donante', $data['nombre'] . ' ' . $data['apellido'] . ' (' . $data['dui'] . ')');
                 respuesta(201, ['success' => true, 'id_donante' => $res['id_donante']]);
         }
     }
@@ -152,6 +154,7 @@ class DonanteController implements Controlador
         if ($res === null){
             respuesta(409, ['success' => false, 'mensaje' => 'El DUI pertenece a otro donante.']);
         }
+        registrarActividad('Editar donante', $data['nombre'] . ' ' . $data['apellido'] . ' (' . $data['dui'] . ')');
         respuesta(200, ['success' => true, 'donante' => $this->modelo->obtenerDonantePorId($idDonante), 'mensaje' => 'Registro actualizado.']);
     }
     
@@ -174,6 +177,10 @@ class DonanteController implements Controlador
             respuesta(404, ['success' => false, 'mensaje' => 'Donante no encontrado']);
         }
 
+        registrarActividad(
+            $activo ? 'Activar donante' : 'Desactivar donante',
+            'Donante #' . $idDonante . ($activo ? ' activado' : ' desactivado')
+        );
         respuesta(200, ['success' => true, 'mensaje' => $activo ? 'Donante activo' : 'Donante inactivo']);
     }
 

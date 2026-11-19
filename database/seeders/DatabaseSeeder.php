@@ -38,6 +38,7 @@ try {
     // Información del sistema
     seedHospitales($conn);
     seedUsuarios($conn);
+    seedActividades($conn);
 
     // Registros de prueba
     seedDonantes($conn);

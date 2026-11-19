@@ -129,6 +129,10 @@ class DonacionController implements Controlador
             case 'evaluacion_usada':
                 respuesta(409, ['success' => false, 'mensaje' => 'La evaluación ya fue utilizada']);
             default:
+                registrarActividad(
+                    'Registrar donación',
+                    'DON-' . str_pad((string)$res['id_donacion'], 3, '0', STR_PAD_LEFT) . ' registrada (donante #' . $idDonante . ')'
+                );
                 respuesta(201, ['success' => true, 'id_donacion' => $res['id_donacion']]);
         }
     }
@@ -158,6 +162,10 @@ class DonacionController implements Controlador
                     'mensaje'  => 'La donación ya tiene ese estado, sin cambios'
                 ]);
             default:
+                registrarActividad(
+                    'Cambiar estado de donación',
+                    'DON-' . str_pad((string)$idDonacion, 3, '0', STR_PAD_LEFT) . ' pasó a ' . $estado
+                );
                 respuesta(200, [
                     'success'  => true,
                     'donacion' => $this->modelo->obtenerDonacionPorId($idDonacion),
@@ -197,6 +205,13 @@ class DonacionController implements Controlador
             case 'tipo_incompatible':
                 respuesta(409, ['success' => false, 'mensaje' => 'El tipo de sangre no es compatible con el paciente']);
             default:
+                registrarActividad(
+                    $idSolicitud === null ? 'Desvincular unidad' : 'Vincular unidad',
+                    'DON-' . str_pad((string)$idDonacion, 3, '0', STR_PAD_LEFT)
+                        . ($idSolicitud === null
+                            ? ' desvinculada de su solicitud'
+                            : ' vinculada a SOL-' . str_pad((string)$idSolicitud, 3, '0', STR_PAD_LEFT))
+                );
                 respuesta(200, [
                     'success'  => true,
                     'donacion' => $this->modelo->obtenerDonacionPorId($idDonacion),
@@ -229,10 +244,14 @@ class DonacionController implements Controlador
             case 'evaluacion_usada':
                 respuesta(409, ['success' => false, 'mensaje' => 'La evaluación ya fue utilizada']);
             default:
+                registrarActividad(
+                    'Reasignar donación',
+                    'DON-' . str_pad((string)$idDonacion, 3, '0', STR_PAD_LEFT) . ' reasignada a la evaluación #' . $idEvaluacion
+                );
                 respuesta(200, [
-                'success'  => true,
-                'donacion' => $this->modelo->obtenerDonacionPorId($idDonacion),
-                'mensaje'  => 'Donación reasignada'
+                    'success'  => true,
+                    'donacion' => $this->modelo->obtenerDonacionPorId($idDonacion),
+                    'mensaje'  => 'Donación reasignada'
                 ]);
         }
     }
