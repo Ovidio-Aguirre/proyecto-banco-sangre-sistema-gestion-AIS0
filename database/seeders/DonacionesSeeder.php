@@ -78,6 +78,7 @@ function seedDonaciones(mysqli $conn): void
                 (?, ?, NULL, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE 
                 id_usuario = VALUES(id_usuario), 
+                id_solicitud = NULL,
                 fecha_recoleccion = VALUES(fecha_recoleccion), 
                 fecha_caducidad = VALUES(fecha_caducidad),
                 estado = VALUES(estado)";
