@@ -23,6 +23,24 @@
         UTILIZADA: 'Utilizada', VENCIDA: 'Vencida', DESCARTADA: 'Descartada'
     };
 
+    // Rango de edad: 18 a 65 años
+    const pad = n => String(n).padStart(2, '0');
+    const fechaISO = f => `${f.getFullYear()}-${pad(f.getMonth() + 1)}-${pad(f.getDate())}`;
+
+    function limitarNacimiento(esAlta) {
+        const hoy = new Date();
+        const a = hoy.getFullYear(), m = hoy.getMonth(), d = hoy.getDate();
+        form.nacimiento.max = fechaISO(new Date(a - 18, m, d));
+        if (esAlta) {
+            // Solo menores de 65
+            form.nacimiento.min = fechaISO(new Date(a - 65, m, d + 1));
+        } else {
+            // Al editar se permite un donante de 65 o más ya registrado
+            form.nacimiento.removeAttribute('min');
+        }
+    }
+    limitarNacimiento(true);
+
     // Los selects de tipo de sangre usan los ids reales (A+, A-, ...)
     llenarSelect(selectFiltro, TIPOS_SANGRE, 'Todos');
     llenarSelect(selectTipo, TIPOS_SANGRE);
@@ -142,6 +160,7 @@
             const d = res.data.donante;
 
             idEditando = d.id_donante;
+            limitarNacimiento(false);
             form.nombre.value = d.nombre;
             form.apellido.value = d.apellido;
             form.dui.value = d.dui;
@@ -165,6 +184,7 @@
     /* --- GUARDAR (crear o actualizar) --- */
     function volverAConsulta() {
         idEditando = null;
+        limitarNacimiento(true);
         form.reset();
         titulo.textContent = 'Datos del donante';
         btnGuardar.textContent = 'GUARDAR DONANTE';

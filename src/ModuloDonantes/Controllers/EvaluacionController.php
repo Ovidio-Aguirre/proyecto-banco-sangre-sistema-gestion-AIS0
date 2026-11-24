@@ -82,9 +82,18 @@ class EvaluacionController
         registrarActividad(
             'Evaluar donante',
             'EVA-' . str_pad((string)$res['id_evaluacion'], 3, '0', STR_PAD_LEFT)
-                . ' (' . ($data['resultado'] === 'APTO' ? 'apto' : 'no apto') . ') al donante #' . $idDonante
+                . ' (' . ($res['resultado'] === 'APTO' ? 'apto' : 'no apto') . ') al donante #' . $idDonante
         );
-        respuesta(201, ['success' => true, 'id_evaluacion' => $res['id_evaluacion']]);
+        respuesta(201, [
+            'success'       => true,
+            'id_evaluacion' => $res['id_evaluacion'],
+            'resultado'     => $res['resultado'],
+            'motivo'        => $res['motivo'],
+            'forzado'       => $res['forzado'],
+            'mensaje'       => $res['forzado']
+                ? 'Evaluación registrada como NO_APTO: ' . $res['motivo']
+                : 'Evaluación registrada'
+        ]);
     }
 }
 

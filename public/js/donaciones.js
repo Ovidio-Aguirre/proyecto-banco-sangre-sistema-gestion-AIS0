@@ -29,6 +29,8 @@
         VENCIDA: 'Vencida',
         DESCARTADA: 'Descartada'
     };
+    
+    const PESO_MINIMO = 50; //kg
 
     // Acciones válidas por estado (según Donacion::TRANSICIONES y los métodos del modelo)
     const ACCIONES = {
@@ -160,6 +162,11 @@
             return alert('El motivo es obligatorio si el donante no es apto');
         }
 
+        if (resultado === 'APTO' && Number(formEvaluar.peso.value) < PESO_MINIMO
+            && !confirm(`El peso es menor a ${PESO_MINIMO} kg: la evaluación se registrará como NO APTO. ¿Continuar?`)) {
+            return;
+        }
+
         // Sin fecha_evaluacion: la asigna el backend
         const datos = {
             peso: Number(formEvaluar.peso.value),
@@ -171,10 +178,14 @@
         const res = await api(`donantes/${selectDonante.value}/evaluaciones`, { metodo: 'POST', cuerpo: datos });
         if (!res.ok) return alert(mensajeError(res));
 
-        alert(`Evaluación EVA-${String(res.data.id_evaluacion).padStart(3, '0')} registrada`);
+        const resultadoFinal = res.data.resultado ?? resultado;
+        const codigoEva = `EVA-${String(res.data.id_evaluacion).padStart(3, '0')}`;
+        alert(res.data.forzado
+            ? `Evaluación ${codigoEva} registrada como NO APTO: ${res.data.motivo}`
+            : `Evaluación ${codigoEva} registrada`);
         prepararFormEvaluar();
 
-        if (resultado === 'APTO') {
+        if (resultadoFinal === 'APTO') {
             await cargarEvaluacionesAptas();
             cambiarPanel(contenedor, 'registrar');
         } else {

@@ -2,6 +2,9 @@
 
 class EvaluacionDonante{
     private mysqli $conn;
+    private const PESO_MINIMO = 50;  // kg
+    private const EDAD_MINIMA = 18;
+    private const EDAD_LIMITE = 65;
 
     public function __construct(mysqli $dbConnection){
         $this->conn = $dbConnection;
@@ -9,6 +12,7 @@ class EvaluacionDonante{
 
     /**
      * Registrar nueva evaluacion a un donante activo
+     * Resultado NO_APTO forzado si no cumple la edad o peso requerido
      * @return array ['estado' => creado|donante_no_disponible,'id_evaluacion' (creado)]
      */
     public function registrarEvaluacion(
@@ -20,11 +24,31 @@ class EvaluacionDonante{
         ) : array
         {
             $stmt = $this->conn->prepare(
-                "SELECT 1 FROM donantes WHERE activo = 1 AND id_donante = ?");
+                "SELECT TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) AS edad
+                FROM donantes WHERE activo = 1 AND id_donante = ?");
             $stmt->bind_param("i",$idDonante);
             $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0){
+            $donante = $stmt->get_result()->fetch_assoc();
+            if ($donante === null){
                 return ['estado' => 'donante_no_disponible'];
+            }
+
+            // Validar aptitudes obligatorias
+            $razones = [];
+            if ($peso < self::PESO_MINIMO) {
+                $razones[] = 'Peso menor al mínimo de ' . self::PESO_MINIMO . ' kg';
+            }
+            $edad = (int)$donante['edad'];
+            if ($edad < self::EDAD_MINIMA || $edad >= self::EDAD_LIMITE) {
+                $razones[] = 'Edad fuera del rango permitido (' . self::EDAD_MINIMA . ' a ' . (self::EDAD_LIMITE - 1) . ' años)';
+            }
+            $forzado = false;
+            if ($razones) {
+                $forzado = ($resultado === 'APTO');
+                $resultado = 'NO_APTO';
+                $automatico = implode('; ', $razones);
+                $motivo = $motivo !== null ? $automatico . '. ' . $motivo : $automatico;
+                $motivo = mb_substr($motivo, 0, 255);
             }
 
             $stmt = $this->conn->prepare(
@@ -35,7 +59,13 @@ class EvaluacionDonante{
             $stmt->bind_param("iddss", $idDonante, $peso, $altura, $resultado, $motivo);
             $stmt->execute();
 
-            return ['estado' => 'creado','id_evaluacion' => $this->conn->insert_id]; 
+            return [
+                'estado'        => 'creado',
+                'id_evaluacion' => $this->conn->insert_id,
+                'resultado'     => $resultado,
+                'motivo'        => $motivo,
+                'forzado'       => $forzado
+            ];
         }
     
     /**

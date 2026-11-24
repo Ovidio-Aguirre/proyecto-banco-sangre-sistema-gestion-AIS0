@@ -128,12 +128,22 @@ class DonacionController implements Controlador
                 respuesta(409, ['success' => false, 'mensaje' => 'El donante no es apto']);
             case 'evaluacion_usada':
                 respuesta(409, ['success' => false, 'mensaje' => 'La evaluación ya fue utilizada']);
-            default:
+            case 'intervalo_minimo':
+                respuesta(409, [
+                    'success'       => false,
+                    'mensaje'       => 'Deben pasar al menos 60 días entre donaciones. El donante podrá donar de nuevo el ' . $res['proxima_fecha'],
+                    'proxima_fecha' => $res['proxima_fecha']
+                ]);
+            case 'limite_anual':
+                respuesta(409, ['success' => false, 'mensaje' => 'El donante alcanzó el límite de ' . $res['limite'] . ' donaciones en los últimos 12 meses']);
+            case 'creado':
                 registrarActividad(
                     'Registrar donación',
                     'DON-' . str_pad((string)$res['id_donacion'], 3, '0', STR_PAD_LEFT) . ' registrada (donante #' . $idDonante . ')'
                 );
                 respuesta(201, ['success' => true, 'id_donacion' => $res['id_donacion']]);
+            default:
+                respuesta(500, ['success' => false, 'mensaje' => 'No se pudo registrar la donación']);
         }
     }
 
@@ -161,6 +171,14 @@ class DonacionController implements Controlador
                     'donacion' => $this->modelo->obtenerDonacionPorId($idDonacion),
                     'mensaje'  => 'La donación ya tiene ese estado, sin cambios'
                 ]);
+            case 'intervalo_minimo':
+                respuesta(409, [
+                    'success'       => false,
+                    'mensaje'       => 'Deben pasar al menos 60 días entre donaciones. El donante podrá donar de nuevo el ' . $res['proxima_fecha'],
+                    'proxima_fecha' => $res['proxima_fecha']
+                ]);
+            case 'limite_anual':
+                respuesta(409, ['success' => false, 'mensaje' => 'El donante alcanzó el límite de ' . $res['limite'] . ' donaciones en los últimos 12 meses']);
             default:
                 registrarActividad(
                     'Cambiar estado de donación',
@@ -243,7 +261,11 @@ class DonacionController implements Controlador
                 respuesta(409, ['success' => false, 'mensaje' => 'El donante está inactivo']);
             case 'evaluacion_usada':
                 respuesta(409, ['success' => false, 'mensaje' => 'La evaluación ya fue utilizada']);
-            default:
+            case 'intervalo_minimo':
+                respuesta(409, ['success' => false, 'mensaje' => 'El donante de esa evaluación donó hace menos de 60 días']);
+            case 'limite_anual':
+                respuesta(409, ['success' => false, 'mensaje' => 'El donante de esa evaluación alcanzó su límite de donaciones en los últimos 12 meses']);
+            case 'actualizada':
                 registrarActividad(
                     'Reasignar donación',
                     'DON-' . str_pad((string)$idDonacion, 3, '0', STR_PAD_LEFT) . ' reasignada a la evaluación #' . $idEvaluacion
@@ -253,6 +275,8 @@ class DonacionController implements Controlador
                     'donacion' => $this->modelo->obtenerDonacionPorId($idDonacion),
                     'mensaje'  => 'Donación reasignada'
                 ]);
+            default:
+                respuesta(500, ['success' => false, 'mensaje' => 'No se pudo reasignar la donación']);
         }
     }
 
