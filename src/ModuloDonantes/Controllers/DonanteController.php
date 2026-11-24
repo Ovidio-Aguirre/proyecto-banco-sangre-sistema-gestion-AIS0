@@ -105,6 +105,7 @@ class DonanteController implements Controlador
     private function crearDonante(): void  
     {
         $data = $this->validarDonante(leerJson());
+        $this->validarEdad($data['fecha_nacimiento'], true);
 
         //Insertar datos
         $res = $this->modelo->crearDonante(
@@ -135,6 +136,7 @@ class DonanteController implements Controlador
     private function actualizarDonante(int $idDonante): void 
     {
         $data = $this->validarDonante(leerJson());
+        $this->validarEdad($data['fecha_nacimiento'], false);
 
         //Insertar datos actualizados
         $res = $this->modelo->actualizarDonante(
@@ -226,6 +228,19 @@ class DonanteController implements Controlador
             'fecha_nacimiento'  => $fechaNacimiento,
             'sexo'              => $data['sexo'],
         ]; 
+    }
+
+    // Valida la edad: 18-65
+    private function validarEdad(string $fechaNacimiento, bool $esAlta): void
+    {
+        $edad = (new DateTime($fechaNacimiento))->diff(new DateTime('today'))->y;
+
+        if ($edad < 18) {
+            respuesta(400, ['success' => false, 'mensaje' => 'El donante debe tener al menos 18 años para registrarse']);
+        }
+        if ($esAlta && $edad >= 65) {
+            respuesta(400, ['success' => false, 'mensaje' => 'No se pueden registrar donantes de 65 años o más']);
+        }
     }
 }
 

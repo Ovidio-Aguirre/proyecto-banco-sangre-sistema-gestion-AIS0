@@ -25,14 +25,18 @@ class Donacion{
         'AB+' => ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
     ];
 
+    // Limite de donaciones
+    private const INTERVALO_DIAS = 60;
+    private const LIMITE_ANUAL = ['M' => 4, 'F' => 3];
+
     public function __construct(mysqli $dbConnection){
         $this-> conn = $dbConnection;
     }
 
     /**
      * Registrar una donacion para donantes aptos
-     * @return array ['estado' => creado|donante_no_disponible|sin_evaluacion
-     *               |no_apto|evaluacion_usada, 'id_donacion' (creado)]
+     * @return array ['estado' => creado|donante_no_disponible sin_evaluacion
+     *               |no_apto|evaluacion_usada|intervalo_minimo|limite_anual 'id_donacion' (creado)]
      */
     public function registrarDonacion(
         int $idDonante, 
@@ -41,10 +45,11 @@ class Donacion{
     {
         // Validar donante activo
         $stmt = $this->conn->prepare(
-                "SELECT 1 FROM donantes WHERE activo = 1 AND id_donante = ?");
+                "SELECT sexo FROM donantes WHERE activo = 1 AND id_donante = ?");
         $stmt->bind_param("i",$idDonante);
         $stmt->execute();
-        if ($stmt->get_result()->num_rows === 0){
+        $donante = $stmt->get_result()->fetch_assoc();
+        if ($donante === null){
             return ['estado' => 'donante_no_disponible'];
         }
 
@@ -75,6 +80,12 @@ class Donacion{
         $stmt->execute();
         if ($stmt->get_result()->num_rows > 0) {
             return ['estado' => 'evaluacion_usada'];
+        }
+
+         // Intervalo mínimo entre donaciones y límite anual
+        $bloqueo = $this->validarFrecuencia($idDonante, $donante['sexo']);
+        if ($bloqueo !== null) {
+            return $bloqueo;
         }
 
         // fecha_caducidad = fecha_recoleccion + 42 dias
@@ -471,7 +482,7 @@ class Donacion{
     /**
      * Reasignar donacion a otro donante por medio de la evaluacion
      * @return string actualizada|donacion_no_existe|donacion_no_reasignable
-     *                evaluacion_no_apta|evaluacion_usada|donante_no_disponible
+     *                evaluacion_no_apta|evaluacion_usada|donante_no_disponible|intervalo_minimo|limite_anual
      */
     public function reasignarDonacion(int $idDonacion, int $idEvaluacionNueva) : string
     {
@@ -499,7 +510,7 @@ class Donacion{
 
         // Validar la evaluacion a utilizar en la reasignacion
         $stmt = $this->conn->prepare(
-            "SELECT e.resultado, dn.activo, (e.fecha_evaluacion = CURDATE()) AS fecha_hoy
+            "SELECT e.resultado, e.id_donante, dn.activo, dn.sexo, (e.fecha_evaluacion = CURDATE()) AS fecha_hoy
             FROM evaluaciones_donante e
             JOIN donantes dn ON dn.id_donante = e.id_donante
             WHERE e.id_evaluacion = ?"
@@ -521,6 +532,11 @@ class Donacion{
         $stmt->execute();
         if ($stmt->get_result()->num_rows > 0) {
             return 'evaluacion_usada';
+        }
+
+        $bloqueo = $this->validarFrecuencia((int)$eval['id_donante'], $eval['sexo'], $idDonacion);
+        if ($bloqueo !== null) {
+            return $bloqueo['estado'];
         }
 
         $stmt = $this->conn->prepare(
@@ -583,5 +599,41 @@ class Donacion{
     private function tiposCompatibles(string $tipoRequerido): array
     {
         return self::COMPATIBILIDAD[$tipoRequerido] ?? [$tipoRequerido];
+    }
+
+    /**
+     * Verifica el intervalo minimo y el limite anual
+     * @param int|null $excluirDonacion donacion a ignorar (al reasignar)
+     * @return array|null null: puede donar
+     *                    ['estado' => 'intervalo_minimo','proxima_fecha' => 'YYYY-MM-DD']
+     *                    ['estado' => 'limite_anual', 'limite' => int]
+     */
+    private function validarFrecuencia(int $idDonante, string $sexo, ?int $excluirDonacion = null): ?array
+    {
+        $excluir = $excluirDonacion ?? 0;
+
+        $stmt = $this->conn->prepare(
+            "SELECT DATEDIFF(CURDATE(), MAX(d.fecha_recoleccion)) AS dias,
+                    DATE_ADD(MAX(d.fecha_recoleccion), INTERVAL " . self::INTERVALO_DIAS . " DAY) AS proxima_fecha,
+                    COALESCE(SUM(d.fecha_recoleccion > DATE_SUB(CURDATE(), INTERVAL 12 MONTH)), 0) AS en_12_meses
+            FROM donaciones d
+            JOIN evaluaciones_donante e ON e.id_evaluacion = d.id_evaluacion
+            WHERE e.id_donante = ? AND d.id_donacion <> ?"
+        );
+        $stmt->bind_param("ii", $idDonante, $excluir);
+        $stmt->execute();
+        $f = $stmt->get_result()->fetch_assoc();
+
+        // Sin donaciones previas, 'dias' es NULL y no hay restriccion
+        if ($f['dias'] !== null && (int)$f['dias'] < self::INTERVALO_DIAS) {
+            return ['estado' => 'intervalo_minimo', 'proxima_fecha' => $f['proxima_fecha']];
+        }
+
+        $limite = self::LIMITE_ANUAL[$sexo];
+        if ((int)$f['en_12_meses'] >= $limite) {
+            return ['estado' => 'limite_anual', 'limite' => $limite];
+        }
+
+        return null;
     }
 }
