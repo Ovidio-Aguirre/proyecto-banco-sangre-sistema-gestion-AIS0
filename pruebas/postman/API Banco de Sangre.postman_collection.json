@@ -1,0 +1,2972 @@
+{
+  "info": {
+    "_postman_id": "402c86e0-7316-43ee-a683-ff2abd2612ac",
+    "name": "API Banco de Sangre",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54359571",
+    "_collection_link": "https://go.postman.co/collection/54359571-402c86e0-7316-43ee-a683-ff2abd2612ac?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"usuario\": \"Admin\", \r\n    \"contrasena\": \"Admin123*\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Error Credenciales",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"usuario\": \"admin\", \r\n    \"contrasena\": \"Admin1234*\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Error tipo dato",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"usuario\": 3453, \r\n    \"contrasena\": \"Admin1234*\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Perfil - Usuario desactivado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"usuario\": \"crivera\", \r\n    \"contrasena\": \"Carlos234*\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/perfil",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "perfil"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Perfil - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/perfil",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "perfil"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Contraseña - Error tipo dato",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"contrasena_actual\": 1235, \r\n    \"contrasena_nueva\": \"Admin123*\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/cambiar-contrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "cambiar-contrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Contraseña - Error cantidad caracteres",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"contrasena_actual\": \"Admin123*\",\r\n    \"contrasena_nueva\": \"Admin12\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/cambiar-contrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "cambiar-contrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Contraseña - Error contraseñas iguales",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"contrasena_actual\": \"Admin123*\",\r\n    \"contrasena_nueva\": \"Admin123*\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/cambiar-contrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "cambiar-contrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Contraseña - Error contraseña actual",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"contrasena_actual\": \"Admin123\",\r\n    \"contrasena_nueva\": \"Admin12345*\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/cambiar-contrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "cambiar-contrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Contraseña - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"contrasena_actual\": \"Admin123*\", \r\n    \"contrasena_nueva\": \"Admin12345*\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/cambiar-contrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "cambiar-contrasena"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Roles - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/roles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "roles"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Usuarios - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Buscar por filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios?q=Admin&id_rol=1&activo=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Admin"
+                },
+                {
+                  "key": "id_rol",
+                  "value": "1"
+                },
+                {
+                  "key": "activo",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error cantidad de caracteres",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios?q=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error ID inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios?id_rol=abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "id_rol",
+                  "value": "abc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error activo 0 o 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/usuarios?activo=3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "activo",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"Pedro\",\r\n  \"apellido\": \"Reyes\",\r\n  \"correo\": \"pedro.reyes@example.com\",\r\n  \"id_rol\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error campos inválidos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"Pedro\",\r\n  \"correo\": \"pedro@example.com\",\r\n  \"id_rol\": 1\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error rol no permitido",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"Test\",\r\n  \"apellido\": \"User\",\r\n  \"correo\": \"test.rol@example.com\",\r\n  \"id_rol\": 9999\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error correo duplicado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"Otro\",\r\n  \"apellido\": \"Usuario\",\r\n  \"correo\": \"juan.perez@example.com\",\r\n  \"id_rol\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios- OK",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"correo\": \"nuevo.correo@example.com\",\r\n  \"id_rol\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios -  Error sin campos",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error formato de activo",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"activo\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error inexistente",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"correo\": \"cualquiera@example.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error correo duplicado",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"correo\": \"juan.perez@example.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usuarios - Error cambiar rol a si mismo",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"activo\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Solicitudes",
+      "item": [
+        {
+          "name": "Solicitudes - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?busquedaPaciente=José&estadoSolicitud=pendiente&orden=asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "busquedaPaciente",
+                  "value": "José"
+                },
+                {
+                  "key": "estadoSolicitud",
+                  "value": "pendiente"
+                },
+                {
+                  "key": "orden",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error orden inválido filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?orden=xyz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "xyz"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error estado inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?estadoSolicitud=cancelada",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "estadoSolicitud",
+                  "value": "cancelada"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Búsqueda por IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?idPaciente=3&idHospital=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "idPaciente",
+                  "value": "3"
+                },
+                {
+                  "key": "idHospital",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error campos vacíos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes?busquedaPaciente=&estadoSolicitud=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ],
+              "query": [
+                {
+                  "key": "busquedaPaciente",
+                  "value": ""
+                },
+                {
+                  "key": "estadoSolicitud",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Búsqueda por ID solicitud",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error ID inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Unidades compatibles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/4/unidades-compatibles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "4",
+                "unidades-compatibles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error unidades compatibles inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/99999/unidades-compatibles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "99999",
+                "unidades-compatibles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idPaciente\": 1,\r\n  \"idHospital\": 2,\r\n  \"unidadesSolicitadas\": 3,\r\n  \"justificacion\": \"Paciente requiere transfusión\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error campos obligatorios",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"idPaciente\": 1, \"idHospital\": 2 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error unidades > 10",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idPaciente\": 1, \"idHospital\": 2,\r\n  \"unidadesSolicitadas\": 15, \"justificacion\": \"x\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error paciente no registrado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idPaciente\": 99999, \"idHospital\": 2,\r\n  \"unidadesSolicitadas\": 1, \"justificacion\": \"x\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error hospital no registrado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"idPaciente\": 1, \"idHospital\": 99999,\r\n  \"unidadesSolicitadas\": 1, \"justificacion\": \"x\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Asignar unidad",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"ids\": [13] }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/1/unidades",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "1",
+                "unidades"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error IDs vacíos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"ids\": [] }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/1/unidades",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "1",
+                "unidades"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error solicitud no aprobada",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"ids\": [1] }\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/5/unidades",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "5",
+                "unidades"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - OK",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"APROBADA\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error rechazar sin motivo",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"RECHAZADA\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error estado inválido",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"PENDIENTE\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error usuario inexistente",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"APROBADA\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/{id_ya_aprobada}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "{id_ya_aprobada}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error solictud ya procesada",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"APROBADA\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - OK",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error entregar sin unidades completas",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error solicitud no aprobada",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/8",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Solicitudes - Error solicitud ya entregada",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/solicitudes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "solicitudes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Reportes - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/resumen?periodo=3-meses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "resumen"
+              ],
+              "query": [
+                {
+                  "key": "periodo",
+                  "value": "3-meses"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Mensuales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/donaciones-mensuales?periodo=anual",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "donaciones-mensuales"
+              ],
+              "query": [
+                {
+                  "key": "periodo",
+                  "value": "anual"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Registro actividades modo Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/actividad?limite=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "actividad"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Registro actividades modo Admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/actividad?pagina=1&por_pagina=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "actividad"
+              ],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "1"
+                },
+                {
+                  "key": "por_pagina",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Error periodo inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/resumen?periodo=diario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "resumen"
+              ],
+              "query": [
+                {
+                  "key": "periodo",
+                  "value": "diario"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Error fuera de rango",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/actividad?limite=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "actividad"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Error no autorizado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/actividad?pagina=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "actividad"
+              ],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Error recurso inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/loquesea",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "loquesea"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reportes - Error método no permitido",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reportes/resumen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "resumen"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pacientes",
+      "item": [
+        {
+          "name": "Pacientes - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Búsqueda por filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes?busquedaPaciente=José&sexoPaciente=m&orden=asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ],
+              "query": [
+                {
+                  "key": "busquedaPaciente",
+                  "value": "José"
+                },
+                {
+                  "key": "sexoPaciente",
+                  "value": "m"
+                },
+                {
+                  "key": "orden",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Obtener por ID existente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombrePaciente\": \"Juan\",\r\n  \"apellidoPaciente\": \"Pérez\",\r\n  \"tipoSangre\": 1,\r\n  \"fechaPaciente\": \"1990-05-10\",\r\n  \"sexoPaciente\": \"M\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Error falta de campos obligatorios",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"nombrePaciente\": \"Juan\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Error sexo inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes?sexoPaciente=X",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ],
+              "query": [
+                {
+                  "key": "sexoPaciente",
+                  "value": "X"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Error orden inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes?orden=xyz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "xyz"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Error ID inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Error método no permitido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pacientes - Error paciente duplicado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombrePaciente\": \"Juan\",\r\n  \"apellidoPaciente\": \"Pérez\",\r\n  \"tipoSangre\": 1,\r\n  \"fechaPaciente\": \"1990-05-10\",\r\n  \"sexoPaciente\": \"M\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "pacientes"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Hospitales",
+      "item": [
+        {
+          "name": "Hospitales - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - Búsqueda por filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales?nombreHospital=Hospital Nacional Rosales&departamentoHospital=6&ordenHospital=asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ],
+              "query": [
+                {
+                  "key": "nombreHospital",
+                  "value": "Hospital Nacional Rosales"
+                },
+                {
+                  "key": "departamentoHospital",
+                  "value": "6"
+                },
+                {
+                  "key": "ordenHospital",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - Obtener por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombreHospital\": \"Hospital Nuevo\",\r\n  \"direccionHospital\": \"Calle 123\",\r\n  \"distritoHospital\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - Error campos vacíos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"nombreHospital\": \"Hospital X\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - Error orden inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales?ordenHospital=xyz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ],
+              "query": [
+                {
+                  "key": "ordenHospital",
+                  "value": "xyz"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - Error ID inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - Error método no permitido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospitales - Error hospital duplicado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombreHospital\": \"Hospital Nuevo\",\r\n  \"direccionHospital\": \"Calle 123\",\r\n  \"distritoHospital\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/hospitales",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "hospitales"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Donantes",
+      "item": [
+        {
+          "name": "Donantes - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes?busqueda=juan&id_tipo_sangre=1&orden=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ],
+              "query": [
+                {
+                  "key": "busqueda",
+                  "value": "juan"
+                },
+                {
+                  "key": "id_tipo_sangre",
+                  "value": "1"
+                },
+                {
+                  "key": "orden",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - Obtener donante específico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - OK",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"id_tipo_sangre\": 1,\r\n  \"dui\": \"00000000-1\",\r\n  \"nombre\": \"Juan\",\r\n  \"apellido\": \"Pérez\",\r\n  \"contacto\": \"7000-0001\",\r\n  \"fecha_nacimiento\": \"1990-05-10\",\r\n  \"sexo\": \"M\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donante - Cambiar estado",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"activo\": false }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes/6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"id_tipo_sangre\": 2,\r\n  \"dui\": \"98765432-1\",\r\n  \"nombre\": \"María\",\r\n  \"apellido\": \"López\",\r\n  \"contacto\": \"6666-5555\",\r\n  \"fecha_nacimiento\": \"1995-03-20\",\r\n  \"sexo\": \"F\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - Error campos vacíos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"nombre\": \"Pedro\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - Error campo inválido",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"id_tipo_sangre\": 1,\r\n  \"dui\": \"11111111-1\",\r\n  \"nombre\": \"Niño\",\r\n  \"apellido\": \"Test\",\r\n  \"contacto\": \"1111-2222\",\r\n  \"fecha_nacimiento\": \"2015-01-01\",\r\n  \"sexo\": \"M\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - Error activo true o false",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"activo\": \"maybe\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - Error donante inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - Error método no permitido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donantes - Error DUI duplicado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"id_tipo_sangre\": 1,\r\n  \"dui\": \"00000000-1\",\r\n  \"nombre\": \"Otra\",\r\n  \"apellido\": \"Persona\",\r\n  \"contacto\": \"3333-4444\",\r\n  \"fecha_nacimiento\": \"1990-01-01\",\r\n  \"sexo\": \"F\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Evaluaciones",
+      "item": [
+        {
+          "name": "Evaluaciones - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/1/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "1",
+                "evaluaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluaciones - Historial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/1/evaluaciones?historial=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "1",
+                "evaluaciones"
+              ],
+              "query": [
+                {
+                  "key": "historial",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluaciones - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"peso\": 70.5,\r\n  \"altura\": 1.75,\r\n  \"resultado\": \"APTO\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes/13/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "13",
+                "evaluaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluaciones - Error campos faltantes",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"peso\": 70 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes/7/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "7",
+                "evaluaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluaciones - Error NO_APTO sin motivo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"peso\": 70,\r\n  \"altura\": 1.75,\r\n  \"resultado\": \"NO_APTO\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes/7/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "7",
+                "evaluaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluaciones - Error sin evaluaciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/99999/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "99999",
+                "evaluaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluaciones - Error donante no registrado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"peso\": 70, \"altura\": 1.75, \"resultado\": \"APTO\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donantes/99999/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "99999",
+                "evaluaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluaciones - Error método no permitido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donantes/1/evaluaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donantes",
+                "1",
+                "evaluaciones"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Donaciones",
+      "item": [
+        {
+          "name": "Donaciones - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones?fecha_ini=2026-10-09&fecha_fin=2026-11-20&id_tipo_sangre=1&estado=disponible",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones"
+              ],
+              "query": [
+                {
+                  "key": "fecha_ini",
+                  "value": "2026-10-09"
+                },
+                {
+                  "key": "fecha_fin",
+                  "value": "2026-11-20"
+                },
+                {
+                  "key": "id_tipo_sangre",
+                  "value": "1"
+                },
+                {
+                  "key": "estado",
+                  "value": "disponible"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - Elegibles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/elegibles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "elegibles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - Buscar por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - OK",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"DISPONIBLE\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/14",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "14"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - OK",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"id_solicitud\": 4 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/10/solicitud",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "10",
+                "solicitud"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"id_donante\": 3 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - Error campos faltantes",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - Error estado inválido",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"INVENTADO\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - Error ID inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - Error método no permitido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donaciones - Error transición no permitida",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"estado\": \"EN_EVALUACION\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/donaciones/14",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "donaciones",
+                "14"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Inventario",
+      "item": [
+        {
+          "name": "Inventario - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventario"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Inventario - Unidades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario/unidades",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventario",
+                "unidades"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Inventario - Filtrar por tipo sangre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventario",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Inventario - Error tipo de sangre inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventario",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Inventario - Error método no permitido",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/inventario/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inventario",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
